@@ -1414,18 +1414,14 @@ function closeLangModal(e){ if(!e || e.target===document.getElementById('langOve
 
 function setLang(lang){
   ebookLang = lang;
-  // Salva na mesma chave global que a calculadora usa
   localStorage.setItem('cvLang', lang);
-  
-  // Atualiza o visual do modal de seleção
-  document.querySelectorAll('.lang-option').forEach(el=>el.classList.remove('selected'));
-  const opt = document.getElementById('lang-'+lang);
-  if(opt) opt.classList.add('selected');
-  
-  closeLangModal();
-  
-  // Recarrega a página para aplicar a tradução do início
-  window.location.reload();
+  if (lang === 'pt') {
+    window.location.href = 'ebook-cardss-pt.html';
+  } else if (lang === 'es') {
+    window.location.href = 'ebook-cardss-es.html';
+  } else if (lang === 'en') {
+    window.location.href = 'ebook-cardss-en.html';
+  }
 }
 
 function loadLang(){
