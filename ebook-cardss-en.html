@@ -555,9 +555,9 @@ button{font-family:var(--sans)}
   <div class="cover">
     <img src="https://images.unsplash.com/photo-1579621970795-87facc2f976d?w=900&q=80" alt="Capa">
     <div class="cover-over">
-      <div class="cover-badge">✦ Complete ebook · 15 Cards</div>
-      <div class="cover-h">The Foundations  <span>of a Prosperous Mind</span></div>
-      <div class="cover-p">The complete guide to transforming your mindset and building financial freedom.</div>
+      <div class="cover-badge">✦ Ebook Completo · 15 Cartões</div>
+      <div class="cover-h">Os Fundamentos<span> da Mente Próspera</span></div>
+      <div class="cover-p">O guia completo para transformar sua mentalidade e construir liberdade financeira</div>
       <div class="cover-stats">
         <div><div class="cover-stat-n">15</div><div class="cover-stat-l">Cartões</div></div>
         <div><div class="cover-stat-n">~90</div><div class="cover-stat-l">Min</div></div>
@@ -566,7 +566,7 @@ button{font-family:var(--sans)}
     </div>
   </div>
 
-  <button class="start-btn" onclick="openCard(0)">📖 Start Reading →</button>
+  <button class="start-btn" onclick="openCard(0)">📖 Começar a Leitura →</button>
 
   <!-- Parte 1 -->
   <div class="part-label">Parte 1 — Os Fundamentos da Mente</div>
@@ -1414,18 +1414,14 @@ function closeLangModal(e){ if(!e || e.target===document.getElementById('langOve
 
 function setLang(lang){
   ebookLang = lang;
-  // Salva na mesma chave global que a calculadora usa
   localStorage.setItem('cvLang', lang);
-  
-  // Atualiza o visual do modal de seleção
-  document.querySelectorAll('.lang-option').forEach(el=>el.classList.remove('selected'));
-  const opt = document.getElementById('lang-'+lang);
-  if(opt) opt.classList.add('selected');
-  
-  closeLangModal();
-  
-  // Recarrega a página para aplicar a tradução do início
-  window.location.reload();
+  if (lang === 'pt') {
+    window.location.href = 'ebook-cardss-pt.html';
+  } else if (lang === 'es') {
+    window.location.href = 'ebook-cardss-es.html';
+  } else if (lang === 'en') {
+    window.location.href = 'ebook-cardss-en.html';
+  }
 }
 
 function loadLang(){
