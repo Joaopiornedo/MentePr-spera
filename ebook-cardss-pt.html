@@ -540,7 +540,6 @@ button{font-family:var(--sans)}
   </div>
   <div class="topbar-actions">
     <button class="tbtn icon" id="btnTheme" onclick="toggleTheme()" title="Tema">☀️</button>
-    <button class="tbtn" id="btnLang" onclick="openLangModal()" title="Idioma" style="gap:4px;"><span id="langFlagSm">🇧🇷</span> <span id="langCodeSm">PT</span></button>
     <a href="index.html" class="tbtn" title="Calculadora">🧮 <span class="lbl">Calculadora</span></a>
   </div>
 </div>
@@ -1418,36 +1417,10 @@ const EBOOK_LANGS = {
 };
 let ebookLang = localStorage.getItem('cvLang') || 'pt';
 
-function openLangModal(){ document.getElementById('langOverlay').classList.add('open'); }
-function closeLangModal(e){ if(!e || e.target===document.getElementById('langOverlay')) document.getElementById('langOverlay').classList.remove('open'); }
-
-function setLang(lang){
-  ebookLang = lang;
-  localStorage.setItem('cvLang', lang);
-  if (lang === 'pt') {
-    window.location.href = 'ebook-cardss-pt.html';
-  } else if (lang === 'es') {
-    window.location.href = 'ebook-cardss-es.html';
-  } else if (lang === 'en') {
-    window.location.href = 'ebook-cardss-en.html';
-  }
-}
-
 function loadLang(){
   // Lê o idioma da calculadora ('cvLang') ou assume português ('pt') por padrão
   const saved = localStorage.getItem('cvLang') || 'pt';
   ebookLang = saved;
-  
-  // Atualiza qual bandeira fica marcada como selecionada no modal
-  document.querySelectorAll('.lang-option').forEach(el=>el.classList.remove('selected'));
-  const opt = document.getElementById('lang-'+saved);
-  if(opt) opt.classList.add('selected');
-  
-  // CORREÇÃO ESSENCIAL: Usa o objeto correto do seu código (LANGS) para o topo da página
-  if (typeof LANGS !== 'undefined' && LANGS[saved]) {
-    document.getElementById('langFlagSm').textContent = LANGS[saved].flag;
-    document.getElementById('langCodeSm').textContent = LANGS[saved].code;
-  }
   
   // CHAMA A FUNÇÃO DE TRADUÇÃO DAS CARTAS
   // Se o seu script possuir uma função para traduzir o texto dos blocos (como applyTranslations), chame-a aqui:
@@ -1457,33 +1430,6 @@ function loadLang(){
 }
 
 </script>
-
-<!-- LANGUAGE MODAL -->
-<div class="lang-modal-overlay" id="langOverlay" onclick="closeLangModal(event)">
-  <div class="lang-sheet" onclick="event.stopPropagation()">
-    <div class="lang-handle"></div>
-    <div class="lang-title">Idioma / Language</div>
-    <div class="lang-sub">Escolha o idioma / Choose language</div>
-    <div class="lang-options">
-      <div class="lang-option selected" id="lang-pt" onclick="setLang('pt')">
-        <span class="lang-flag">🇧🇷</span>
-        <div><div class="lang-name">Português</div><div class="lang-native">Brasil</div></div>
-        <span class="lang-check">✓</span>
-      </div>
-      <div class="lang-option" id="lang-es" onclick="setLang('es')">
-        <span class="lang-flag">🌎</span>
-        <div><div class="lang-name">Español</div><div class="lang-native">Latinoamérica</div></div>
-        <span class="lang-check">✓</span>
-      </div>
-      <div class="lang-option" id="lang-en" onclick="setLang('en')">
-        <span class="lang-flag">🇺🇸</span>
-        <div><div class="lang-name">English</div><div class="lang-native">United States</div></div>
-        <span class="lang-check">✓</span>
-      </div>
-    </div>
-    <button class="lang-close-btn" onclick="closeLangModal()">Fechar / Close</button>
-  </div>
-</div>
 
 </body>
 </html>
