@@ -2232,7 +2232,6 @@ function goToEbook() {
 
 window.onload = () => {
   loadTheme();
-  loadLang();
   // Load mode first (without triggering conversion)
   const savedMode = localStorage.getItem('cvMode') || 'pct';
   // Load config WITHOUT calling setMode() to prevent saving empty items
@@ -2253,9 +2252,7 @@ window.onload = () => {
   loadItems();
   defaultItems();
   setDefaultMonth();
-  renderDreams();
-  calcularTudo();
-  applyTranslations();
+  loadLang();
 };
 
 // ═══════════════════════════════════════════════════════
