@@ -2,9 +2,10 @@ const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 const fs = require("fs");
 
-const html = fs.readFileSync("index.html", "utf8");
+let html = fs.readFileSync("index.html", "utf8");
+html = html.replace('const dInit = getData();', 'const dInit = getData(); console.log("dInit:", dInit);');
+html = html.replace("$('salario').value   = dInit.config.salario  || '2000';", "console.log('setting salario to', dInit.config.salario); $('salario').value   = dInit.config.salario  || '2000';");
 
-// Setup initial localStorage mock state
 const mockStorage = {
   'cvData_v4': JSON.stringify({
     "historico":[],
@@ -34,4 +35,5 @@ setTimeout(() => {
   const document = window.document;
 
   console.log("salario value is:", document.getElementById("salario").value);
-}, 500);
+  console.log("cvData_v4 in storage is:", window.localStorage.getItem("cvData_v4"));
+}, 1000);

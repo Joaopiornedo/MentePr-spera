@@ -2,9 +2,10 @@ const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 const fs = require("fs");
 
-const html = fs.readFileSync("index.html", "utf8");
+let html = fs.readFileSync("index.html", "utf8");
 
-// Setup initial localStorage mock state
+html = html.replace('saveItems();', 'saveItems(); console.log("addItem saved data, salary value:", document.getElementById("salario").value);');
+
 const mockStorage = {
   'cvData_v4': JSON.stringify({
     "historico":[],
@@ -14,7 +15,7 @@ const mockStorage = {
       "lazer":[],
       "invest":[]
     },
-    "config":{"salario":"5000","pctFixo":"50","pctInvest":"20","mode":"pct"}
+    "config":{"salario":"8888","pctFixo":"50","pctInvest":"20","mode":"pct"}
   })
 };
 
@@ -25,13 +26,9 @@ const dom = new JSDOM(html, {
   beforeParse(window) {
     window.localStorage.getItem = (k) => mockStorage[k] || null;
     window.localStorage.setItem = (k, v) => mockStorage[k] = v;
-    window.console.log = (...args) => console.log("WINDOW:", ...args);
   }
 });
 
 setTimeout(() => {
-  const window = dom.window;
-  const document = window.document;
-
-  console.log("salario value is:", document.getElementById("salario").value);
-}, 500);
+  console.log("storage finally:", dom.window.localStorage.getItem("cvData_v4"));
+}, 1000);

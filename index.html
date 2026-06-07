@@ -3,12 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Calculadora da Virada</title>
+<title>Mente Próspera</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#6366f1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="CalcVirada">
+<meta name="apple-mobile-web-app-title" content="Mente Próspera">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
 <style>
 /* ═══════════════════════════════════════════════════════
    DESIGN TOKENS — LIGHT MODE (default)
@@ -102,9 +104,11 @@ body {
 }
 .topbar-logo {
   width: 34px; height: 34px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--primary), var(--purple));
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
+  overflow: hidden;
+}
+.topbar-logo img {
+  width: 100%; height: 100%; object-fit: cover;
 }
 .topbar-title { font-size: 16px; font-weight: 700; color: var(--text); }
 .topbar-sub { font-size: 11px; color: var(--text3); }
@@ -919,9 +923,9 @@ input, select, textarea { font-family: inherit; }
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="topbar-brand">
-    <div class="topbar-logo">💰</div>
+    <div class="topbar-logo"><img src="icons/icon-192.png" alt="Logo"></div>
     <div>
-      <div class="topbar-title">Calculadora da Virada</div>
+      <div class="topbar-title">Mente Próspera</div>
       <div class="topbar-sub">Gestão financeira inteligente</div>
     </div>
   </div>
@@ -938,7 +942,7 @@ input, select, textarea { font-family: inherit; }
     <div class="install-handle"></div>
     <div style="font-size:44px;text-align:center;margin-bottom:12px;">📲</div>
     <div class="install-sheet-title">Instalar App</div>
-    <div class="install-sheet-sub">Adicione a Calculadora da Virada ao seu celular ou PC — acesso rápido, funciona offline.</div>
+    <div class="install-sheet-sub">Adicione a Mente Próspera ao seu celular ou PC — acesso rápido, funciona offline.</div>
 
     <div id="installStepPWA">
       <button class="install-pwa-btn" id="btnInstallPWA" onclick="triggerInstall()">
@@ -959,7 +963,7 @@ input, select, textarea { font-family: inherit; }
         <div class="install-step-num">2</div>
         <div class="install-step-text">
           <h4>💻 PC — Chrome / Edge</h4>
-          <p>Clique no ícone <b>⊕</b> na barra de endereço → <b>"Instalar Calculadora da Virada"</b></p>
+          <p>Clique no ícone <b>⊕</b> na barra de endereço → <b>"Instalar Mente Próspera"</b></p>
         </div>
       </div>
       <div class="install-step">
@@ -2265,7 +2269,7 @@ const LANGS = {
   pt: {
     flag: '🇧🇷', code: 'PT',
     // topbar
-    appTitle: 'Calculadora da Virada',
+    appTitle: 'Mente Próspera',
     appSub: 'Gestão financeira inteligente',
     // install modal
     installTitle: 'Instalar App',
@@ -2275,7 +2279,7 @@ const LANGS = {
     installStep1Title: '📱 iPhone / iPad — Safari',
     installStep1Body: 'Toque em <b>Compartilhar ↑</b> (barra inferior) → <b>"Adicionar à Tela de Início"</b>',
     installStep2Title: '💻 PC — Chrome / Edge',
-    installStep2Body: 'Clique no ícone <b>⊕</b> na barra de endereço → <b>"Instalar Calculadora da Virada"</b>',
+    installStep2Body: 'Clique no ícone <b>⊕</b> na barra de endereço → <b>"Instalar Mente Próspera"</b>',
     installStep3Title: '🤖 Android — Chrome',
     installStep3Body: 'Menu <b>⋮</b> → <b>"Adicionar à tela inicial"</b> ou use o botão acima',
     installClose: 'Fechar',

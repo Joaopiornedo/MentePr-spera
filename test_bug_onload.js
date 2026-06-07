@@ -2,9 +2,8 @@ const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 const fs = require("fs");
 
-const html = fs.readFileSync("index.html", "utf8");
+let html = fs.readFileSync("index.html", "utf8");
 
-// Setup initial localStorage mock state
 const mockStorage = {
   'cvData_v4': JSON.stringify({
     "historico":[],
@@ -33,5 +32,6 @@ setTimeout(() => {
   const window = dom.window;
   const document = window.document;
 
-  console.log("salario value is:", document.getElementById("salario").value);
-}, 500);
+  console.log("salario initially:", document.getElementById("salario").value);
+  console.log("storage initially:", window.localStorage.getItem("cvData_v4"));
+}, 1000);
