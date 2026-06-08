@@ -108,7 +108,7 @@ button{font-family:var(--sans)}
 }
 .topbar-title{font-family:var(--serif);font-size:14px;font-weight:700;color:var(--text);line-height:1.2;transition:color var(--t)}
 .topbar-sub{font-size:10px;color:var(--text2);transition:color var(--t)}
-.topbar-actions{display:flex;gap:7px}
+.topbar-actions{display:flex;align-items:center;gap:10px}
 .tbtn{
   display:inline-flex;align-items:center;justify-content:center;gap:5px;
   height:34px;padding:0 12px;
@@ -116,6 +116,7 @@ button{font-family:var(--sans)}
   border-radius:var(--r-sm);cursor:pointer;
   font-size:12px;font-weight:700;color:var(--text2);
   text-decoration:none;transition:all var(--t);white-space:nowrap;
+  overflow: hidden;
 }
 .tbtn:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.1)}
 .tbtn.icon{width:34px;padding:0;font-size:16px}
@@ -547,7 +548,8 @@ button{font-family:var(--sans)}
   </div>
   <div class="topbar-actions">
     <button class="tbtn icon" id="btnTheme" onclick="toggleTheme()" title="Tema">☀️</button>
-<div> <a href="index.html" class="tbtn" title="Calculadora"> <img src="icons/calculator.png" alt="Calculadora" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">  <span class="lbl"></span></a></div>  </div>
+    <a href="index.html" class="tbtn" title="Calculadora"> <img src="icons/calculator.png" alt="Calculadora" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">  <span class="lbl"></span></a>
+  </div>
 </div>
 
 <!-- ════════════════════════════════
@@ -1392,7 +1394,7 @@ function toggleTheme() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const next = isDark ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
-  document.getElementById('btnTheme').textContent = isDark ? '☀️' : '🌙';
+  document.getElementById('btnTheme').textContent = isDark ? '☀️🌙' : '🌙';
   localStorage.setItem('ebookCardsTheme', next);
 }
 
