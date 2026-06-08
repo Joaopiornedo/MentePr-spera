@@ -1647,6 +1647,16 @@ const fmt = (n, decimals=2) => Number(n||0).toFixed(decimals);
 const fmtMoney = n => '$' + Number(n||0).toLocaleString('pt', {minimumFractionDigits:2, maximumFractionDigits:2});
 const safeNum = v => { let n = parseFloat(String(v||0).replace(',','.')); return isNaN(n) ? 0 : n; };
 
+const escapeHTML = (str) => {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
+
 function showToast(msg, duration=2500) {
   const t = $('toast'); t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), duration);
@@ -1749,11 +1759,14 @@ function addItem(cat, nome='', data='', valor='', done=false) {
   const row = document.createElement('div');
   row.className = 'item-row' + (cat !== 'fixo' ? ' no-date' : '') + (done ? ' done' : '');
   row.dataset.cat = cat;
+  const safeNome = escapeHTML(nome);
+  const safeData = escapeHTML(data);
+  const safeValor = escapeHTML(valor);
   row.innerHTML = `
     <button class="item-check" onclick="toggleItemDone(this)" title="Marcar como feito">✓</button>
-    <input type="text" class="item-name" placeholder="${t('itemDescPh')}" value="${nome}" oninput="calcularTudo();saveItems();">
-    ${cat === 'fixo' ? `<input type="date" class="item-date" value="${data}" onchange="calcularTudo();saveItems();">` : ''}
-    <input type="number" class="item-value" placeholder="0.00" value="${valor}" oninput="calcularTudo();saveItems();" min="0" step="0.01">
+    <input type="text" class="item-name" placeholder="${t('itemDescPh')}" value="${safeNome}" oninput="calcularTudo();saveItems();">
+    ${cat === 'fixo' ? `<input type="date" class="item-date" value="${safeData}" onchange="calcularTudo();saveItems();">` : ''}
+    <input type="number" class="item-value" placeholder="0.00" value="${safeValor}" oninput="calcularTudo();saveItems();" min="0" step="0.01">
     <button class="item-del" onclick="removeItem(this)">🗑</button>
   `;
   list.appendChild(row);
@@ -1852,12 +1865,14 @@ function renderDreams() {
     const removeLabel = t("sonhosRemove");
     card.className = 'dream-card' + (s.done ? ' done' : '');
     card.dataset.id = s.id;
+    const safeNome = escapeHTML(s.nome);
+    const safeMeses = escapeHTML(s.meses);
     card.innerHTML = `
       <div class="dream-card-top">
         <button class="dream-check-btn" onclick="toggleDreamDone(${s.id})" title="Marcar como concluído">✓</button>
         <div style="flex:1">
-          <div class="dream-name">🎯 ${s.nome}</div>
-          <div class="dream-meta">Meta: ${fmtMoney(s.valor)} em ${s.meses} meses</div>
+          <div class="dream-name">🎯 ${safeNome}</div>
+          <div class="dream-meta">Meta: ${fmtMoney(s.valor)} em ${safeMeses} meses</div>
         </div>
         <button class="dream-del" onclick="deleteDream(${s.id})">${removeLabel}</button>
       </div>
@@ -2101,10 +2116,11 @@ function renderHistory() {
   sorted.forEach(h => {
     const card = document.createElement('div');
     card.className = 'history-card';
+    const safeMes = escapeHTML(h.mes);
     card.innerHTML = `
       <div class="hc-top">
         <div>
-          <div class="hc-month">📅 ${h.mes}</div>
+          <div class="hc-month">📅 ${safeMes}</div>
           <div class="hc-salary">${t("histSalary", fmtMoney(h.salario))}</div>
         </div>
         <button class="hc-del" onclick="deleteHistory(${h.id})">🗑</button>
