@@ -1413,7 +1413,7 @@ function openLangModal(){ document.getElementById('langOverlay').classList.add('
 function closeLangModal(e){ if(!e || e.target===document.getElementById('langOverlay')) document.getElementById('langOverlay').classList.remove('open'); }
 
 function setLang(lang){
-  ebookLang = lang;
+
   // Salva na mesma chave global que a calculadora usa
   localStorage.setItem('cvLang', lang);
   
@@ -1424,8 +1424,8 @@ function setLang(lang){
   
   closeLangModal();
   
-  // Recarrega a página para aplicar a tradução do início
-  window.location.reload();
+  // Redireciona para o arquivo da língua correspondente
+  window.location.href = 'ebook-cardss-' + lang + '.html';
 }
 
 function loadLang(){
