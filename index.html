@@ -1642,6 +1642,7 @@ input, select, textarea { font-family: inherit; }
 // ═══════════════════════════════════════════════════════
 //  UTILS
 // ═══════════════════════════════════════════════════════
+const escapeHTML = str => String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 const $ = id => document.getElementById(id);
 const fmt = (n, decimals=2) => Number(n||0).toFixed(decimals);
 const fmtMoney = n => '$' + Number(n||0).toLocaleString('pt', {minimumFractionDigits:2, maximumFractionDigits:2});
@@ -1954,8 +1955,9 @@ function calcularTudo() {
     const div = document.createElement('div');
     div.className = 'pct-card sonho-pct';
     div.style.borderColor = 'var(--purple)';
+    const safeNome = escapeHTML(sp.nome);
     div.innerHTML = `
-      <div class="pct-label" style="color:var(--purple);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${sp.nome}">🎯 ${sp.nome}</div>
+      <div class="pct-label" style="color:var(--purple);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${safeNome}">🎯 ${safeNome}</div>
       <div class="pct-row">
         <input class="pct-input" disabled value="${fmt(sp.pct,1)}" style="color:var(--purple);background:var(--purple-soft);border-color:transparent;">
         <span class="pct-sym" style="color:var(--purple);">%</span>
