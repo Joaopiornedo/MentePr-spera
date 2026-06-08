@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calc-virada-v4';
+const CACHE_NAME = 'MenteProspera-v1';
 const ASSETS = [
   'index.html',
   'manifest.json',

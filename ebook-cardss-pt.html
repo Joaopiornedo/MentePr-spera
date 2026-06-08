@@ -547,7 +547,7 @@ button{font-family:var(--sans)}
   </div>
   <div class="topbar-actions">
     <button class="tbtn icon" id="btnTheme" onclick="toggleTheme()" title="Tema">☀️</button>
-    <a href="index.html" class="tbtn" title="Calculadora">🧮 <span class="lbl">Calculadora</span></a>
+    <a href="index.html" class="tbtn" title="Calculadora"> <img src="icons/calculator.png" alt="Calculadora" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">  <span class="lbl"></span></a>
   </div>
 </div>
 
@@ -1393,7 +1393,7 @@ function toggleTheme() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const next = isDark ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
-  document.getElementById('btnTheme').textContent = isDark ? '🌙' : '☀️';
+  document.getElementById('btnTheme').textContent = isDark ? '☀️' : '🌙';
   localStorage.setItem('ebookCardsTheme', next);
 }
 
@@ -1403,7 +1403,7 @@ function toggleTheme() {
 (function(){
   const theme = localStorage.getItem('ebookCardsTheme') || 'dark';
   document.documentElement.setAttribute('data-theme', theme);
-  document.getElementById('btnTheme').textContent = theme === 'dark' ? '☀️' : '🌙';
+  document.getElementById('btnTheme').textContent = theme === 'dark' ? '🌙' : '☀️';
 
   // Resume
   const saved = localStorage.getItem('ebookCardsPos');
