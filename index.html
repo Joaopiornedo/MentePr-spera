@@ -1647,6 +1647,18 @@ const fmt = (n, decimals=2) => Number(n||0).toFixed(decimals);
 const fmtMoney = n => '$' + Number(n||0).toLocaleString('pt', {minimumFractionDigits:2, maximumFractionDigits:2});
 const safeNum = v => { let n = parseFloat(String(v||0).replace(',','.')); return isNaN(n) ? 0 : n; };
 
+function escapeHTML(str) {
+  return String(str).replace(/[&<>'"]/g,
+    tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag])
+  );
+}
+
 function showToast(msg, duration=2500) {
   const t = $('toast'); t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), duration);
@@ -1751,7 +1763,7 @@ function addItem(cat, nome='', data='', valor='', done=false) {
   row.dataset.cat = cat;
   row.innerHTML = `
     <button class="item-check" onclick="toggleItemDone(this)" title="Marcar como feito">✓</button>
-    <input type="text" class="item-name" placeholder="${t('itemDescPh')}" value="${nome}" oninput="calcularTudo();saveItems();">
+    <input type="text" class="item-name" placeholder="${t('itemDescPh')}" value="${escapeHTML(nome)}" oninput="calcularTudo();saveItems();">
     ${cat === 'fixo' ? `<input type="date" class="item-date" value="${data}" onchange="calcularTudo();saveItems();">` : ''}
     <input type="number" class="item-value" placeholder="0.00" value="${valor}" oninput="calcularTudo();saveItems();" min="0" step="0.01">
     <button class="item-del" onclick="removeItem(this)">🗑</button>
@@ -1856,7 +1868,7 @@ function renderDreams() {
       <div class="dream-card-top">
         <button class="dream-check-btn" onclick="toggleDreamDone(${s.id})" title="Marcar como concluído">✓</button>
         <div style="flex:1">
-          <div class="dream-name">🎯 ${s.nome}</div>
+          <div class="dream-name">🎯 ${escapeHTML(s.nome)}</div>
           <div class="dream-meta">Meta: ${fmtMoney(s.valor)} em ${s.meses} meses</div>
         </div>
         <button class="dream-del" onclick="deleteDream(${s.id})">${removeLabel}</button>
@@ -1955,7 +1967,7 @@ function calcularTudo() {
     div.className = 'pct-card sonho-pct';
     div.style.borderColor = 'var(--purple)';
     div.innerHTML = `
-      <div class="pct-label" style="color:var(--purple);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${sp.nome}">🎯 ${sp.nome}</div>
+      <div class="pct-label" style="color:var(--purple);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHTML(sp.nome)}">🎯 ${escapeHTML(sp.nome)}</div>
       <div class="pct-row">
         <input class="pct-input" disabled value="${fmt(sp.pct,1)}" style="color:var(--purple);background:var(--purple-soft);border-color:transparent;">
         <span class="pct-sym" style="color:var(--purple);">%</span>
