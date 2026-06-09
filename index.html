@@ -1697,7 +1697,7 @@ let deferredPrompt = null;
 function getData() {
     let d = JSON.parse(localStorage.getItem('cvData_v4') || '{"historico":[],"sonhos":[],"items":{}}');
   if (!d.config) d.config = {};
-  if (!d.config.fracoes) d.config.fracoes = { lazer: { partes: 1, nomes: [] }, invest: { partes: 1, nomes: [] } };
+  if (!d.config.fracoes) d.config.fracoes = { lazer: { partes: 1, nomes: [], checks: [] }, invest: { partes: 1, nomes: [], checks: [] } };
   return d;
 }
 function saveData(d) {
@@ -1740,6 +1740,7 @@ function switchPage(page) {
 // ═══════════════════════════════════════════════════════
 function setFraction(cat, parts) {
   const d = getData();
+  if(!d.config.fracoes) d.config.fracoes = { lazer: { partes: 1, nomes: [], checks: [] }, invest: { partes: 1, nomes: [], checks: [] } };
   d.config.fracoes[cat].partes = parseInt(parts);
   saveData(d);
   calcularTudo();
@@ -1747,12 +1748,21 @@ function setFraction(cat, parts) {
 
 function saveFractionName(cat, idx, val) {
   const d = getData();
+  if(!d.config.fracoes) d.config.fracoes = { lazer: { partes: 1, nomes: [], checks: [] }, invest: { partes: 1, nomes: [], checks: [] } };
   d.config.fracoes[cat].nomes[idx] = val;
+  saveData(d);
+}
+
+function toggleFractionCheck(cat, idx, isChecked) {
+  const d = getData();
+  if(!d.config.fracoes) d.config.fracoes = { lazer: { partes: 1, nomes: [], checks: [] }, invest: { partes: 1, nomes: [], checks: [] } };
+  d.config.fracoes[cat].checks[idx] = isChecked;
   saveData(d);
 }
 
 function renderFractions(cat, totalMeta) {
   const d = getData();
+  if(!d.config.fracoes) d.config.fracoes = { lazer: { partes: 1, nomes: [], checks: [] }, invest: { partes: 1, nomes: [], checks: [] } };
   const fracoes = d.config.fracoes[cat];
   const select = document.querySelector(`#fracoes-${cat} .fraction-select`);
   if (select) select.value = fracoes.partes;
@@ -1769,9 +1779,13 @@ function renderFractions(cat, totalMeta) {
   let html = '';
   for (let i = 0; i < fracoes.partes; i++) {
     const nome = escapeHTML(fracoes.nomes[i] || `Parte ${i + 1}`);
+    const isChecked = fracoes.checks[i] ? 'checked' : '';
     html += `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
-        <input type="text" value="${nome}" oninput="saveFractionName('${cat}', ${i}, this.value)" placeholder="Nome da parte..." style="font-size:12px; padding:4px 6px; border:1px solid var(--border); border-radius:4px; width:60%; background:var(--surface); color:var(--text);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; padding-bottom:6px;">
+        <div style="display:flex; align-items:center; gap: 8px; flex: 1;">
+          <input type="checkbox" onchange="toggleFractionCheck('${cat}', ${i}, this.checked)" ${isChecked} style="accent-color:var(--primary); width: 14px; height: 14px; cursor: pointer;">
+          <input type="text" value="${nome}" oninput="saveFractionName('${cat}', ${i}, this.value)" placeholder="Nome da parte..." style="font-size:12px; padding:4px 6px; border:1px solid var(--border); border-radius:4px; width:100%; max-width: 200px; background:var(--surface); color:var(--text);">
+        </div>
         <span style="font-size:12px; font-weight:bold; color:var(--text);">${fmtMoney(fractionValue)}</span>
       </div>
     `;
