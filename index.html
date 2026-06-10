@@ -5,10 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Calculadora da Virada</title>
 <link rel="manifest" href="manifest.json">
+
+<!-- Favicon — usa o ícone do app (fallback emoji SVG se o PNG não existir) -->
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<!-- PWA / browser chrome -->
 <meta name="theme-color" content="#6d28d9">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Calculadora da Virada">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Calculadora da Virada">
+
+<!-- Prevent browser UI chrome on Android -->
+<meta name="msapplication-navbutton-color" content="#6d28d9">
+<meta name="msapplication-starturl" content="index.html">
+<meta name="msapplication-TileColor" content="#6d28d9">
+<meta name="msapplication-TileImage" content="icons/icon-192.png">
+
+<!-- Open Graph — prévia ao partilhar o link (WhatsApp, Telegram, etc.) -->
+<meta property="og:type"        content="website">
+<meta property="og:title"       content="Calculadora da Virada">
+<meta property="og:description" content="Gestão financeira inteligente — controla salário, despesas, investimentos e sonhos num só lugar.">
+<meta property="og:image"       content="icons/icon-512.png">
+<meta property="og:image:width"  content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:image:alt"   content="Calculadora da Virada">
+
+<!-- Twitter Card -->
+<meta name="twitter:card"        content="summary">
+<meta name="twitter:title"       content="Calculadora da Virada">
+<meta name="twitter:description" content="Gestão financeira inteligente — controla salário, despesas, investimentos e sonhos num só lugar.">
+<meta name="twitter:image"       content="icons/icon-512.png">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -78,6 +107,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 .tab-pill.t-lazer.active{background:#d97706}
 .tab-pill.t-invest.active{background:#059669}
 .tab-pill.t-sonhos.active{background:#8b5cf6}
+.tab-pill.t-parcelado.active{background:#0891b2}
 
 /* ── dashed add btn ── */
 .add-dashed{border:1.5px dashed var(--bdr2);background:transparent;color:var(--txt3);
@@ -819,6 +849,14 @@ function switchPage(p){
   const n=$('nav-'+p); if(n) n.classList.add('active');
   if(p==='historico') renderHistory();
   if(p==='plano') renderPlano();
+  // Update browser tab title to reflect current page
+  const T=TR[lang]||TR.pt;
+  const pageLabels={
+    orcamento:'💰 '+(T.navOrc||'Orçamento'),
+    historico:'📅 '+(T.navHist||'Histórico'),
+    plano:    '📈 '+(T.navPlan||'Plano'),
+  };
+  document.title=(pageLabels[p]||'Calculadora da Virada')+' · Calculadora da Virada';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
