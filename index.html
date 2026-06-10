@@ -1,2322 +1,1382 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Calculadora da Virada</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#6366f1">
+<meta name="theme-color" content="#6d28d9">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Mente Próspera">
+<meta name="apple-mobile-web-app-title" content="Calculadora da Virada">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: ['selector', '[data-theme="dark"]'],
+    theme: { extend: {} }
+  }
+</script>
 <style>
-/* ═══════════════════════════════════════════════════════
-   DESIGN TOKENS — LIGHT MODE (default)
-═══════════════════════════════════════════════════════ */
-:root {
-  --bg:           #F4F6FB;
-  --surface:      #FFFFFF;
-  --surface2:     #F8F9FD;
-  --border:       #E4E7F0;
-  --border2:      #CDD1DF;
-  --text:         #1A1D27;
-  --text2:        #52566A;
-  --text3:        #8B90A7;
-  --primary:      #6366F1;
-  --primary-soft: #EEF0FD;
-  --primary-dark: #4F52CC;
-  --green:        #10B981;
-  --green-soft:   #D1FAE5;
-  --amber:        #F59E0B;
-  --amber-soft:   #FEF3C7;
-  --red:          #EF4444;
-  --red-soft:     #FEE2E2;
-  --blue:         #3B82F6;
-  --blue-soft:    #DBEAFE;
-  --purple:       #8B5CF6;
-  --purple-soft:  #EDE9FE;
-  --shadow:       0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
-  --shadow-sm:    0 1px 2px rgba(0,0,0,0.05);
-  --radius:       14px;
-  --radius-sm:    8px;
-  --radius-xs:    6px;
-  --transition:   0.2s ease;
-}
-[data-theme="dark"] {
-  --bg:           #0F1117;
-  --surface:      #1A1D27;
-  --surface2:     #21253A;
-  --border:       #2E3347;
-  --border2:      #3D4360;
-  --text:         #E8EAF2;
-  --text2:        #9BA3C4;
-  --text3:        #5C6480;
-  --primary-soft: #2A2C5A;
-  --green-soft:   #0D2B22;
-  --amber-soft:   #2D2209;
-  --red-soft:     #2D1515;
-  --blue-soft:    #172040;
-  --purple-soft:  #231B45;
-  --shadow:       0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.25);
-}
+/* ── base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px}
 
-/* ═══════ RESET & BASE ═══════ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 15px; }
-body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  transition: background var(--transition), color var(--transition);
-  -webkit-font-smoothing: antialiased;
+/* ── tokens light ── */
+:root{
+  --bg:#f1f5f9;--surf:#fff;--surf2:#f8fafc;
+  --bdr:#e2e8f0;--bdr2:#cbd5e1;
+  --txt:#0f172a;--txt2:#475569;--txt3:#94a3b8;
+  --shadow:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);
 }
+/* ── tokens dark ── */
+[data-theme="dark"]{
+  --bg:#0f1117;--surf:#1a1d2e;--surf2:#22263a;
+  --bdr:#2e3347;--bdr2:#3d4460;
+  --txt:#e2e8f0;--txt2:#94a3b8;--txt3:#4a5178;
+}
+[data-theme="dark"] body{background:#0f1117;color:#e2e8f0}
+[data-theme="dark"] .s{background:var(--surf);border-color:var(--bdr)}
+[data-theme="dark"] .inp{background:var(--surf2)!important;color:var(--txt)!important;border-color:var(--bdr)!important}
 
-/* ═══════ SCROLLBAR ═══════ */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+/* ── pages ── */
+.page{display:none}.page.active{display:block}
+.sub-panel{display:none}.sub-panel.active{display:block}
 
-/* ═══════ LAYOUT ═══════ */
-.app-wrapper {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 16px 16px 100px;
-}
+/* ── slide-up ── */
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.slide-up{animation:slideUp .28s cubic-bezier(.32,.72,0,1)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .18s ease}
 
-/* ═══════ TOPBAR ═══════ */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  backdrop-filter: blur(8px);
-}
-.topbar-brand {
-  display: flex; align-items: center; gap: 10px;
-}
-.topbar-logo {
-  width: 34px; height: 34px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--primary), var(--purple));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-}
-.topbar-title { font-size: 16px; font-weight: 700; color: var(--text); }
-.topbar-sub { font-size: 11px; color: var(--text3); }
-.topbar-actions { display: flex; gap: 8px; align-items: center; }
-.icon-btn {
-  width: 36px; height: 36px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 17px;
-  transition: all var(--transition);
-  color: var(--text);
-}
-.icon-btn:hover { background: var(--primary-soft); border-color: var(--primary); }
+/* ── item row ── */
+.item-row{transition:opacity .15s}
+.item-row.done .iname{text-decoration:line-through;opacity:.45}
+.item-row.done .ival{opacity:.45}
+.item-row.done .idate{opacity:.35}
 
-/* ═══════ INSTALL BTN ═══════ */
-.install-bar {
-  display: none;
-  align-items: center;
-  gap: 12px;
-  background: linear-gradient(135deg, var(--primary), var(--purple));
-  color: #fff;
-  padding: 12px 16px;
-  border-radius: var(--radius);
-  margin: 16px 0 0;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  box-shadow: 0 4px 20px rgba(99,102,241,0.35);
-}
-.install-bar:hover { opacity: 0.92; }
-.install-bar .install-icon { font-size: 22px; }
-.install-bar .install-close {
-  margin-left: auto; opacity: 0.7; font-size: 18px;
-  background: none; border: none; color: #fff; cursor: pointer;
-}
+/* ── check circle ── */
+.chk{width:24px;height:24px;border-radius:50%;border:2px solid var(--bdr2);background:transparent;
+     display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+     font-size:11px;color:transparent;transition:all .15s}
+.chk:hover{border-color:#059669}
+.chk.on{background:#059669;border-color:#059669;color:#fff}
 
-/* ═══════ PAGE TABS (bottom nav) ═══════ */
-.bottom-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  display: flex;
-  z-index: 200;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-}
-.nav-item {
-  flex: 1;
-  display: flex; flex-direction: column; align-items: center;
-  gap: 3px;
-  padding: 10px 4px 8px;
-  cursor: pointer;
-  border: none; background: none;
-  color: var(--text3);
-  font-size: 10px;
-  font-weight: 600;
-  transition: color var(--transition);
-  letter-spacing: 0.02em;
-}
-.nav-item .nav-icon { font-size: 22px; transition: transform var(--transition); }
-.nav-item.active { color: var(--primary); }
-.nav-item.active .nav-icon { transform: scale(1.15); }
+/* ── nav ── */
+.nav-item{color:var(--txt3);transition:color .15s}
+.nav-item.active{color:#6d28d9}
 
-/* ═══════ PAGES ═══════ */
-.page { display: none; }
-.page.active { display: block; }
+/* ── tab pill ── */
+.tab-pill{flex-shrink:0;padding:7px 14px;border-radius:100px;border:1.5px solid var(--bdr);
+          background:var(--surf);font-size:12px;font-weight:700;cursor:pointer;
+          color:var(--txt2);white-space:nowrap;transition:all .15s}
+.tab-pill.active{color:#fff;border-color:transparent}
+.tab-pill.t-fixo.active{background:#6d28d9}
+.tab-pill.t-lazer.active{background:#d97706}
+.tab-pill.t-invest.active{background:#059669}
+.tab-pill.t-sonhos.active{background:#8b5cf6}
 
-/* ═══════ CARDS ═══════ */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  box-shadow: var(--shadow-sm);
-  transition: background var(--transition), border-color var(--transition);
-}
-.card + .card, .card + .section-header, .section-header + .card { margin-top: 12px; }
-.section-header {
-  font-size: 11px; font-weight: 700; color: var(--text3);
-  text-transform: uppercase; letter-spacing: 0.08em;
-  margin: 20px 0 8px;
-}
+/* ── dashed add btn ── */
+.add-dashed{border:1.5px dashed var(--bdr2);background:transparent;color:var(--txt3);
+            width:calc(100% - 32px);margin:8px 16px;display:flex;align-items:center;
+            justify-content:center;gap:6px;padding:9px 12px;border-radius:10px;
+            font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+.add-dashed:hover{border-color:#6d28d9;color:#6d28d9;background:#ede9fe}
 
-/* ═══════ SALARY HERO ═══════ */
-.salary-hero {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--purple) 100%);
-  border-radius: var(--radius);
-  padding: 24px;
-  color: #fff;
-  margin-top: 16px;
-}
-.salary-hero label { font-size: 12px; opacity: 0.8; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
-.salary-hero .salary-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-.salary-hero .currency { font-size: 28px; font-weight: 800; opacity: 0.7; }
-.salary-input {
-  flex: 1;
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.3);
-  border-radius: var(--radius-sm);
-  color: #fff;
-  font-size: 28px;
-  font-weight: 800;
-  padding: 8px 12px;
-  outline: none;
-  width: 100%;
-}
-.salary-input::placeholder { color: rgba(255,255,255,0.45); }
-.salary-input:focus { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.6); }
-.balance-pill {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 100px;
-  padding: 5px 14px;
-  font-size: 13px; font-weight: 700;
-  margin-top: 14px;
-}
+/* ── dist bar ── */
+.dseg{height:100%;transition:width .4s ease}
 
-/* ═══════ DISTRIBUTION BARS ═══════ */
-.dist-bar-wrap {
-  height: 10px; border-radius: 100px;
-  background: var(--border);
-  overflow: hidden;
-  margin: 10px 0 16px;
-  display: flex;
-}
-.dist-seg {
-  height: 100%;
-  transition: width 0.4s ease;
-  position: relative;
-}
+/* ── modal overlay ── */
+.overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.55);
+         backdrop-filter:blur(4px);align-items:flex-end;justify-content:center}
+.overlay.open{display:flex}
 
-.pct-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-.pct-card {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  transition: all var(--transition);
-}
-.pct-card:focus-within { border-color: var(--primary); background: var(--primary-soft); }
-.pct-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-.pct-row { display: flex; align-items: center; gap: 4px; }
-.pct-input {
-  flex: 1; min-width: 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xs);
-  color: var(--text);
-  font-size: 16px; font-weight: 700;
-  padding: 6px 8px;
-  outline: none;
-  width: 100%;
-  text-align: center;
-  transition: border-color var(--transition);
-}
-.pct-input:focus { border-color: var(--primary); }
-.pct-input:disabled { background: var(--surface2); color: var(--amber); }
-.pct-sym { font-size: 13px; color: var(--text3); }
-.pct-val { font-size: 11px; color: var(--text3); margin-top: 4px; }
+/* ── toast ── */
+#toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(12px);
+       background:#0f172a;color:#fff;padding:10px 20px;border-radius:100px;
+       font-size:13px;font-weight:600;opacity:0;pointer-events:none;
+       transition:all .25s;z-index:999;white-space:nowrap;
+       box-shadow:0 4px 20px rgba(0,0,0,.3)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* Sonho pct cards */
-.pct-card.sonho-pct { border-style: dashed; }
+/* ── settings popover ── */
+#settingsMenu{display:none;position:absolute;top:calc(100% + 8px);right:0;
+              width:220px;border-radius:14px;padding:6px;
+              background:var(--surf);border:1px solid var(--bdr);
+              box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:300}
+#settingsMenu.open{display:block}
 
-/* ═══════ MODE TOGGLE (% or $) ═══════ */
-.mode-toggle {
-  display: flex;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 3px;
-  gap: 2px;
-}
-.mode-btn {
-  flex: 1; padding: 6px 0;
-  border: none; border-radius: calc(var(--radius-sm) - 2px);
-  font-size: 12px; font-weight: 700; cursor: pointer;
-  transition: all var(--transition);
-  background: transparent;
-  color: var(--text3);
-}
-.mode-btn.active {
-  background: var(--primary);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(99,102,241,0.3);
-}
+/* ── invest alloc modal ── */
+#allocModal .alloc-acc-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr)}
+#allocModal .alloc-acc-row:last-child{border:none}
 
-/* ═══════ SECTION TABS (within page 1) ═══════ */
-.tab-row {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  padding: 2px 0;
-}
-.tab-row::-webkit-scrollbar { display: none; }
-.tab-pill {
-  flex-shrink: 0;
-  padding: 8px 14px;
-  border-radius: 100px;
-  border: 1.5px solid var(--border);
-  background: var(--surface);
-  font-size: 12px; font-weight: 700;
-  cursor: pointer;
-  transition: all var(--transition);
-  color: var(--text2);
-  display: flex; align-items: center; gap: 5px;
-  white-space: nowrap;
-}
-.tab-pill.active {
-  color: #fff;
-  border-color: transparent;
-}
-.tab-pill.t-fixo.active { background: var(--primary); }
-.tab-pill.t-lazer.active { background: var(--amber); }
-.tab-pill.t-invest.active { background: var(--green); }
-.tab-pill.t-sonhos.active { background: var(--purple); }
+/* ── ebook chapter ── */
+.eb-body{display:none}.ebook-chapter.open .eb-body{display:block}
+.eb-arrow{transition:transform .2s}.ebook-chapter.open .eb-arrow{transform:rotate(90deg)}
 
-/* ═══════ SUB SECTION PANELS ═══════ */
-.sub-panel { display: none; }
-.sub-panel.active { display: block; }
-
-/* ═══════ BUDGET SECTION CARD ═══════ */
-.budget-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-.budget-card-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 18px 14px;
-  border-bottom: 1px solid var(--border);
-}
-.budget-card-title {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 14px; font-weight: 700;
-}
-.budget-card-badge {
-  font-size: 11px; font-weight: 700;
-  padding: 3px 9px; border-radius: 100px;
-}
-.budget-card-meta {
-  font-size: 11px; color: var(--text3);
-  text-align: right;
-}
-.budget-card-meta strong { font-size: 14px; color: var(--text); display: block; }
-
-/* ═══════ ITEMS LIST ═══════ */
-.items-list { padding: 0 18px; }
-.item-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-  animation: slideIn 0.2s ease;
-}
-.item-row:last-child { border-bottom: none; }
-@keyframes slideIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-
-.item-name {
-  flex: 1; min-width: 0;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xs);
-  padding: 7px 10px;
-  font-size: 13px;
-  color: var(--text);
-  outline: none;
-  transition: border-color var(--transition);
-}
-.item-name:focus { border-color: var(--primary); }
-.item-date {
-  width: 110px; flex-shrink: 0;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xs);
-  padding: 7px 6px;
-  font-size: 12px; color: var(--text2);
-  outline: none;
-  transition: border-color var(--transition);
-}
-.item-date:focus { border-color: var(--primary); }
-.item-value {
-  width: 80px; flex-shrink: 0;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xs);
-  padding: 7px 8px;
-  font-size: 13px; font-weight: 700;
-  text-align: right;
-  color: var(--text);
-  outline: none;
-  transition: border-color var(--transition);
-}
-.item-value:focus { border-color: var(--primary); }
-.item-del {
-  width: 30px; flex-shrink: 0;
-  background: none; border: none;
-  color: var(--text3); cursor: pointer;
-  font-size: 16px; padding: 4px;
-  border-radius: var(--radius-xs);
-  transition: all var(--transition);
-  display: flex; align-items: center; justify-content: center;
-}
-.item-del:hover { color: var(--red); background: var(--red-soft); }
-
-/* No date variant */
-.item-row.no-date .item-date { display: none; }
-
-.add-item-btn {
-  display: flex; align-items: center; gap: 6px;
-  margin: 10px 18px 14px;
-  padding: 8px 12px;
-  background: none; border: 1.5px dashed var(--border2);
-  border-radius: var(--radius-sm);
-  font-size: 13px; font-weight: 600;
-  color: var(--text3);
-  cursor: pointer;
-  transition: all var(--transition);
-  width: calc(100% - 36px);
-}
-.add-item-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-soft); }
-
-/* ═══════ TOTALS FOOTER ═══════ */
-.budget-footer {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 18px;
-  background: var(--surface2);
-  border-top: 1px solid var(--border);
-}
-.budget-footer-label { font-size: 12px; color: var(--text3); font-weight: 600; }
-.budget-footer-value { font-size: 16px; font-weight: 800; }
-.alert-strip {
-  padding: 10px 18px;
-  font-size: 12px; font-weight: 600;
-  display: none;
-}
-.alert-strip.show { display: block; }
-.alert-strip.ok { background: var(--green-soft); color: var(--green); }
-.alert-strip.warn { background: var(--amber-soft); color: #B45309; }
-.alert-strip.danger { background: var(--red-soft); color: var(--red); }
-
-/* ═══════ SONHOS ═══════ */
-.dream-form {
-  background: var(--purple-soft);
-  border: 1.5px solid var(--purple);
-  border-radius: var(--radius);
-  padding: 18px;
-  margin-bottom: 14px;
-}
-.dream-form h4 { font-size: 14px; color: var(--purple); margin-bottom: 12px; }
-.dream-inputs { display: flex; flex-direction: column; gap: 10px; }
-.dream-inputs .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.dream-input {
-  width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-size: 14px;
-  color: var(--text);
-  outline: none;
-  transition: border-color var(--transition);
-}
-.dream-input:focus { border-color: var(--purple); }
-.dream-submit {
-  width: 100%;
-  background: var(--purple);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  font-size: 14px; font-weight: 700;
-  cursor: pointer;
-  transition: opacity var(--transition);
-  margin-top: 4px;
-}
-.dream-submit:hover { opacity: 0.9; }
-
-.dream-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px;
-  margin-bottom: 10px;
-}
-.dream-card-top {
-  display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;
-}
-.dream-name { font-size: 15px; font-weight: 700; }
-.dream-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
-.dream-del {
-  background: none; border: none; color: var(--text3); cursor: pointer;
-  font-size: 14px; padding: 4px; border-radius: var(--radius-xs);
-  transition: all var(--transition);
-}
-.dream-del:hover { color: var(--red); background: var(--red-soft); }
-.progress-bar { height: 8px; border-radius: 100px; background: var(--border); overflow: hidden; margin: 8px 0 6px; }
-.progress-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--purple), var(--primary)); transition: width 0.5s ease; }
-.progress-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); }
-.dream-monthly {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--purple-soft);
-  color: var(--purple);
-  border-radius: 100px;
-  padding: 4px 10px;
-  font-size: 12px; font-weight: 700;
-  margin-bottom: 8px;
-}
-
-/* ═══════ ALERT BANNER ═══════ */
-.global-alert {
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  margin-top: 12px;
-  display: none;
-  line-height: 1.5;
-}
-.global-alert.show { display: block; }
-.global-alert.danger { background: var(--red-soft); color: var(--red); border: 1px solid var(--red); }
-.global-alert.success { background: var(--green-soft); color: var(--green); border: 1px solid var(--green); }
-.global-alert.warn { background: var(--amber-soft); color: #B45309; border: 1px solid var(--amber); }
-
-/* ═══════ HISTORY PAGE ═══════ */
-.month-selector-row {
-  display: flex; gap: 10px; align-items: center; margin-bottom: 16px;
-}
-.month-input {
-  flex: 1;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-size: 14px; font-weight: 600;
-  color: var(--text);
-  outline: none;
-}
-.month-input:focus { border-color: var(--primary); }
-.archive-btn {
-  background: var(--primary);
-  color: #fff; border: none;
-  border-radius: var(--radius-sm);
-  padding: 10px 16px;
-  font-size: 13px; font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: opacity var(--transition);
-}
-.archive-btn:hover { opacity: 0.9; }
-.history-empty { text-align: center; padding: 48px 24px; color: var(--text3); font-size: 14px; }
-.history-empty .he-icon { font-size: 40px; margin-bottom: 12px; }
-
-.history-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 18px;
-  margin-bottom: 10px;
-  transition: all var(--transition);
-}
-.history-card:hover { border-color: var(--primary); }
-.hc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.hc-month { font-size: 15px; font-weight: 700; }
-.hc-salary { font-size: 12px; color: var(--text3); }
-.hc-del {
-  background: none; border: none; color: var(--text3); cursor: pointer;
-  font-size: 16px; padding: 4px; border-radius: var(--radius-xs);
-  transition: all var(--transition);
-}
-.hc-del:hover { color: var(--red); background: var(--red-soft); }
-.hc-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.hc-metric {
-  background: var(--surface2);
-  border-radius: var(--radius-sm);
-  padding: 10px;
-  text-align: center;
-}
-.hc-metric-label { font-size: 10px; color: var(--text3); font-weight: 600; text-transform: uppercase; }
-.hc-metric-value { font-size: 14px; font-weight: 800; margin-top: 3px; }
-
-/* ═══════ INPUTS GLOBAL ═══════ */
-input, select, textarea { font-family: inherit; }
-
-/* ═══════ BUTTON ═══════ */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  border: none; border-radius: var(--radius-sm);
-  padding: 10px 16px;
-  font-size: 13px; font-weight: 700;
-  cursor: pointer;
-  transition: all var(--transition);
-}
-.btn-primary { background: var(--primary); color: #fff; }
-.btn-primary:hover { background: var(--primary-dark); }
-.btn-close {
-  width: 100%;
-  background: linear-gradient(135deg, #1A1D27, #2A2D3E);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 14px;
-  font-size: 14px; font-weight: 700;
-  cursor: pointer;
-  margin-top: 16px;
-  transition: opacity var(--transition);
-}
-.btn-close:hover { opacity: 0.85; }
-
-/* ═══════ TOAST ═══════ */
-.toast {
-  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
-  background: #1A1D27; color: #fff;
-  padding: 12px 20px; border-radius: 100px;
-  font-size: 13px; font-weight: 600;
-  opacity: 0; pointer-events: none;
-  transition: all 0.3s ease;
-  z-index: 999;
-  white-space: nowrap;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* ═══════ INSTALL MODAL ═══════ */
-.install-overlay {
-  display: none;
-  position: fixed; inset: 0; z-index: 500;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(4px);
-  align-items: flex-end;
-  justify-content: center;
-  padding: 0;
-}
-.install-overlay.open { display: flex; }
-.install-sheet {
-  width: 100%;
-  max-width: 500px;
-  background: var(--surface);
-  border-radius: 24px 24px 0 0;
-  padding: 28px 24px 40px;
-  animation: slideUp 0.3s ease;
-}
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.install-handle {
-  width: 40px; height: 4px;
-  background: var(--border2); border-radius: 2px;
-  margin: 0 auto 24px;
-}
-.install-sheet-title {
-  font-size: 20px; font-weight: 800; text-align: center;
-  margin-bottom: 6px;
-}
-.install-sheet-sub {
-  font-size: 13px; color: var(--text3); text-align: center;
-  margin-bottom: 24px; line-height: 1.5;
-}
-.install-steps {
-  display: flex; flex-direction: column; gap: 14px;
-  margin-bottom: 24px;
-}
-.install-step {
-  display: flex; align-items: flex-start; gap: 14px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 14px;
-}
-.install-step-num {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: var(--primary); color: #fff;
-  font-size: 13px; font-weight: 800;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.install-step-text h4 { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-.install-step-text p  { font-size: 12px; color: var(--text3); line-height: 1.5; }
-.install-pwa-btn {
-  width: 100%;
-  background: linear-gradient(135deg, var(--primary), var(--purple));
-  color: #fff; border: none;
-  border-radius: var(--radius-sm);
-  padding: 15px; font-size: 15px; font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(99,102,241,0.35);
-  transition: opacity var(--transition);
-  margin-bottom: 10px;
-}
-.install-pwa-btn:hover { opacity: 0.9; }
-.install-pwa-btn:disabled { opacity: 0.5; cursor: default; }
-.install-cancel-btn {
-  width: 100%; background: none; border: none;
-  color: var(--text3); font-size: 14px; cursor: pointer; padding: 8px;
-}
-
-/* ═══════ EBOOK PAGE ═══════ */
-.ebook-cover {
-  background: linear-gradient(160deg, #0D0D1A 0%, #1A1A35 60%, #1A3520 100%);
-  border-radius: var(--radius);
-  padding: 32px 24px 28px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-  margin-bottom: 16px;
-}
-.ebook-cover::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.15) 0%, transparent 65%);
-  pointer-events: none;
-}
-.ebook-badge {
-  display: inline-block;
-  background: rgba(201,168,76,0.2); border: 1px solid rgba(201,168,76,0.4);
-  color: #C9A84C; font-size: 10px; font-weight: 800;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  padding: 4px 14px; border-radius: 100px; margin-bottom: 16px;
-}
-.ebook-cover h1 {
-  font-size: 22px; font-weight: 900; color: #fff;
-  line-height: 1.2; margin-bottom: 8px;
-  font-family: Georgia, 'Times New Roman', serif;
-}
-.ebook-cover h1 span { color: #C9A84C; display: block; }
-.ebook-cover p { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.6; max-width: 320px; margin: 0 auto; }
-.ebook-emoji-cover { font-size: 56px; margin-bottom: 16px; filter: drop-shadow(0 4px 16px rgba(0,0,0,0.4)); }
-
-.ebook-chapter-list { display: flex; flex-direction: column; gap: 10px; }
-.ebook-chapter {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  cursor: pointer;
-  transition: border-color var(--transition), box-shadow var(--transition);
-}
-.ebook-chapter:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(99,102,241,0.1); }
-.ebook-chapter-header {
-  display: flex; align-items: center; gap: 14px;
-  padding: 14px 16px;
-}
-.ebook-chap-icon {
-  width: 44px; height: 44px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px; flex-shrink: 0;
-}
-.ebook-chap-info { flex: 1; }
-.ebook-chap-num { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 2px; }
-.ebook-chap-title { font-size: 14px; font-weight: 700; color: var(--text); }
-.ebook-chap-time { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.ebook-chap-arrow { font-size: 14px; color: var(--text3); transition: transform var(--transition); }
-.ebook-chapter.open .ebook-chap-arrow { transform: rotate(90deg); }
-.ebook-chapter-body {
-  display: none;
-  padding: 0 16px 18px;
-  border-top: 1px solid var(--border);
-}
-.ebook-chapter.open .ebook-chapter-body { display: block; }
-.ebook-body-text { font-size: 13.5px; color: var(--text2); line-height: 1.85; }
-.ebook-body-text p { margin-bottom: 12px; }
-.ebook-body-text p:last-child { margin-bottom: 0; }
-.ebook-tip {
-  background: var(--amber-soft);
-  border-left: 4px solid var(--amber);
-  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
-  padding: 12px 14px;
-  margin: 14px 0;
-  font-size: 13px; color: #92400E; line-height: 1.6;
-}
-.ebook-tip strong { color: #78350F; }
-.ebook-quote {
-  border-left: 3px solid var(--primary);
-  padding: 10px 14px;
-  margin: 14px 0;
-  font-size: 14px; font-style: italic;
-  color: var(--primary); font-weight: 600;
-  background: var(--primary-soft);
-  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
-}
-.ebook-list { padding-left: 0; list-style: none; margin: 10px 0; }
-.ebook-list li {
-  display: flex; gap: 8px; align-items: flex-start;
-  font-size: 13px; color: var(--text2); padding: 5px 0;
-  border-bottom: 1px solid var(--border); line-height: 1.55;
-}
-.ebook-list li:last-child { border: none; }
-.ebook-list li::before { content: '✓'; color: var(--green); font-weight: 800; flex-shrink: 0; margin-top: 1px; }
-.ebook-section-label {
-  font-size: 11px; font-weight: 800; color: var(--primary);
-  text-transform: uppercase; letter-spacing: 0.1em;
-  margin: 18px 0 6px;
-}
-
-/* Bottom nav 4 items */
-.bottom-nav { display: grid; grid-template-columns: repeat(4, 1fr); }
-
-/* ═══════ RESPONSIVE ═══════ */
-@media (max-width: 480px) {
-  .hc-metrics { grid-template-columns: repeat(2, 1fr); }
-  .pct-grid { grid-template-columns: repeat(3, 1fr); }
-  .salary-input { font-size: 22px; }
-  .topbar-sub { display: none; }
-}
-@media (min-width: 720px) {
-  .app-wrapper { padding-top: 24px; }
-}
-
-/* ═══════ LANGUAGE SELECTOR ═══════ */
-.lang-modal-overlay {
-  display: none; position: fixed; inset: 0; z-index: 600;
-  background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
-  align-items: flex-end; justify-content: center;
-}
-.lang-modal-overlay.open { display: flex; }
-.lang-sheet {
-  width: 100%; max-width: 500px;
-  background: var(--surface);
-  border-radius: 24px 24px 0 0;
-  padding: 24px 20px 36px;
-  animation: slideUp 0.3s ease;
-}
-.lang-handle { width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 20px; }
-.lang-title { font-size:18px;font-weight:800;text-align:center;margin-bottom:4px; }
-.lang-sub { font-size:13px;color:var(--text3);text-align:center;margin-bottom:20px; }
-.lang-options { display:flex;flex-direction:column;gap:10px; }
-.lang-option {
-  display:flex;align-items:center;gap:14px;
-  padding:16px 18px;
-  border:2px solid var(--border);
-  border-radius:var(--radius);
-  cursor:pointer;background:var(--surface2);
-  transition:all var(--transition);
-}
-.lang-option:hover { border-color:var(--primary);background:var(--primary-soft); }
-.lang-option.selected { border-color:var(--primary);background:var(--primary-soft); }
-.lang-flag { font-size:28px;flex-shrink:0; }
-.lang-name { font-size:15px;font-weight:700; }
-.lang-native { font-size:12px;color:var(--text3);margin-top:2px; }
-.lang-check { margin-left:auto;color:var(--primary);font-size:18px;font-weight:900;opacity:0; }
-.lang-option.selected .lang-check { opacity:1; }
-.lang-close-btn {
-  width:100%;background:none;border:1px solid var(--border);
-  border-radius:var(--radius-sm);padding:11px;
-  font-size:14px;color:var(--text3);cursor:pointer;margin-top:14px;
-}
-/* Lang btn in topbar */
-.lang-btn {
-  display:flex;align-items:center;gap:5px;
-  padding:6px 10px; border-radius:var(--radius-sm);
-  border:1px solid var(--border); background:var(--surface2);
-  cursor:pointer; font-size:12px;font-weight:700;color:var(--text);
-  transition:all var(--transition);
-}
-.lang-btn:hover { background:var(--primary-soft);border-color:var(--primary); }
-.lang-flag-sm { font-size:16px; }
-
-/* ═══ ITEM CHECKBOX ═══ */
-.item-check {
-  flex-shrink: 0;
-  width: 26px; height: 26px;
-  border-radius: 50%;
-  border: 2px solid var(--border);
-  background: transparent;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px;
-  transition: all .2s;
-  color: transparent;
-  padding: 0;
-}
-.item-check:hover { border-color: var(--green); }
-.item-row.done .item-check {
-  background: var(--green);
-  border-color: var(--green);
-  color: #fff;
-}
-.item-row.done .item-name {
-  text-decoration: line-through;
-  opacity: .55;
-}
-.item-row.done .item-value { opacity: .55; }
-.item-row.done .item-date  { opacity: .45; }
-
-/* dream check */
-.dream-check-btn {
-  width: 32px; height: 32px; border-radius: 50%;
-  border: 2px solid var(--border);
-  background: transparent; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px; color: transparent;
-  transition: all .2s; flex-shrink: 0; padding: 0;
-}
-.dream-check-btn:hover { border-color: var(--green); }
-.dream-card.done .dream-check-btn {
-  background: var(--green); border-color: var(--green); color: #fff;
-}
-.dream-card.done .dream-name { text-decoration: line-through; opacity: .6; }
-.dream-card.done .dream-meta,
-.dream-card.done .dream-monthly { opacity: .5; }
-.dream-card.done .progress-fill { background: var(--green) !important; opacity: .6; }
-
+/* safe area bottom nav */
+.bottom-nav{padding-bottom:env(safe-area-inset-bottom,0)}
 </style>
 </head>
-<body>
+<body style="background:#f1f5f9;min-height:100vh;">
 
-<!-- TOPBAR -->
-<div class="topbar">
-  <div class="topbar-brand">
-    <div class="topbar-logo"><img src="icons/icon-192.png" alt="Logo" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"></div>
+<!-- ══════════════════════════════════════
+     TOPBAR
+══════════════════════════════════════ -->
+<header id="topbar" class="sticky top-0 z-50 flex items-center justify-between px-4 py-3"
+        style="background:var(--surf);border-bottom:1px solid var(--bdr);backdrop-filter:blur(8px);">
+  <div class="flex items-center gap-2.5">
+    <div class="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
+         style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);">
+      <img src="icons/icon-192.png" alt="" class="w-full h-full object-cover rounded-xl"
+           onerror="this.style.display='none';this.parentElement.innerHTML='💰'">
+    </div>
     <div>
-      <div class="topbar-title">Calculadora</div>
-      <div class="topbar-sub">Gestão financeira inteligente</div>
+      <div class="text-sm font-bold leading-tight" style="color:var(--txt);" id="t-appName">Calculadora da Virada</div>
+      <div class="text-xs leading-tight" style="color:var(--txt3);" id="t-appSub">Gestão financeira inteligente</div>
     </div>
   </div>
-  <div class="topbar-actions">
-    <button class="lang-btn" id="btnLang" onclick="openLangModal()" title="Change language"><span class="lang-flag-sm" id="langFlagSm">🇧🇷</span> <span id="langCodeSm">PT</span></button>
-    <button class="icon-btn" id="btnTheme" title="Alternar tema" onclick="toggleTheme()">☀️</button>
-    <button class="icon-btn" id="btnInstallTop" title="Instalar App" onclick="openInstallModal()" style="font-size:18px;background:linear-gradient(135deg,var(--primary),var(--purple));border-color:transparent;color:#fff;">📲</button>
-  </div>
-</div>
-
-<!-- INSTALL MODAL -->
-<div class="install-overlay" id="installOverlay" onclick="closeInstallModal(event)">
-  <div class="install-sheet" onclick="event.stopPropagation()">
-    <div class="install-handle"></div>
-    <div style="font-size:44px;text-align:center;margin-bottom:12px;">📲</div>
-    <div class="install-sheet-title">Instalar App</div>
-    <div class="install-sheet-sub">Adicione a Calculadora da Virada ao seu celular ou PC — acesso rápido, funciona offline.</div>
-
-    <div id="installStepPWA">
-      <button class="install-pwa-btn" id="btnInstallPWA" onclick="triggerInstall()">
-        📲 Instalar Agora no Dispositivo
-      </button>
-      <p style="text-align:center;font-size:12px;color:var(--text3);margin-bottom:16px;" id="pwaNote">Disponível no Chrome, Edge e Android</p>
-    </div>
-
-    <div class="install-steps">
-      <div class="install-step">
-        <div class="install-step-num">1</div>
-        <div class="install-step-text">
-          <h4>📱 iPhone / iPad — Safari</h4>
-          <p>Toque em <b>Compartilhar ↑</b> (barra inferior) → <b>"Adicionar à Tela de Início"</b></p>
+  <!-- actions -->
+  <div class="flex items-center gap-2">
+    <!-- install -->
+    <button onclick="openInstallModal()" id="btnInstall"
+            class="w-9 h-9 rounded-xl flex items-center justify-center text-lg text-white"
+            style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);border:none;">📲</button>
+    <!-- settings gear -->
+    <div class="relative" id="settingsWrap">
+      <button onclick="toggleSettings()"
+              class="w-9 h-9 rounded-xl flex items-center justify-center text-xl transition-all"
+              style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);">⚙️</button>
+      <div id="settingsMenu" class="s">
+        <!-- theme row -->
+        <div class="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all hover:bg-violet-50"
+             onclick="toggleTheme()" style="color:var(--txt);">
+          <span class="text-sm font-semibold" id="t-themeLabel">Modo Escuro</span>
+          <span id="themeIcon" class="text-base">🌙</span>
         </div>
-      </div>
-      <div class="install-step">
-        <div class="install-step-num">2</div>
-        <div class="install-step-text">
-          <h4>💻 PC — Chrome / Edge</h4>
-          <p>Clique no ícone <b>⊕</b> na barra de endereço → <b>"Instalar Calculadora da Virada"</b></p>
-        </div>
-      </div>
-      <div class="install-step">
-        <div class="install-step-num">3</div>
-        <div class="install-step-text">
-          <h4>🤖 Android — Chrome</h4>
-          <p>Menu <b>⋮</b> → <b>"Adicionar à tela inicial"</b> ou use o botão acima</p>
-        </div>
-      </div>
-    </div>
-
-    <button class="install-cancel-btn" onclick="closeInstallModal()">Fechar</button>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════
-     PAGE 1 — ORÇAMENTO
-═══════════════════════════════════ -->
-<div class="page active" id="page-orcamento">
-<div class="app-wrapper">
-
-  <!-- SALARY HERO -->
-  <div class="salary-hero">
-    <label>Salário mensal</label>
-    <div class="salary-row">
-      <span class="currency">$</span>
-      <input type="number" class="salary-input" id="salario" value="2000" placeholder="0" oninput="calcularTudo()">
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap;gap:8px;">
-      <span class="balance-pill" id="balancePill">💰 Saldo: $0.00</span>
-      <div>
-        <div class="mode-toggle">
-          <button class="mode-btn active" id="modeBtn-pct" onclick="setMode('pct')">% Percentagem</button>
-          <button class="mode-btn" id="modeBtn-val" onclick="setMode('val')">$ Valor</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DISTRIBUTION BAR -->
-  <div class="section-header" style="margin-top:18px;">Distribuição do orçamento</div>
-  <div class="card" style="padding:16px;">
-    <div class="dist-bar-wrap">
-      <div class="dist-seg" id="bar-fixo" style="background:var(--primary);"></div>
-      <div class="dist-seg" id="bar-lazer" style="background:var(--amber);"></div>
-      <div class="dist-seg" id="bar-invest" style="background:var(--green);"></div>
-      <div class="dist-seg" id="bar-sonhos" style="background:var(--purple);"></div>
-    </div>
-
-    <!-- PCT GRID -->
-    <div class="pct-grid" id="pctGrid">
-      <!-- FIXO -->
-      <div class="pct-card">
-        <div class="pct-label" style="color:var(--primary);">🏠 Fixo</div>
-        <div class="pct-row">
-          <input type="number" class="pct-input" id="pctFixo" value="50" min="0" max="100" oninput="onPctChange('fixo')">
-          <span class="pct-sym" id="pctFixoSym">%</span>
-        </div>
-        <div class="pct-val" id="pctFixoVal">$1,000</div>
-      </div>
-      <!-- LAZER (auto) -->
-      <div class="pct-card" style="background:var(--amber-soft);border-color:var(--amber);">
-        <div class="pct-label" style="color:var(--amber);">☕ Lazer</div>
-        <div class="pct-row">
-          <input type="number" class="pct-input" id="pctLazer" value="30" disabled style="color:var(--amber);background:transparent;border-color:transparent;">
-          <span class="pct-sym" style="color:var(--amber);" id="pctLazerSym">%</span>
-        </div>
-        <div class="pct-val" id="pctLazerVal" style="color:var(--amber);">$600</div>
-      </div>
-      <!-- INVEST -->
-      <div class="pct-card">
-        <div class="pct-label" style="color:var(--green);">🛡️ Invest.</div>
-        <div class="pct-row">
-          <input type="number" class="pct-input" id="pctInvest" value="20" min="0" max="100" oninput="onPctChange('invest')">
-          <span class="pct-sym" id="pctInvestSym">%</span>
-        </div>
-        <div class="pct-val" id="pctInvestVal">$400</div>
-      </div>
-    </div>
-
-    <!-- SONHOS PCT (dynamic) -->
-    <div id="sonhosPctGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;"></div>
-
-    <!-- GLOBAL ALERT -->
-    <div class="global-alert" id="globalAlert"></div>
-  </div>
-
-  <!-- SECTION TABS -->
-  <div class="section-header">Categorias</div>
-  <div class="tab-row">
-    <button class="tab-pill t-fixo active" onclick="switchSubTab('fixo')">🏠 Gastos Fixos</button>
-    <button class="tab-pill t-lazer" onclick="switchSubTab('lazer')">☕ Lazer</button>
-    <button class="tab-pill t-invest" onclick="switchSubTab('invest')">🛡️ Investimentos</button>
-    <button class="tab-pill t-sonhos" onclick="switchSubTab('sonhos')">🚀 Sonhos</button>
-  </div>
-
-  <!-- SUB-PANEL: FIXO -->
-  <div class="sub-panel active" id="sub-fixo">
-    <div class="budget-card" style="margin-top:10px;">
-      <div class="budget-card-header">
-        <div class="budget-card-title">
-          <span style="color:var(--primary);">🏠 Gastos Fixos</span>
-          <span class="budget-card-badge" style="background:var(--primary-soft);color:var(--primary);" id="badge-fixo">50%</span>
-        </div>
-        <div class="budget-card-meta">
-          Limite<strong id="meta-fixo">$1,000</strong>
-        </div>
-      </div>
-      <!-- col headers -->
-      <div style="display:flex;gap:8px;padding:6px 18px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border);">
-        <span style="flex:1;">Descrição</span>
-        <span style="width:110px;flex-shrink:0;">Vencimento</span>
-        <span style="width:80px;flex-shrink:0;text-align:right;">Valor</span>
-        <span style="width:30px;"></span>
-      </div>
-      <div class="items-list" id="list-fixo"></div>
-      <button class="add-item-btn" onclick="addItem('fixo')">➕ Adicionar conta fixa</button>
-      <div class="budget-footer">
-        <span class="budget-footer-label">Total gastos fixos</span>
-        <span class="budget-footer-value" id="total-fixo" style="color:var(--primary);">$0.00</span>
-      </div>
-      <div class="alert-strip" id="alert-fixo"></div>
-    </div>
-  </div>
-
-  <!-- SUB-PANEL: LAZER -->
-  <div class="sub-panel" id="sub-lazer">
-    <div class="budget-card" style="margin-top:10px;">
-      <div class="budget-card-header">
-        <div class="budget-card-title">
-          <span style="color:var(--amber);">☕ Lazer & Estilo de Vida</span>
-          <span class="budget-card-badge" style="background:var(--amber-soft);color:var(--amber);" id="badge-lazer">30%</span>
-        </div>
-        <div class="budget-card-meta">
-          Limite<strong id="meta-lazer">$600</strong>
-        </div>
-      </div>
-      <div class="fractions-container" id="fracoes-lazer" style="padding: 10px 18px; border-bottom: 1px solid var(--border);">
-        <div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:8px;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;">
-          <span>Divisão da Meta</span>
-          <select class="fraction-select" onchange="setFraction('lazer', this.value)" style="font-size:11px;padding:2px 4px;border:1px solid var(--border);border-radius:4px;background:var(--surface);">
-            <option value="1">1 Parte (Sem divisão)</option>
-            <option value="2">2 Partes</option>
-            <option value="3">3 Partes</option>
-            <option value="4">4 Partes</option>
-          </select>
-        </div>
-        <div id="fracoes-lazer-list"></div>
-      </div>
-      <div style="display:flex;gap:8px;padding:6px 18px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border);">
-        <span style="flex:1;">Descrição</span>
-        <span style="width:80px;flex-shrink:0;text-align:right;">Valor</span>
-        <span style="width:30px;"></span>
-      </div>
-      <div class="items-list" id="list-lazer"></div>
-      <button class="add-item-btn" onclick="addItem('lazer')">➕ Adicionar item de lazer</button>
-      <div class="budget-footer">
-        <span class="budget-footer-label">Total lazer</span>
-        <span class="budget-footer-value" id="total-lazer" style="color:var(--amber);">$0.00</span>
-      </div>
-      <div class="alert-strip" id="alert-lazer"></div>
-    </div>
-  </div>
-
-  <!-- SUB-PANEL: INVEST -->
-  <div class="sub-panel" id="sub-invest">
-    <div class="budget-card" style="margin-top:10px;">
-      <div class="budget-card-header">
-        <div class="budget-card-title">
-          <span style="color:var(--green);">🛡️ Investimentos</span>
-          <span class="budget-card-badge" style="background:var(--green-soft);color:var(--green);" id="badge-invest">20%</span>
-        </div>
-        <div class="budget-card-meta">
-          Meta mínima<strong id="meta-invest">$400</strong>
-        </div>
-      </div>
-      <div class="fractions-container" id="fracoes-invest" style="padding: 10px 18px; border-bottom: 1px solid var(--border);">
-        <div style="font-size:11px;font-weight:700;color:var(--text3);margin-bottom:8px;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;">
-          <span>Divisão da Meta</span>
-          <select class="fraction-select" onchange="setFraction('invest', this.value)" style="font-size:11px;padding:2px 4px;border:1px solid var(--border);border-radius:4px;background:var(--surface);">
-            <option value="1">1 Parte (Sem divisão)</option>
-            <option value="2">2 Partes</option>
-            <option value="3">3 Partes</option>
-            <option value="4">4 Partes</option>
-          </select>
-        </div>
-        <div id="fracoes-invest-list"></div>
-      </div>
-      <div style="display:flex;gap:8px;padding:6px 18px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border);">
-        <span style="flex:1;">Descrição</span>
-        <span style="width:80px;flex-shrink:0;text-align:right;">Valor</span>
-        <span style="width:30px;"></span>
-      </div>
-      <div class="items-list" id="list-invest"></div>
-      <button class="add-item-btn" onclick="addItem('invest')">➕ Adicionar investimento</button>
-      <div class="budget-footer">
-        <span class="budget-footer-label">Total investido</span>
-        <span class="budget-footer-value" id="total-invest" style="color:var(--green);">$0.00</span>
-      </div>
-      <div class="alert-strip" id="alert-invest"></div>
-    </div>
-  </div>
-
-  <!-- SUB-PANEL: SONHOS -->
-  <div class="sub-panel" id="sub-sonhos">
-    <div style="margin-top:10px;">
-      <div class="dream-form">
-        <h4>✨ Novo Sonho / Meta</h4>
-        <div class="dream-inputs">
-          <input type="text" class="dream-input" id="dreamName" placeholder="Ex: iPhone, Carro, Viagem...">
-          <div class="row2">
-            <input type="number" class="dream-input" id="dreamValue" placeholder="Valor total ($)" min="0">
-            <input type="number" class="dream-input" id="dreamMonths" placeholder="Prazo (meses)" min="1">
+        <!-- divider -->
+        <div style="height:1px;background:var(--bdr);margin:4px 0;"></div>
+        <!-- language options -->
+        <div class="px-2 pb-1">
+          <div class="text-xs font-bold uppercase tracking-wider mb-1.5 px-1" style="color:var(--txt3);">Idioma</div>
+          <div id="langPt" onclick="setLang('pt')" class="lang-opt flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all" style="color:var(--txt);">
+            <span>🇧🇷</span><span class="text-sm font-semibold">Português</span>
+            <span class="ml-auto text-sm font-black" style="color:#6d28d9;" id="lchk-pt">✓</span>
           </div>
-          <button class="dream-submit" onclick="addDream()">🚀 Adicionar Sonho</button>
+          <div id="langEs" onclick="setLang('es')" class="lang-opt flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all" style="color:var(--txt);">
+            <span>🌎</span><span class="text-sm font-semibold">Español</span>
+            <span class="ml-auto text-sm font-black hidden" style="color:#6d28d9;" id="lchk-es">✓</span>
+          </div>
+          <div id="langEn" onclick="setLang('en')" class="lang-opt flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all" style="color:var(--txt);">
+            <span>🇺🇸</span><span class="text-sm font-semibold">English</span>
+            <span class="ml-auto text-sm font-black hidden" style="color:#6d28d9;" id="lchk-en">✓</span>
+          </div>
         </div>
-      </div>
-      <div id="dreamsList"></div>
-      <div id="dreamsEmpty" style="text-align:center;padding:32px;color:var(--text3);font-size:14px;">
-        <div style="font-size:36px;margin-bottom:8px;">🌟</div>
-        Nenhum sonho adicionado ainda.<br>Adicione o seu primeiro objetivo acima!
       </div>
     </div>
   </div>
+</header>
 
-  <!-- ARCHIVE BUTTON -->
-  <button class="btn-close" onclick="arquivarMes()">🔒 Fechar e Arquivar Mês</button>
 
-</div><!-- end app-wrapper -->
+<!-- ══════════════════════════════════════
+     PAGE 1 — ORÇAMENTO
+══════════════════════════════════════ -->
+<div class="page active" id="page-orcamento">
+<div class="max-w-2xl mx-auto px-4 pt-4 pb-28">
+
+  <!-- ── WALLET PANEL ── -->
+  <section class="rounded-2xl overflow-hidden mb-4"
+           style="background:linear-gradient(135deg,#4c1d95 0%,#6d28d9 55%,#7c3aed 100%);">
+
+    <!-- Total saldo -->
+    <div class="px-5 pt-5 pb-2">
+      <div class="text-xs font-bold uppercase tracking-widest text-white/60 mb-1" id="t-walletTitle">SALDO TOTAL</div>
+      <div class="flex items-end gap-2 mb-1">
+        <span class="text-3xl font-black text-white/50">$</span>
+        <span class="text-5xl font-black text-white leading-none tracking-tight" id="walletGrand">0.00</span>
+      </div>
+      <!-- saldo livre pill -->
+      <div class="inline-flex items-center gap-2 mt-2 px-3 py-1.5 rounded-full text-sm font-bold text-white"
+           style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);">
+        <span>🔓</span>
+        <span id="t-walletFree">Saldo livre:</span>
+        <span id="walletFree" class="font-black">$0.00</span>
+      </div>
+    </div>
+
+    <!-- Salário input inside wallet -->
+    <div class="px-5 pt-3 pb-2">
+      <div class="text-xs font-bold uppercase tracking-widest text-white/60 mb-1.5" id="t-salaryLabel">Salário / Renda mensal</div>
+      <div class="flex items-center gap-2 rounded-xl px-3 py-2"
+           style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);">
+        <span class="text-white/50 font-bold text-lg">$</span>
+        <input type="number" id="salario" value="2000" min="0" step="0.01" placeholder="0.00"
+               class="flex-1 bg-transparent border-none outline-none text-white text-2xl font-black placeholder-white/30"
+               oninput="calcularTudo()">
+        <!-- mode toggle -->
+        <div class="flex rounded-lg overflow-hidden flex-shrink-0" style="background:rgba(255,255,255,.15);">
+          <button id="mBtn-pct" onclick="setMode('pct')"
+                  class="px-2.5 py-1 text-xs font-bold text-white rounded-md transition-all"
+                  style="background:rgba(255,255,255,.3);">%</button>
+          <button id="mBtn-val" onclick="setMode('val')"
+                  class="px-2.5 py-1 text-xs font-bold text-white/50 rounded-md transition-all">$</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fontes de dinheiro -->
+    <div class="px-4 pb-4">
+      <div class="rounded-xl overflow-hidden" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);">
+        <div class="flex items-center justify-between px-3 py-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-white/60" id="t-accounts">Minhas contas</span>
+          <button onclick="addWalletAccount()"
+                  class="text-xs font-bold text-white px-3 py-1 rounded-full transition-all"
+                  style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.28);" id="t-addAccount">
+            ＋ Adicionar conta
+          </button>
+        </div>
+        <div id="walletList" class="px-3 pb-2 flex flex-col gap-1.5"></div>
+        <div id="walletEmpty" class="px-3 pb-2 text-xs text-white/40 hidden" id="t-walletEmpty">Nenhuma conta ainda.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ── DISTRIBUTION BAR + BUDGET CARDS ── -->
+  <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);box-shadow:var(--shadow);">
+    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);" id="t-distLabel">Distribuição do orçamento</div>
+    <!-- bar -->
+    <div class="h-2.5 rounded-full overflow-hidden flex mb-4" style="background:var(--bdr);">
+      <div class="dseg" id="bar-fixo"   style="background:#6d28d9;"></div>
+      <div class="dseg" id="bar-lazer"  style="background:#d97706;"></div>
+      <div class="dseg" id="bar-invest" style="background:#059669;"></div>
+      <div class="dseg" id="bar-sonhos" style="background:#8b5cf6;"></div>
+    </div>
+    <!-- 3 pct cards -->
+    <div class="grid grid-cols-3 gap-2.5">
+      <!-- fixo -->
+      <div class="rounded-xl p-3 s" style="background:var(--surf2);border:1px solid var(--bdr);">
+        <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#6d28d9;">🏠 <span id="t-lFixo">Fixo</span></div>
+        <div class="flex items-center gap-1">
+          <input type="number" id="pctFixo" value="50" min="0" max="100"
+                 class="inp flex-1 min-w-0 text-center text-base font-bold outline-none rounded-md py-1 px-1.5"
+                 style="background:#fff;border:1px solid var(--bdr);color:var(--txt);"
+                 oninput="calcularTudo()">
+          <span class="text-xs" style="color:var(--txt3);" id="symFixo">%</span>
+        </div>
+        <div class="text-xs mt-1" style="color:var(--txt3);" id="valFixo">$1,000.00</div>
+      </div>
+      <!-- lazer (auto) -->
+      <div class="rounded-xl p-3" style="background:#fef3c7;border:1.5px solid #d97706;">
+        <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#d97706;">☕ <span id="t-lLazer">Lazer</span></div>
+        <div class="flex items-center gap-1">
+          <input type="number" id="pctLazer" disabled value="30"
+                 class="flex-1 min-w-0 text-center text-base font-bold outline-none rounded-md py-1 px-1.5"
+                 style="background:transparent;border:none;color:#d97706;">
+          <span class="text-xs" style="color:#d97706;" id="symLazer">%</span>
+        </div>
+        <div class="text-xs mt-1" style="color:#d97706;" id="valLazer">$600.00</div>
+      </div>
+      <!-- invest -->
+      <div class="rounded-xl p-3 s" style="background:var(--surf2);border:1px solid var(--bdr);">
+        <div class="text-xs font-bold uppercase tracking-wider mb-2" style="color:#059669;">🛡️ <span id="t-lInvest">Invest.</span></div>
+        <div class="flex items-center gap-1">
+          <input type="number" id="pctInvest" value="20" min="0" max="100"
+                 class="inp flex-1 min-w-0 text-center text-base font-bold outline-none rounded-md py-1 px-1.5"
+                 style="background:#fff;border:1px solid var(--bdr);color:var(--txt);"
+                 oninput="calcularTudo()">
+          <span class="text-xs" style="color:var(--txt3);" id="symInvest">%</span>
+        </div>
+        <div class="text-xs mt-1" style="color:var(--txt3);" id="valInvest">$400.00</div>
+      </div>
+    </div>
+    <!-- sonhos dynamic grid -->
+    <div id="sonhosPctGrid" class="mt-2.5" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
+    <!-- global alert -->
+    <div id="globalAlert" class="hidden mt-3 rounded-xl px-4 py-3 text-xs font-semibold leading-relaxed"></div>
+  </div>
+
+
+  <!-- ── CATEGORY TABS ── -->
+  <div class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--txt3);" id="t-catLabel">Categorias</div>
+  <div class="flex gap-2 overflow-x-auto pb-1 mb-3" style="scrollbar-width:none;">
+    <button class="tab-pill t-fixo active" onclick="switchTab('fixo')" id="tab-fixo">🏠 <span id="t-tabFixo">Gastos Fixos</span></button>
+    <button class="tab-pill t-lazer" onclick="switchTab('lazer')" id="tab-lazer">☕ <span id="t-tabLazer">Lazer</span></button>
+    <button class="tab-pill t-invest" onclick="switchTab('invest')" id="tab-invest">🛡️ <span id="t-tabInvest">Investimentos</span></button>
+    <button class="tab-pill t-sonhos" onclick="switchTab('sonhos')" id="tab-sonhos">🚀 <span id="t-tabSonhos">Sonhos</span></button>
+  </div>
+
+
+  <!-- ══ SUB-PANEL FIXO ══ -->
+  <div class="sub-panel active" id="sub-fixo">
+    <div class="rounded-2xl overflow-hidden s" style="background:var(--surf);border:1px solid var(--bdr);box-shadow:var(--shadow);">
+      <div class="flex items-center justify-between px-4 py-3" style="border-bottom:1px solid var(--bdr);">
+        <div class="flex items-center gap-2">
+          <span class="font-bold" style="color:#6d28d9;" id="t-fixoTitle">🏠 Gastos Fixos</span>
+          <span class="text-xs font-bold px-2 py-0.5 rounded-full" style="background:#ede9fe;color:#6d28d9;" id="badge-fixo">50%</span>
+        </div>
+        <div class="text-right">
+          <div class="text-xs" style="color:var(--txt3);" id="t-limitLabel">Limite</div>
+          <div class="font-bold text-sm" style="color:var(--txt);" id="meta-fixo">$1,000.00</div>
+        </div>
+      </div>
+      <!-- col headers (Etapa 5 proportions) -->
+      <div class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider" style="color:var(--txt3);border-bottom:1px solid var(--bdr);">
+        <span style="flex:1 1 0;" id="t-colDesc">Descrição</span>
+        <span style="width:90px;flex-shrink:0;text-align:center;" id="t-colDue">Vencimento</span>
+        <span style="width:72px;flex-shrink:0;text-align:right;" id="t-colVal">Valor</span>
+        <span style="width:28px;flex-shrink:0;"></span>
+      </div>
+      <div id="list-fixo" class="divide-y" style="border-color:var(--bdr);"></div>
+      <button class="add-dashed" onclick="addItem('fixo')" id="t-addFixo">➕ Adicionar gasto fixo</button>
+      <div class="flex items-center justify-between px-4 py-3" style="background:var(--surf2);border-top:1px solid var(--bdr);">
+        <span class="text-xs font-bold" style="color:var(--txt3);" id="t-totalFixo">Total gastos fixos</span>
+        <span class="text-base font-black" style="color:#6d28d9;" id="total-fixo">$0.00</span>
+      </div>
+      <div id="alert-fixo" class="hidden px-4 py-2.5 text-xs font-bold rounded-b-2xl"></div>
+    </div>
+  </div>
+
+
+  <!-- ══ SUB-PANEL LAZER ══ -->
+  <div class="sub-panel" id="sub-lazer">
+    <div class="rounded-2xl overflow-hidden s" style="background:var(--surf);border:1px solid var(--bdr);box-shadow:var(--shadow);">
+      <div class="flex items-center justify-between px-4 py-3" style="border-bottom:1px solid var(--bdr);">
+        <div class="flex items-center gap-2">
+          <span class="font-bold" style="color:#d97706;" id="t-lazerTitle">☕ Lazer & Estilo de Vida</span>
+          <span class="text-xs font-bold px-2 py-0.5 rounded-full" style="background:#fef3c7;color:#d97706;" id="badge-lazer">30%</span>
+        </div>
+        <div class="text-right">
+          <div class="text-xs" style="color:var(--txt3);" id="t-lazerLimit">Limite</div>
+          <div class="font-bold text-sm" style="color:var(--txt);" id="meta-lazer">$600.00</div>
+        </div>
+      </div>
+      <!-- fractionamento lazer -->
+      <div class="px-4 py-3" style="border-bottom:1px solid var(--bdr);">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold" style="color:var(--txt3);" id="t-splitLabel">Dividir meta em partes iguais</span>
+          <select id="fracLazer" onchange="applyFrac('lazer')"
+                  class="inp text-xs font-bold rounded-lg px-2 py-1 outline-none"
+                  style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);">
+            <option value="0" id="t-fracManual">Manual</option>
+            <option value="2">2×</option><option value="3">3×</option><option value="4">4×</option>
+          </select>
+        </div>
+        <div id="fracLazerRows" class="flex flex-col gap-1.5"></div>
+      </div>
+      <!-- col headers (no date col for lazer/invest) -->
+      <div class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider" style="color:var(--txt3);border-bottom:1px solid var(--bdr);">
+        <span style="flex:1 1 0;" id="t-colDescL">Descrição</span>
+        <span style="width:72px;flex-shrink:0;text-align:right;" id="t-colValL">Valor</span>
+        <span style="width:28px;flex-shrink:0;"></span>
+      </div>
+      <div id="list-lazer" class="divide-y" style="border-color:var(--bdr);"></div>
+      <button class="add-dashed" onclick="addItem('lazer')" id="t-addLazer">➕ Adicionar item de lazer</button>
+      <div class="flex items-center justify-between px-4 py-3" style="background:var(--surf2);border-top:1px solid var(--bdr);">
+        <span class="text-xs font-bold" style="color:var(--txt3);" id="t-totalLazer">Total lazer</span>
+        <span class="text-base font-black" style="color:#d97706;" id="total-lazer">$0.00</span>
+      </div>
+      <div id="alert-lazer" class="hidden px-4 py-2.5 text-xs font-bold rounded-b-2xl"></div>
+    </div>
+  </div>
+
+
+  <!-- ══ SUB-PANEL INVEST ══ -->
+  <div class="sub-panel" id="sub-invest">
+    <div class="rounded-2xl overflow-hidden s" style="background:var(--surf);border:1px solid var(--bdr);box-shadow:var(--shadow);">
+      <div class="flex items-center justify-between px-4 py-3" style="border-bottom:1px solid var(--bdr);">
+        <div class="flex items-center gap-2">
+          <span class="font-bold" style="color:#059669;" id="t-investTitle">🛡️ Investimentos</span>
+          <span class="text-xs font-bold px-2 py-0.5 rounded-full" style="background:#d1fae5;color:#059669;" id="badge-invest">20%</span>
+        </div>
+        <div class="text-right">
+          <div class="text-xs" style="color:var(--txt3);" id="t-investLimit">Meta mínima</div>
+          <div class="font-bold text-sm" style="color:var(--txt);" id="meta-invest">$400.00</div>
+        </div>
+      </div>
+      <!-- fractionamento invest -->
+      <div class="px-4 py-3" style="border-bottom:1px solid var(--bdr);">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold" style="color:var(--txt3);">Dividir meta em partes iguais</span>
+          <select id="fracInvest" onchange="applyFrac('invest')"
+                  class="inp text-xs font-bold rounded-lg px-2 py-1 outline-none"
+                  style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);">
+            <option value="0">Manual</option>
+            <option value="2">2×</option><option value="3">3×</option><option value="4">4×</option>
+          </select>
+        </div>
+        <div id="fracInvestRows" class="flex flex-col gap-1.5"></div>
+      </div>
+      <div class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider" style="color:var(--txt3);border-bottom:1px solid var(--bdr);">
+        <span style="flex:1 1 0;">Descrição</span>
+        <span style="width:72px;flex-shrink:0;text-align:right;">Valor</span>
+        <span style="width:28px;flex-shrink:0;"></span>
+      </div>
+      <div id="list-invest" class="divide-y" style="border-color:var(--bdr);"></div>
+      <button class="add-dashed" onclick="addItem('invest')" id="t-addInvest">➕ Adicionar investimento</button>
+      <div class="flex items-center justify-between px-4 py-3" style="background:var(--surf2);border-top:1px solid var(--bdr);">
+        <span class="text-xs font-bold" style="color:var(--txt3);" id="t-totalInvest">Total investido</span>
+        <span class="text-base font-black" style="color:#059669;" id="total-invest">$0.00</span>
+      </div>
+      <div id="alert-invest" class="hidden px-4 py-2.5 text-xs font-bold rounded-b-2xl"></div>
+    </div>
+  </div>
+
+
+  <!-- ══ SUB-PANEL SONHOS ══ -->
+  <div class="sub-panel" id="sub-sonhos">
+    <div class="rounded-2xl p-4 mb-3" style="background:#ede9fe;border:1.5px solid #6d28d9;">
+      <div class="font-bold text-sm mb-3" style="color:#6d28d9;" id="t-dreamFormTitle">✨ Novo Sonho / Meta</div>
+      <div class="flex flex-col gap-2.5">
+        <input type="text" id="dreamName" class="inp w-full rounded-xl px-3 py-2.5 text-sm outline-none"
+               style="background:#fff;border:1px solid var(--bdr);color:var(--txt);" id="t-dreamNamePh" placeholder="Ex: iPhone, Carro, Viagem...">
+        <div class="grid grid-cols-2 gap-2.5">
+          <input type="number" id="dreamValue" class="inp w-full rounded-xl px-3 py-2.5 text-sm outline-none"
+                 style="background:#fff;border:1px solid var(--bdr);color:var(--txt);" placeholder="Valor ($)" min="0">
+          <input type="number" id="dreamMonths" class="inp w-full rounded-xl px-3 py-2.5 text-sm outline-none"
+                 style="background:#fff;border:1px solid var(--bdr);color:var(--txt);" placeholder="Prazo (meses)" min="1">
+        </div>
+        <button onclick="addDream()" class="w-full py-3 rounded-xl font-bold text-sm text-white"
+                style="background:#6d28d9;border:none;" id="t-addDreamBtn">🚀 Adicionar Sonho</button>
+      </div>
+    </div>
+    <div id="dreamsList" class="flex flex-col gap-2.5"></div>
+    <div id="dreamsEmpty" class="text-center py-10 text-sm" style="color:var(--txt3);">
+      <div class="text-4xl mb-2">🌟</div>
+      <span id="t-dreamsEmpty">Nenhum sonho adicionado ainda.</span>
+    </div>
+  </div>
+
+
+  <!-- ── ARCHIVE BTN ── -->
+  <button onclick="arquivarMes()" class="w-full mt-5 py-4 rounded-2xl font-bold text-base text-white transition-all hover:opacity-85"
+          style="background:linear-gradient(135deg,#0f172a,#1e293b);border:none;" id="t-archiveBtn">
+    🔒 Fechar e Arquivar Mês
+  </button>
+
+</div>
 </div><!-- end page-orcamento -->
 
 
-<!-- ═══════════════════════════════════
+<!-- ══════════════════════════════════════
      PAGE 2 — HISTÓRICO
-═══════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div class="page" id="page-historico">
-<div class="app-wrapper" style="padding-top:20px;">
-  <div style="font-size:20px;font-weight:800;margin-bottom:16px;">📅 Histórico Mensal</div>
-
-  <div class="card">
-    <div style="font-size:13px;color:var(--text3);margin-bottom:12px;">Selecione o mês e arquive o registo atual:</div>
-    <div class="month-selector-row">
-      <input type="month" class="month-input" id="mesRef">
-      <button class="archive-btn" onclick="arquivarMes()">🔒 Arquivar</button>
+<div class="max-w-2xl mx-auto px-4 pb-28 pt-5">
+  <div class="text-xl font-black mb-4" style="color:var(--txt);" id="t-histTitle">📅 Histórico Mensal</div>
+  <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
+    <div class="text-sm mb-3" style="color:var(--txt3);" id="t-histSelectLabel">Selecione o mês e arquive o registo atual:</div>
+    <div class="flex gap-2">
+      <input type="month" id="mesRef" class="inp flex-1 rounded-xl px-3 py-2.5 text-sm font-semibold outline-none"
+             style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);">
+      <button onclick="arquivarMes()" class="px-4 py-2.5 rounded-xl text-sm font-bold text-white whitespace-nowrap"
+              style="background:#6d28d9;border:none;" id="t-histArchiveBtn">🔒 Arquivar</button>
     </div>
   </div>
-
-  <div class="section-header" style="margin-top:20px;">Registos arquivados</div>
-  <div id="historyList">
-    <div class="history-empty">
-      <div class="he-icon">📋</div>
-      Nenhum mês arquivado ainda.<br>Feche um mês para criar o primeiro registo.
-    </div>
-  </div>
+  <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);" id="t-histSection">Registos arquivados</div>
+  <div id="historyList"></div>
 </div>
 </div>
 
 
-
-
-<!-- ═══════════════════════════════════
+<!-- ══════════════════════════════════════
      PAGE 3 — EBOOK
-═══════════════════════════════════ -->
+══════════════════════════════════════ -->
 <div class="page" id="page-ebook">
-<div class="app-wrapper" style="padding-top:20px;">
-
-  <!-- CAPA -->
-  <div class="ebook-cover">
-    <div class="ebook-badge">📚 Ebook Exclusivo Incluso</div>
-    <div class="ebook-emoji-cover">💰</div>
-    <h1>Os Fundamentos<br><span>da Mente Próspera</span></h1>
-    <p style="margin-top:10px;">O guia completo para transformar sua mentalidade e construir liberdade financeira</p>
+<div class="max-w-2xl mx-auto px-4 pb-28 pt-5">
+  <!-- redirects to external file; show loading card -->
+  <div class="rounded-2xl p-8 text-center" style="background:linear-gradient(160deg,#0d0d1a,#1a1a35);min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+    <div class="text-5xl mb-4">📚</div>
+    <div class="text-white font-black text-xl mb-2" id="t-ebookLoading">A abrir o Ebook...</div>
+    <div class="text-white/50 text-sm" id="t-ebookSub">Será redirecionado em instantes.</div>
+    <button onclick="goToEbook()" class="mt-6 px-6 py-3 rounded-xl font-bold text-white text-sm"
+            style="background:#6d28d9;border:none;" id="t-ebookBtn">Abrir agora</button>
   </div>
-
-  <!-- SECTION: MENTALIDADE -->
-  <div class="section-header">📊 Parte 1 — Os Fundamentos da Mente</div>
-  <div class="ebook-chapter-list">
-
-    <!-- CARD 1 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#EEF0FD;">🧠</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Cartão 1 · 5 min</div>
-          <div class="ebook-chap-title">O Hábito</div>
-          <div class="ebook-chap-time">O Segredo para Mudar de Vida sem Sofrer</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>Mudar a sua situação financeira não exige que você faça um milagre de um dia para o outro. Exige apenas que você mude as pequenas coisas que faz no seu dia a dia quase sem perceber.</p>
-          <p>O hábito é importante por um motivo simples: o nosso cérebro não gosta de gastar energia. Se todo santo dia você precisar fazer um esforço gigantesco para guardar um pouco de dinheiro, estudar ou trabalhar mais, você vai acabar cansando e desistindo. O segredo de quem prospera não é ter uma força de vontade sobre-humana, é apenas transformar as escolhas certas em um costume natural, como escovar os dentes.</p>
-          <div class="ebook-section-label">🚢 A Analogia do Barco e o Piloto Automático</div>
-          <ul class="ebook-list">
-            <li><b>A Força de Vontade é o Capitão:</b> Ele sabe para onde quer ir, mas se segurar o leme a cada segundo vai desmaiar de cansaço.</li>
-            <li><b>O Hábito é o Piloto Automático:</b> Depois que você programa o caminho certo, ele assume o controle — mesmo quando o mar fica agitado.</li>
-          </ul>
-          <div class="ebook-quote">Quando você cuida das suas ações de hoje, o seu amanhã começa a se cuidar sozinho.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CARD 2 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#FEF3C7;">💰</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Cartão 2 · 5 min</div>
-          <div class="ebook-chap-title">A Mentalidade</div>
-          <div class="ebook-chap-time">O Segredo para Fazer o Dinheiro Trabalhar por Você</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>A diferença entre as pessoas que prosperam e as que vivem sufocadas pelas contas não é o tamanho do salário, mas a forma como elas pensam. A maioria de nós foi ensinada a trabalhar por dinheiro — mas quem tem a mente milionária aprende a fazer o dinheiro trabalhar para si.</p>
-          <div class="ebook-section-label">🪣 A Analogia dos Baldes</div>
-          <ul class="ebook-list">
-            <li><b>Passivo = Balde Furado:</b> Coisas que tiram dinheiro do bolso todo mês — carro que não precisava, assinaturas que não usa. Quanto mais passivos, mais você se cansa.</li>
-            <li><b>Ativo = Balde Firme que Transborda:</b> Investimentos, negócio próprio, conhecimento que gera renda. Em vez de vazar, acumula e transborda sozinho.</li>
-          </ul>
-          <div class="ebook-quote">A riqueza não é medida pelo status das coisas que você exibe, mas pelo tempo que consegue viver com tranquilidade se parar de trabalhar hoje.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CARD 3 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#D1FAE5;">🌳</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Cartão 3 · 5 min</div>
-          <div class="ebook-chap-title">As Leis</div>
-          <div class="ebook-chap-time">O Caminho para Reter e Multiplicar o que é Seu</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>A verdade mais reconfortante sobre a prosperidade é que ela não escolhe pessoas, ela segue regras. Se você começar a praticar as leis da multiplicação, o crescimento é inevitável.</p>
-          <div class="ebook-section-label">🌱 A Analogia da Semente e a Árvore da Riqueza</div>
-          <ul class="ebook-list">
-            <li><b>Pague-se Primeiro (A Semente):</b> Toda vez que receber dinheiro, separe ao menos 10% para o seu futuro antes de qualquer boleto. Isso é plantar a sua primeira semente.</li>
-            <li><b>Faça o Dinheiro Trabalhar (A Árvore):</b> Os juros e rendimentos que esse dinheiro gera são os frutos. Use esses frutos para plantar novas árvores — é assim que se cria uma floresta de segurança.</li>
-          </ul>
-          <div class="ebook-quote">Ninguém consegue construir um teto seguro se gastar todos os tijolos que recebe.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CARD 4 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#EDE9FE;">⚙️</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Cartão 4 · 5 min</div>
-          <div class="ebook-chap-title">Os Arquivos</div>
-          <div class="ebook-chap-time">Reprogramando Suas Crenças para Atrair a Prosperidade</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>Dentro da nossa mente existem "arquivos de riqueza" ou "arquivos de escassez" instalados na infância. Se você cresceu ouvindo que "o dinheiro é a raiz de todo o mal", a sua mente criou um mecanismo invisível para afastar o dinheiro, mesmo que você queira muito prosperar.</p>
-          <div class="ebook-section-label">🌡️ A Analogia do Termostato</div>
-          <ul class="ebook-list">
-            <li><b>Termostato programado para sobreviver:</b> Se ganhar um extra, a mente fará você gastar para voltar à temperatura antiga em que se sente "confortável".</li>
-            <li><b>Ajustando o termostato:</b> Quando você reprograma suas crenças e passa a se ver como merecedor da riqueza, a sua realidade financeira muda para acompanhar a nova temperatura.</li>
-          </ul>
-          <div class="ebook-quote">A sua renda só crescerá na mesma medida em que você crescer como pessoa.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CARD 5 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#DBEAFE;">🧲</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Cartão 5 · 5 min</div>
-          <div class="ebook-chap-title">A Visão</div>
-          <div class="ebook-chap-time">O Ponto de Partida de Toda Riqueza</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>A estrada para uma vida próspera não começa no banco — ela começa na sua mente. Quem vive na escassez passa o dia inteiro focado no medo da pobreza. Quem tem a mente milionária aprende a focar na certeza de onde quer chegar.</p>
-          <div class="ebook-section-label">🧲 O Ímã Invisível</div>
-          <ul class="ebook-list">
-            <li><b>Ímã da Escassez:</b> Pensar em dívidas e medo atrai mais contas, mais problemas e mais desculpas para continuar no mesmo lugar.</li>
-            <li><b>Ímã da Prosperidade:</b> Definir com clareza o que quer, agir com convicção, atrai as ideias, oportunidades e pessoas certas para virar o jogo.</li>
-          </ul>
-          <div class="ebook-quote">A pobreza e a riqueza começam exatamente no mesmo lugar: na sua cabeça.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CARD 6 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#FEE2E2;">👓</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Cartão 6 · 5 min</div>
-          <div class="ebook-chap-title">A Atitude</div>
-          <div class="ebook-chap-time">A Lente Certa para Enxergar as Oportunidades</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>O mundo não se importa com o que você sabe, mas sim com a forma como você reage diante do que acontece na sua vida. Ter atitude positiva não é ignorar os boletos — é ter a coragem de procurar a semente de uma oportunidade em cada problema.</p>
-          <div class="ebook-section-label">👓 A Analogia dos Óculos Coloridos</div>
-          <ul class="ebook-list">
-            <li><b>Lente Escura da Escassez:</b> Com óculos sujos, até o dia mais bonito parece cinzento. Você olha para um negócio novo e só enxerga o risco de perder.</li>
-            <li><b>Lente Clara da Prosperidade:</b> Com óculos limpos, você ganha a capacidade de enxergar o caminho certo mesmo no meio de uma tempestade.</li>
-          </ul>
-          <div class="ebook-quote">Os problemas são iguais para todos, mas a sua atitude é o que te diferencia da multidão.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CARD 7 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#D1FAE5;">⛰️</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Cartão 7 · 5 min</div>
-          <div class="ebook-chap-title">A Doação</div>
-          <div class="ebook-chap-time">O Segredo de Entregar o Melhor para Receber em Dobro</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>O sucesso financeiro duradouro não vem do quanto você acumula para si à força, mas do valor real que você entrega às pessoas através do seu trabalho. Quando você se torna a resposta para as necessidades de alguém, o dinheiro se torna uma consequência natural.</p>
-          <div class="ebook-section-label">🗣 O Eco na Montanha</div>
-          <ul class="ebook-list">
-            <li><b>Eco da Escassez:</b> Trabalhar de má vontade, pensando em "arrancar" o dinheiro dos outros, traz de volta clientes insatisfeitos e portas fechadas.</li>
-            <li><b>Eco da Prosperidade:</b> Entregar o melhor produto e o atendimento mais humano faz a vida devolver em forma de oportunidades, indicações e fartura.</li>
-          </ul>
-          <div class="ebook-quote">A vida funciona como um eco perfeito. Entregue o seu melhor hoje e deixe o tempo trazer a colheita.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CARD 8 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#EEF0FD;">🌉</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Cartão 8 · 5 min</div>
-          <div class="ebook-chap-title">A Parceria</div>
-          <div class="ebook-chap-time">O Poder de Criar Laços para Caminhar Mais Longe</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>Ninguém consegue mudar de vida totalmente sozinho. O dinheiro não se move sozinho — ele vem através das pessoas. A sua capacidade de prosperar está ligada à forma como você trata, ouve e respeita as pessoas ao redor.</p>
-          <div class="ebook-section-label">🌉 As Pontes Invisíveis</div>
-          <ul class="ebook-list">
-            <li><b>Muros da Escassez:</b> Tratar pessoas com indiferença levanta muros ao redor. Você fica isolado sem caminhos para avançar quando uma crise chega.</li>
-            <li><b>Pontes da Prosperidade:</b> Cada sorriso genuíno, cada ajuda sincera constrói uma ponte invisível. Mais pontes = mais fácil atravessar qualquer dificuldade.</li>
-          </ul>
-          <div class="ebook-quote">Ninguém chega ao topo sozinho. Construa pontes e descubra que o caminho fica muito mais leve quando é compartilhado.</div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- end card list parte 1 -->
-
-  <!-- SECTION: MAPA DA VIRADA -->
-  <div class="section-header" style="margin-top:24px;">🗺️ Parte 2 — O Mapa da Virada</div>
-  <div class="ebook-chapter-list">
-
-    <!-- PASSO 1 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#EEF0FD;">📊</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Passo 1 · 6 min</div>
-          <div class="ebook-chap-title">Organizando a Casa</div>
-          <div class="ebook-chap-time">A Regra dos Potes — sem sofrer</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>Para o dinheiro começar a sobrar, você não precisa ser um gênio da matemática. Precisa apenas de um método simples para governar o seu salário — em vez de deixar que os boletos governem você.</p>
-          <div class="ebook-section-label">📐 A Divisão dos Potes</div>
-          <ul class="ebook-list">
-            <li><b>50% — Sobreviver (O Essencial):</b> Aluguel, água, luz, mercado, saúde. Se ultrapassar 50%, é hora de reduzir ou focar em ganhar mais.</li>
-            <li><b>30% — Viver (Seu Estilo de Vida):</b> Jantar fora, passeio, corte de cabelo, lazer. Você trabalha duro e merece colher os frutos agora.</li>
-            <li><b>20% — Futuro (A Liberdade):</b> Esta parte é sagrada. No exato momento que receber, separe esses 20% e guarde. É a semente do seu futuro.</li>
-          </ul>
-          <div class="ebook-tip">💡 <strong>Dica prática:</strong> Use a aba <b>Orçamento</b> desta calculadora para aplicar exatamente esta divisão no seu salário hoje mesmo.</div>
-          <div class="ebook-quote">Quem não governa o próprio salário vive sempre com a sensação de que trabalhou o mês inteiro para nada.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASSO 2 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#FEF3C7;">🚀</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Passo 2 · 6 min</div>
-          <div class="ebook-chap-title">Acelerando os Ganhos</div>
-          <div class="ebook-chap-time">Renda Extra como Motor Turbinado</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>Você vai perceber que apenas economizar tem um limite: só consegue cortar até chegar a zero. Por outro lado, a sua capacidade de ganhar mais dinheiro é totalmente infinita.</p>
-          <div class="ebook-section-label">🏎 O Motor Turbinado</div>
-          <ul class="ebook-list">
-            <li><b>Motor Padrão (Seu Salário):</b> Funciona bem, te leva aos lugares, mas tem velocidade máxima limitada.</li>
-            <li><b>Motor Turbinado (Renda Extra):</b> Instalar um turbo não muda o caminho — mas você chega aos objetivos em metade do tempo, sem privações.</li>
-          </ul>
-          <div class="ebook-quote">A economia te protege da pobreza, mas é a velocidade dos seus ganhos que te leva para a riqueza.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASSO 3 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#D1FAE5;">💻</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Passo 3 · 7 min</div>
-          <div class="ebook-chap-title">Vender Serviços na Internet</div>
-          <div class="ebook-chap-time">Onde e Como Encontrar os Primeiros Clientes</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>Muitos pequenos empresários estão desesperados por ajuda porque não têm tempo para cuidar das redes sociais. Você pode ser a solução para o problema deles.</p>
-          <div class="ebook-section-label">🛠 Plataformas para Começar</div>
-          <ul class="ebook-list">
-            <li><b>Fiverr e Workana:</b> Ideais para iniciantes. Crie um anúncio do seu serviço e receba propostas de empresários.</li>
-            <li><b>Upwork:</b> Global, ótimo para tradução, escrita e assistência virtual — ganhe em moedas fortes.</li>
-          </ul>
-          <div class="ebook-section-label">👣 Passo a Passo Real</div>
-          <ul class="ebook-list">
-            <li><b>Crie seu portfólio:</b> Use IA para criar 3 exemplos de postagens para um negócio fictício. O cliente precisa ver o que você sabe fazer.</li>
-            <li><b>Abordagem direta:</b> Entre no Instagram de pequenas empresas locais. Se o perfil estiver parado, mande uma mensagem acolhedora com os exemplos de presente.</li>
-            <li><b>Entregue mais:</b> O primeiro cliente por valor baixo? Dedique-se ao máximo. Um cliente satisfeito indica você para outros três.</li>
-          </ul>
-          <div class="ebook-quote">O mercado digital não paga quem tem mais estudos, paga quem resolve problemas com mais agilidade.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASSO 4 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#FEE2E2;">🍰</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Passo 4 · 6 min</div>
-          <div class="ebook-chap-title">Ganhando no Seu Bairro</div>
-          <div class="ebook-chap-time">Serviços e Alimentação no Mercado de Proximidade</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>O seu próprio bairro é uma mina de ouro. A rotina das pessoas é corrida — falta tempo para cozinhar, passear com animais, cuidar de tarefas simples. Você pode transformar o seu tempo livre na solução para a falta de tempo dos vizinhos.</p>
-          <div class="ebook-section-label">💼 Duas Formas Práticas</div>
-          <ul class="ebook-list">
-            <li><b>Alimentação Caseira:</b> Bolos por encomenda, caixas de doces, marmitas para trabalhadores. Clientes fiéis que compram toda semana.</li>
-            <li><b>Serviços de Cuidado:</b> Passear cães (Rover, DogBuddy), babysitter (Sitly). Crie perfil gratuito e defina seu preço.</li>
-          </ul>
-          <div class="ebook-tip">💡 Use grupos de WhatsApp de vizinhos para divulgar. O boca a boca de um trabalho impecável vale mais que qualquer anúncio pago.</div>
-          <div class="ebook-quote">Onde existe alguém ocupado, existe uma oportunidade de renda extra para quem tem disposição.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASSO 5 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#EDE9FE;">📦</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Passo 5 · 6 min</div>
-          <div class="ebook-chap-title">Comércio Digital Sem Estoque</div>
-          <div class="ebook-chap-time">Renda com o que Você Já Tem ou Sabe</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>A forma mais rápida de ver o dinheiro entrar sem investir nada antes é olhando para o que você já tem — objetos parados em casa ou conhecimento que guardou só para si.</p>
-          <div class="ebook-section-label">🎒 Duas Rotas para o Digital</div>
-          <ul class="ebook-list">
-            <li><b>Mercado de Desapegos:</b> Roupas, livros, eletrônicos → Vinted, Wallapop (Europa) ou Mercado Libre, Facebook Marketplace (América Latina).</li>
-            <li><b>Produtos Digitais:</b> Guias em PDF, e-books, templates sobre o que você domina → Hotmart ou Gumroad. Entrega 100% automática.</li>
-          </ul>
-          <div class="ebook-quote">O dinheiro que falta está escondido nas roupas que você não usa ou no conhecimento que guarda só para si.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PASSO 6 -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#EEF0FD;">🖥️</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Passo 6 · 8 min</div>
-          <div class="ebook-chap-title">Designs e Sites para Negócios Locais</div>
-          <div class="ebook-chap-time">Uma Solução Rápida e Muito Lucrativa</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>Todos os dias, milhares de novos negócios abrem as portas e precisam de presença digital. Você não precisa ser um designer profissional — com as ferramentas certas, cria materiais incríveis em minutos.</p>
-          <div class="ebook-section-label">🛠 O Que Oferecer</div>
-          <ul class="ebook-list">
-            <li>Templates e posts para Instagram</li>
-            <li>Banners comerciais e cardápios digitais com QR Code</li>
-            <li>Páginas e sites no Google (Landing Pages)</li>
-          </ul>
-          <div class="ebook-section-label">🔑 Ferramentas Obrigatórias</div>
-          <ul class="ebook-list">
-            <li><b>Canva:</b> Posts, banners e cardápios — arrasta e muda as cores.</li>
-            <li><b>WordPress / Elementor:</b> Sites profissionais com total controle.</li>
-            <li><b>Facebook Ads:</b> Divulgue seu trabalho E ofereça como serviço extra com mensalidade fixa ao cliente.</li>
-          </ul>
-          <div class="ebook-quote">O comércio tradicional está pronto para pagar quem sabe atrair clientes no digital.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- FERRAMENTAS IA -->
-    <div class="ebook-chapter" onclick="toggleChapter(this)">
-      <div class="ebook-chapter-header">
-        <div class="ebook-chap-icon" style="background:#D1FAE5;">📝</div>
-        <div class="ebook-chap-info">
-          <div class="ebook-chap-num">Bônus · 10 min</div>
-          <div class="ebook-chap-title">Navegando no Novo Mercado Digital</div>
-          <div class="ebook-chap-time">As Ferramentas que Mudam o Jogo</div>
-        </div>
-        <span class="ebook-chap-arrow">›</span>
-      </div>
-      <div class="ebook-chapter-body">
-        <div class="ebook-body-text">
-          <p>A IA não veio para substituir você — veio para substituir quem não sabe usá-la. O mercado de Solopreneurs já movimenta <b>$1,7 trilhão/ano</b> e 74% deles usam IA, recuperando mais de 20 horas por semana.</p>
-          <div class="ebook-section-label">✍️ IAs de Escrita</div>
-          <ul class="ebook-list">
-            <li><b>ChatGPT:</b> Ideias, estruturas, traduções, anúncios.</li>
-            <li><b>Claude:</b> Textos longos, e-books fluidos, artigos profundos.</li>
-          </ul>
-          <div class="ebook-section-label">🎨 Design Visual</div>
-          <ul class="ebook-list">
-            <li><b>Canva:</b> Obrigatório para iniciantes — arrastar e soltar.</li>
-            <li><b>Midjourney / Ideogram:</b> Imagens ultra-realistas a partir de texto.</li>
-          </ul>
-          <div class="ebook-section-label">🌐 Sites e Divulgação</div>
-          <ul class="ebook-list">
-            <li><b>Gamma App:</b> Landing pages e apresentações em minutos.</li>
-            <li><b>Facebook Ads:</b> Anúncios no Instagram e Facebook segmentados.</li>
-            <li><b>Google Ads:</b> Apareça no topo das pesquisas do Google.</li>
-          </ul>
-          <div class="ebook-tip">💡 <strong>Regra de ouro:</strong> Não tente dominar tudo de uma vez. Escolha UM objetivo, selecione DUAS ferramentas e estude-as a fundo. O futuro pertence a quem tem a iniciativa de aprender.</div>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- end card list parte 2 -->
-
-  <div style="text-align:center;padding:32px 16px;color:var(--text3);font-size:13px;line-height:1.7;">
-    <div style="font-size:32px;margin-bottom:10px;">✦</div>
-    <strong style="color:var(--text);">Fim do Ebook</strong><br>
-    Aplique um conceito por semana e em 8 semanas a sua relação com o dinheiro será irreconhecível.
-  </div>
-
 </div>
-</div><!-- end page-ebook -->
+</div>
 
-<!-- ═══════════════════════════════════
+
+<!-- ══════════════════════════════════════
      BOTTOM NAV
-═══════════════════════════════════ -->
-<nav class="bottom-nav">
-  <button class="nav-item active" id="nav-orcamento" onclick="switchPage('orcamento')">
-    <span class="nav-icon">💰</span>Orçamento
+══════════════════════════════════════ -->
+<nav class="bottom-nav fixed bottom-0 left-0 right-0 z-50 grid grid-cols-4"
+     style="background:var(--surf);border-top:1px solid var(--bdr);">
+  <button class="nav-item active flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
+          id="nav-orcamento" onclick="switchPage('orcamento')">
+    <span class="text-xl">💰</span><span id="t-navOrc">Orçamento</span>
   </button>
-  <button class="nav-item" id="nav-ebook" onclick="goToEbook()">
-    <span class="nav-icon">📚</span>Ebook
+  <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
+          id="nav-ebook" onclick="switchPage('ebook')">
+    <span class="text-xl">📚</span><span id="t-navEbook">Ebook</span>
   </button>
-  <button class="nav-item" id="nav-historico" onclick="switchPage('historico')">
-    <span class="nav-icon">📅</span>Histórico
+  <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
+          id="nav-historico" onclick="switchPage('historico')">
+    <span class="text-xl">📅</span><span id="t-navHist">Histórico</span>
   </button>
-  <button class="nav-item" id="nav-plano">
-    <span class="nav-icon">📈</span>Plano
+  <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
+          id="nav-plano">
+    <span class="text-xl">📈</span><span id="t-navPlan">Plano</span>
   </button>
 </nav>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<!-- Toast -->
+<div id="toast"></div>
 
 
+<!-- ══════════════════════════════════════
+     INSTALL MODAL
+══════════════════════════════════════ -->
+<div id="installOverlay" class="overlay" onclick="closeModal('installOverlay',event)">
+  <div class="slide-up w-full max-w-lg rounded-t-3xl px-6 pt-5 pb-10 s" style="background:var(--surf);" onclick="event.stopPropagation()">
+    <div class="w-10 h-1 rounded-full mx-auto mb-4" style="background:var(--bdr2);"></div>
+    <div class="text-4xl text-center mb-3">📲</div>
+    <div class="text-xl font-black text-center mb-1" style="color:var(--txt);" id="t-installTitle">Instalar App</div>
+    <div class="text-sm text-center mb-5" style="color:var(--txt3);" id="t-installSub">Acesso rápido, funciona offline.</div>
+    <div id="pwaInstallBtn" class="hidden mb-4">
+      <button onclick="triggerInstall()" class="w-full py-4 rounded-2xl font-bold text-white text-base mb-2"
+              style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);border:none;">📲 Instalar Agora</button>
+    </div>
+    <div class="flex flex-col gap-2.5 mb-4">
+      <div class="flex gap-3 rounded-xl p-3 s" style="background:var(--surf2);border:1px solid var(--bdr);">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black text-white flex-shrink-0" style="background:#6d28d9;">1</div>
+        <div><div class="text-xs font-bold mb-0.5" style="color:var(--txt);">📱 iPhone/iPad — Safari</div><div class="text-xs" style="color:var(--txt3);">Compartilhar ↑ → Adicionar à Tela de Início</div></div>
+      </div>
+      <div class="flex gap-3 rounded-xl p-3 s" style="background:var(--surf2);border:1px solid var(--bdr);">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black text-white flex-shrink-0" style="background:#6d28d9;">2</div>
+        <div><div class="text-xs font-bold mb-0.5" style="color:var(--txt);">💻 PC — Chrome/Edge</div><div class="text-xs" style="color:var(--txt3);">Ícone ⊕ na barra de endereço → Instalar</div></div>
+      </div>
+      <div class="flex gap-3 rounded-xl p-3 s" style="background:var(--surf2);border:1px solid var(--bdr);">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black text-white flex-shrink-0" style="background:#6d28d9;">3</div>
+        <div><div class="text-xs font-bold mb-0.5" style="color:var(--txt);">🤖 Android — Chrome</div><div class="text-xs" style="color:var(--txt3);">Menu ⋮ → Adicionar à tela inicial</div></div>
+      </div>
+    </div>
+    <button onclick="closeModal('installOverlay')" class="w-full py-3 text-sm font-semibold" style="background:none;border:none;color:var(--txt3);">Fechar</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     INVEST ALLOC MODAL
+══════════════════════════════════════ -->
+<div id="allocModal" class="overlay" onclick="closeModal('allocModal',event)">
+  <div class="slide-up w-full max-w-lg rounded-t-3xl px-5 pt-5 pb-10 s" style="background:var(--surf);max-height:85vh;overflow-y:auto;" onclick="event.stopPropagation()">
+    <div class="w-10 h-1 rounded-full mx-auto mb-4" style="background:var(--bdr2);"></div>
+    <div class="font-black text-lg mb-1" style="color:var(--txt);" id="t-allocTitle">💼 Alocar Investimento</div>
+    <div class="text-sm mb-4" style="color:var(--txt3);" id="t-allocSub">Em qual conta guardar este valor?</div>
+    <div id="allocAmount" class="text-2xl font-black mb-4" style="color:#059669;"></div>
+    <div id="allocAccList" class="flex flex-col mb-4"></div>
+    <!-- remaining -->
+    <div id="allocRemaining" class="text-sm font-bold mb-4" style="color:var(--txt3);"></div>
+    <button onclick="confirmAlloc()" class="w-full py-3 rounded-xl font-bold text-sm text-white"
+            style="background:#059669;border:none;" id="t-allocConfirm">✅ Confirmar</button>
+    <button onclick="closeModal('allocModal')" class="w-full py-2 text-sm mt-2" style="background:none;border:none;color:var(--txt3);" id="t-allocCancel">Cancelar</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
 <script>
-// ═══════════════════════════════════════════════════════
+// ─────────────────────────────────────────
 //  UTILS
-// ═══════════════════════════════════════════════════════
-const $ = id => document.getElementById(id);
-const fmt = (n, decimals=2) => Number(n||0).toFixed(decimals);
-const fmtMoney = n => '$' + Number(n||0).toLocaleString('pt', {minimumFractionDigits:2, maximumFractionDigits:2});
-const safeNum = v => { let n = parseFloat(String(v||0).replace(',','.')); return isNaN(n) ? 0 : n; };
-const escapeHTML = str => String(str).replace(/[&<>'"]/g, tag => ({
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;',
-  "'": '&#39;',
-  '"': '&quot;'
-}[tag]));
+// ─────────────────────────────────────────
+const $  = id => document.getElementById(id);
+const fmt  = (n,d=2) => Number(n||0).toFixed(d);
+const fmtM = n => '$' + Number(n||0).toLocaleString('pt',{minimumFractionDigits:2,maximumFractionDigits:2});
+const safe = v => { const n=parseFloat(String(v||0).replace(',','.')); return isNaN(n)?0:n; };
+const esc  = s => String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 
-function showToast(msg, duration=2500) {
-  const t = $('toast'); t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), duration);
+function toast(msg,ms=2600){
+  const t=$('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),ms);
 }
 
-// ═══════════════════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════════════════
-let mode = 'pct'; // 'pct' | 'val'
-let currentSubTab = 'fixo';
-let currentPage = 'orcamento';
-let deferredPrompt = null;
-
-function getData() {
-    let d = JSON.parse(localStorage.getItem('cvData_v4') || '{"historico":[],"sonhos":[],"items":{}}');
-  if (!d.config) d.config = {};
-  if (!d.config.fracoes) d.config.fracoes = { lazer: { partes: 1, nomes: [], checks: [] }, invest: { partes: 1, nomes: [], checks: [] } };
+// ─────────────────────────────────────────
+//  STORAGE
+// ─────────────────────────────────────────
+function getData(){
+  let d=JSON.parse(localStorage.getItem('cvD6')||'{}');
+  if(!d.items)     d.items={fixo:[],lazer:[],invest:[]};
+  if(!d.sonhos)    d.sonhos=[];
+  if(!d.hist)      d.hist=[];
+  if(!d.cfg)       d.cfg={};
+  if(!d.wallet)    d.wallet=[];
+  if(!d.fracs)     d.fracs={lazer:{n:0,names:[]},invest:{n:0,names:[]}};
   return d;
 }
-function saveData(d) {
-  localStorage.setItem('cvData_v4', JSON.stringify(d));
-}
+function save(d){ localStorage.setItem('cvD6',JSON.stringify(d)); }
 
-// ═══════════════════════════════════════════════════════
+// ─────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────
+let mode='pct', lang='pt', currentPage='orcamento', currentTab='fixo';
+let deferredPWA=null;
+// pending invest alloc
+let pendingAllocItem=null; // {rowEl, value, itemKey}
+let allocInputs={};
+
+// ─────────────────────────────────────────
 //  THEME
-// ═══════════════════════════════════════════════════════
-function toggleTheme() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const next = isDark ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  $('btnTheme').textContent = isDark ? '☀️' : '🌙';
-  localStorage.setItem('cvTheme', next);
+// ─────────────────────────────────────────
+function toggleTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  applyTheme(dark?'light':'dark');
+  closeSettings();
 }
-function loadTheme() {
-  const saved = localStorage.getItem('cvTheme') || 'light';
-  document.documentElement.setAttribute('data-theme', saved);
-  $('btnTheme').textContent = saved === 'dark' ? '🌙' : '☀️';
-}
-
-// ═══════════════════════════════════════════════════════
-//  PAGE NAVIGATION
-// ═══════════════════════════════════════════════════════
-function switchPage(page) {
-  currentPage = page;
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  $('page-' + page).classList.add('active');
-  $('nav-' + page).classList.add('active');
-  if (page === 'historico') renderHistory();
-  // Scroll to top on page change
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  document.body.style.background=t==='dark'?'#0f1117':'#f1f5f9';
+  $('themeIcon').textContent=t==='dark'?'☀️':'🌙';
+  $('t-themeLabel').textContent=t==='dark'?TR[lang].lightMode:TR[lang].darkMode;
+  localStorage.setItem('cvTheme',t);
 }
 
+// ─────────────────────────────────────────
+//  SETTINGS MENU
+// ─────────────────────────────────────────
+function toggleSettings(){
+  const m=$('settingsMenu');
+  m.classList.toggle('open');
+}
+function closeSettings(){ $('settingsMenu').classList.remove('open'); }
+document.addEventListener('click',e=>{ if(!$('settingsWrap').contains(e.target)) closeSettings(); });
 
-// ═══════════════════════════════════════════════════════
-//  FRACTIONS
-// ═══════════════════════════════════════════════════════
-function setFraction(cat, parts) {
-  const d = getData();
-  if(!d.config.fracoes) d.config.fracoes = { lazer: { partes: 1, nomes: [], checks: [] }, invest: { partes: 1, nomes: [], checks: [] } };
-  d.config.fracoes[cat].partes = parseInt(parts);
-  saveData(d);
-  calcularTudo();
+// ─────────────────────────────────────────
+//  NAVIGATION
+// ─────────────────────────────────────────
+function switchPage(p){
+  currentPage=p;
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  $('page-'+p).classList.add('active');
+  const n=$('nav-'+p); if(n) n.classList.add('active');
+  if(p==='historico') renderHistory();
+  if(p==='ebook'){ goToEbook(); return; }
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function saveFractionName(cat, idx, val) {
-  const d = getData();
-  if(!d.config.fracoes) d.config.fracoes = { lazer: { partes: 1, nomes: [], checks: [] }, invest: { partes: 1, nomes: [], checks: [] } };
-  d.config.fracoes[cat].nomes[idx] = val;
-  saveData(d);
+function goToEbook(){
+  const map={pt:'ebook-cardss-pt.html',es:'ebook-cardss-es.html',en:'ebook-cardss-en.html'};
+  window.location.href=map[lang]||'ebook-cardss-pt.html';
 }
 
-function toggleFractionCheck(cat, idx, isChecked) {
-  const d = getData();
-  if(!d.config.fracoes) d.config.fracoes = { lazer: { partes: 1, nomes: [], checks: [] }, invest: { partes: 1, nomes: [], checks: [] } };
-  d.config.fracoes[cat].checks[idx] = isChecked;
-  saveData(d);
+function switchTab(t){
+  currentTab=t;
+  document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-pill').forEach(p=>{
+    p.classList.remove('active');
+    p.style.background=''; p.style.color=''; p.style.borderColor='';
+  });
+  $('sub-'+t).classList.add('active');
+  const pill=$('tab-'+t);
+  if(pill) pill.classList.add('active');
 }
 
-function renderFractions(cat, totalMeta) {
-  const d = getData();
-  if(!d.config.fracoes) d.config.fracoes = { lazer: { partes: 1, nomes: [], checks: [] }, invest: { partes: 1, nomes: [], checks: [] } };
-  const fracoes = d.config.fracoes[cat];
-  const select = document.querySelector(`#fracoes-${cat} .fraction-select`);
-  if (select) select.value = fracoes.partes;
-  
-  const list = $(`fracoes-${cat}-list`);
-  if (!list) return;
-  
-  if (fracoes.partes <= 1) {
-    list.innerHTML = '';
-    return;
-  }
-  
-  const fractionValue = totalMeta / fracoes.partes;
-  let html = '';
-  for (let i = 0; i < fracoes.partes; i++) {
-    const nome = escapeHTML(fracoes.nomes[i] || `Parte ${i + 1}`);
-    const isChecked = fracoes.checks[i] ? 'checked' : '';
-    html += `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; padding-bottom:6px;">
-        <div style="display:flex; align-items:center; gap: 8px; flex: 1;">
-          <input type="checkbox" onchange="toggleFractionCheck('${cat}', ${i}, this.checked)" ${isChecked} style="accent-color:var(--primary); width: 14px; height: 14px; cursor: pointer;">
-          <input type="text" value="${nome}" oninput="saveFractionName('${cat}', ${i}, this.value)" placeholder="Nome da parte..." style="font-size:12px; padding:4px 6px; border:1px solid var(--border); border-radius:4px; width:100%; max-width: 200px; background:var(--surface); color:var(--text);">
-        </div>
-        <span style="font-size:12px; font-weight:bold; color:var(--text);">${fmtMoney(fractionValue)}</span>
-      </div>
-    `;
-  }
-  list.innerHTML = html;
-}
-
-// ═══════════════════════════════════════════════════════
-//  SUB-TAB NAVIGATION
-// ═══════════════════════════════════════════════════════
-function switchSubTab(tab) {
-  currentSubTab = tab;
-  document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-pill').forEach(p => p.classList.remove('active'));
-  $('sub-' + tab).classList.add('active');
-  document.querySelector('.tab-pill.t-' + tab).classList.add('active');
-}
-
-// ═══════════════════════════════════════════════════════
-//  MODE: % or $
-// ═══════════════════════════════════════════════════════
-function setMode(m) { if (mode === m) return;
-  mode = m;
-  $('modeBtn-pct').classList.toggle('active', m === 'pct');
-  $('modeBtn-val').classList.toggle('active', m === 'val');
-  // update sym labels
-  const sym = m === 'pct' ? '%' : '$';
-  ['pctFixoSym','pctLazerSym','pctInvestSym'].forEach(id => { if ($(id)) $(id).textContent = sym; });
-  // update input values
-  const salario = safeNum($('salario').value);
-  const pFixo = safeNum($('pctFixo').value);
-  const pInvest = safeNum($('pctInvest').value);
-  if (m === 'val') {
-    $('pctFixo').value = fmt(salario * pFixo / 100);
-    $('pctInvest').value = fmt(salario * pInvest / 100);
+// ─────────────────────────────────────────
+//  MODE % / $
+// ─────────────────────────────────────────
+function setMode(m){
+  if(mode===m) return;
+  const sal=safe($('salario').value);
+  if(m==='val'){
+    $('pctFixo').value  =fmt(sal*safe($('pctFixo').value)/100);
+    $('pctInvest').value=fmt(sal*safe($('pctInvest').value)/100);
   } else {
-    // convert $ back to %
-    const vFixo = safeNum($('pctFixo').value);
-    const vInvest = safeNum($('pctInvest').value);
-    $('pctFixo').value = salario > 0 ? fmt(vFixo / salario * 100, 1) : '0';
-    $('pctInvest').value = salario > 0 ? fmt(vInvest / salario * 100, 1) : '0';
+    $('pctFixo').value  =sal>0?fmt(safe($('pctFixo').value)/sal*100,1):'0';
+    $('pctInvest').value=sal>0?fmt(safe($('pctInvest').value)/sal*100,1):'0';
   }
+  mode=m;
+  $('mBtn-pct').style.background=m==='pct'?'rgba(255,255,255,.3)':'transparent';
+  $('mBtn-pct').style.color=m==='pct'?'#fff':'rgba(255,255,255,.4)';
+  $('mBtn-val').style.background=m==='val'?'rgba(255,255,255,.3)':'transparent';
+  $('mBtn-val').style.color=m==='val'?'#fff':'rgba(255,255,255,.4)';
+  ['symFixo','symLazer','symInvest'].forEach(id=>{ if($(id)) $(id).textContent=m==='pct'?'%':'$'; });
   calcularTudo();
-  localStorage.setItem('cvMode', m);
+  const d=getData(); d.cfg.mode=m; save(d);
 }
 
-function onPctChange(field) {
-  // Validate max 100 combined
+// ─────────────────────────────────────────
+//  WALLET ACCOUNTS
+// ─────────────────────────────────────────
+function addWalletAccount(nome='',valor=''){
+  const d=getData();
+  d.wallet.push({id:Date.now()+Math.random(),nome,valor:String(valor)});
+  save(d); renderWallet(); calcularTudo();
+}
+function removeWalletAccount(id){
+  const d=getData(); d.wallet=d.wallet.filter(a=>a.id!==id); save(d);
+  renderWallet(); calcularTudo();
+}
+function saveWalletField(id,field,val){
+  const d=getData(); const a=d.wallet.find(x=>x.id===id);
+  if(a){ a[field]=val; save(d); } calcularTudo();
+}
+function renderWallet(){
+  const d=getData(); const list=$('walletList'); const empty=$('walletEmpty');
+  list.innerHTML='';
+  if(!d.wallet.length){ empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  d.wallet.forEach(a=>{
+    const div=document.createElement('div');
+    div.className='fade-in flex items-center gap-2 rounded-xl px-3 py-2';
+    div.style='background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);';
+    div.innerHTML=`
+      <span class="text-base flex-shrink-0">🏦</span>
+      <input type="text" value="${esc(a.nome)}" placeholder="Nome da conta"
+             class="flex-1 min-w-0 bg-transparent border-none outline-none text-white text-xs font-semibold placeholder-white/30"
+             oninput="saveWalletField(${a.id},'nome',this.value)">
+      <span class="text-white/40 text-xs flex-shrink-0">$</span>
+      <input type="number" value="${esc(a.valor)}" placeholder="0.00" min="0" step="0.01"
+             class="w-20 flex-shrink-0 bg-transparent border-none outline-none text-white text-xs font-bold text-right placeholder-white/30"
+             oninput="saveWalletField(${a.id},'valor',this.value)">
+      <button onclick="removeWalletAccount(${a.id})"
+              class="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-xs text-white"
+              style="background:rgba(255,255,255,.18);border:none;">✕</button>`;
+    list.appendChild(div);
+  });
+}
+function walletTotal(){ return getData().wallet.reduce((s,a)=>s+safe(a.valor),0); }
+
+// ─────────────────────────────────────────
+//  FRACTIONS (Etapa 3)
+// ─────────────────────────────────────────
+function applyFrac(cat){
+  const n=parseInt($('frac'+cap(cat)).value)||0;
+  const d=getData();
+  d.fracs[cat].n=n;
+  if(n>0){
+    // preserve existing names up to n
+    while(d.fracs[cat].names.length<n) d.fracs[cat].names.push('');
+  }
+  save(d); calcularTudo(); renderFracRows(cat);
+}
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+function renderFracRows(cat){
+  const d=getData(); const fc=d.fracs[cat];
+  const container=$('frac'+cap(cat)+'Rows');
+  container.innerHTML='';
+  if(!fc||fc.n<=0) return;
+
+  // get current meta value
+  const sal=safe($('salario').value);
+  let pct;
+  if(cat==='lazer'){
+    const pF=mode==='pct'?safe($('pctFixo').value):sal>0?safe($('pctFixo').value)/sal*100:0;
+    const pI=mode==='pct'?safe($('pctInvest').value):sal>0?safe($('pctInvest').value)/sal*100:0;
+    const d2=getData(); let pS=0;
+    d2.sonhos.forEach(s=>{ pS+=sal>0?(s.valor/s.meses/sal*100):0; });
+    pct=Math.max(0,100-pF-pI-pS);
+  } else {
+    pct=mode==='pct'?safe($('pctInvest').value):sal>0?safe($('pctInvest').value)/sal*100:0;
+  }
+  const total=sal*pct/100;
+  const part=total/fc.n;
+
+  for(let i=0;i<fc.n;i++){
+    const isChecked=fc.checks&&fc.checks[i];
+    const row=document.createElement('div');
+    row.className='flex items-center gap-2 py-1';
+    row.innerHTML=`
+      <button class="chk${isChecked?' on':''}" onclick="toggleFracCheck('${cat}',${i},this)" title="Marcar como feito">✓</button>
+      <input type="text" value="${esc(fc.names[i]||'')}" placeholder="Parte ${i+1}"
+             class="inp flex-1 min-w-0 rounded-lg px-2.5 py-1.5 text-xs font-semibold outline-none"
+             style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
+             oninput="saveFracName('${cat}',${i},this.value)">
+      <span class="text-xs font-black flex-shrink-0" style="color:${cat==='lazer'?'#d97706':'#059669'};">${fmtM(part)}</span>`;
+    container.appendChild(row);
+  }
+}
+
+function saveFracName(cat,i,val){
+  const d=getData(); d.fracs[cat].names[i]=val; save(d);
+}
+
+function toggleFracCheck(cat,i,btn){
+  const d=getData();
+  if(!d.fracs[cat].checks) d.fracs[cat].checks=[];
+  d.fracs[cat].checks[i]=!d.fracs[cat].checks[i];
+  save(d);
+  btn.classList.toggle('on',d.fracs[cat].checks[i]);
   calcularTudo();
 }
 
-// ═══════════════════════════════════════════════════════
-//  ITEMS
-// ═══════════════════════════════════════════════════════
-function addItem(cat, nome='', data='', valor='', done=false) {
-  const list = $('list-' + cat);
-  const row = document.createElement('div');
-  row.className = 'item-row' + (cat !== 'fixo' ? ' no-date' : '') + (done ? ' done' : '');
-  row.dataset.cat = cat;
-  row.innerHTML = `
-    <button class="item-check" onclick="toggleItemDone(this)" title="Marcar como feito">✓</button>
-    <input type="text" class="item-name" placeholder="${t('itemDescPh')}" value="${nome}" oninput="calcularTudo();saveItems();">
-    ${cat === 'fixo' ? `<input type="date" class="item-date" value="${data}" onchange="calcularTudo();saveItems();">` : ''}
-    <input type="number" class="item-value" placeholder="0.00" value="${valor}" oninput="calcularTudo();saveItems();" min="0" step="0.01">
-    <button class="item-del" onclick="removeItem(this)">🗑</button>
-  `;
+// ─────────────────────────────────────────
+//  ITEMS (expense rows)
+// ─────────────────────────────────────────
+function addItem(cat,nome='',date='',valor='',done=false){
+  const list=$('list-'+cat);
+  const showDate=cat==='fixo';
+  const row=document.createElement('div');
+  row.className='item-row fade-in flex items-center gap-2 px-4 py-2.5'+(done?' done':'');
+  row.dataset.cat=cat; row.dataset.done=done?'1':'0';
+
+  row.innerHTML=`
+    <button class="chk${done?' on':''}"
+            style="border-color:${done?'#059669':'var(--bdr2)'};background:${done?'#059669':'transparent'};color:${done?'#fff':'transparent'};"
+            onclick="handleItemCheck(this,'${cat}')" title="Marcar como pago">✓</button>
+    <input type="text" class="iname inp flex-1 min-w-0 rounded-lg px-2.5 py-1.5 text-sm outline-none"
+           style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
+           placeholder="Descrição..." value="${esc(nome)}" oninput="calcularTudo();saveItems();">
+    ${showDate?`<input type="date" class="idate inp flex-shrink-0 rounded-lg px-2 py-1.5 text-xs outline-none"
+           style="width:90px;background:var(--surf2);border:1px solid var(--bdr);color:var(--txt2);"
+           value="${esc(date)}" onchange="calcularTudo();saveItems();">` : ''}
+    <input type="number" class="ival inp flex-shrink-0 rounded-lg px-2 py-1.5 text-sm font-bold text-right outline-none"
+           style="width:72px;background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
+           placeholder="0.00" min="0" step="0.01" value="${esc(valor)}"
+           oninput="calcularTudo();saveItems();">
+    <button onclick="removeItem(this)" class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-all"
+            style="background:none;border:none;color:var(--txt3);" onmouseover="this.style.background='#fee2e2';this.style.color='#dc2626';" onmouseout="this.style.background='none';this.style.color='var(--txt3)';">🗑</button>`;
   list.appendChild(row);
-  row.querySelector('.item-name').focus();
-  calcularTudo();
-  saveItems();
+  row.querySelector('.iname').focus();
+  calcularTudo(); saveItems();
 }
 
-function toggleItemDone(btn) {
-  const row = btn.closest('.item-row');
-  row.classList.toggle('done');
-  saveItems();
+// ── Etapa 4: checkbox triggers ──
+function handleItemCheck(btn,cat){
+  const row=btn.closest('.item-row');
+  const wasDone=row.dataset.done==='1';
+
+  if(cat==='invest' && !wasDone){
+    // open alloc modal before marking done
+    const val=safe(row.querySelector('.ival').value);
+    if(val>0){
+      openAllocModal(row,val,cat); return;
+    }
+  }
+
+  toggleItemDone(btn,row);
 }
 
-function removeItem(btn) {
-  btn.closest('.item-row').remove();
-  calcularTudo();
-  saveItems();
+function toggleItemDone(btn,row){
+  const isDone=row.dataset.done==='1';
+  const nowDone=!isDone;
+  row.dataset.done=nowDone?'1':'0';
+  row.classList.toggle('done',nowDone);
+  btn.classList.toggle('on',nowDone);
+  btn.style.background=nowDone?'#059669':'transparent';
+  btn.style.borderColor=nowDone?'#059669':'var(--bdr2)';
+  btn.style.color=nowDone?'#fff':'transparent';
+  calcularTudo(); saveItems();
 }
 
-function saveItems() {
-  const d = getData();
-  ['fixo','lazer','invest'].forEach(cat => {
-    d.items[cat] = [];
-    document.querySelectorAll(`#list-${cat} .item-row`).forEach(row => {
-      const nome  = row.querySelector('.item-name').value;
-      const date  = row.querySelector('.item-date') ? row.querySelector('.item-date').value : '';
-      const valor = row.querySelector('.item-value').value;
-      const done  = row.classList.contains('done');
-      d.items[cat].push({ nome, date, valor, done });
+function removeItem(btn){ btn.closest('.item-row').remove(); calcularTudo(); saveItems(); }
+
+function sumDoneItems(cat){
+  let t=0;
+  document.querySelectorAll(`#list-${cat} .item-row`).forEach(row=>{
+    if(row.dataset.done==='1') t+=safe(row.querySelector('.ival').value);
+  });
+  return t;
+}
+function sumAllItems(cat){
+  let t=0;
+  document.querySelectorAll(`#list-${cat} .item-value, #list-${cat} .ival`).forEach(el=>t+=safe(el.value));
+  return t;
+}
+
+function saveItems(){
+  const d=getData();
+  ['fixo','lazer','invest'].forEach(cat=>{
+    d.items[cat]=[];
+    document.querySelectorAll(`#list-${cat} .item-row`).forEach(row=>{
+      d.items[cat].push({
+        nome:row.querySelector('.iname').value,
+        date:row.querySelector('.idate')?row.querySelector('.idate').value:'',
+        valor:row.querySelector('.ival').value,
+        done:row.dataset.done==='1'
+      });
     });
   });
-  if(!d.config) d.config = {};
-  d.config.salario = $('salario').value;
-  d.config.pctFixo = $('pctFixo').value;
-  d.config.pctInvest = $('pctInvest').value;
-  d.config.mode = mode;
-  saveData(d);
+  d.cfg.salario  =$('salario').value;
+  d.cfg.pctFixo  =$('pctFixo').value;
+  d.cfg.pctInvest=$('pctInvest').value;
+  save(d);
 }
 
-function loadItems() {
-  const d = getData();
-  if (!d.items) return;
-  ['fixo','lazer','invest'].forEach(cat => {
-    (d.items[cat] || []).forEach(item => addItem(cat, item.nome, item.date||'', item.valor, item.done||false));
+function loadItems(){
+  const d=getData();
+  ['fixo','lazer','invest'].forEach(cat=>{
+    (d.items[cat]||[]).forEach(it=>addItem(cat,it.nome,it.date||'',it.valor,it.done||false));
   });
 }
 
-// ═══════════════════════════════════════════════════════
+// ─────────────────────────────────────────
+//  INVEST ALLOC MODAL (Etapa 4)
+// ─────────────────────────────────────────
+function openAllocModal(rowEl,val,cat){
+  pendingAllocItem={rowEl,val,cat};
+  allocInputs={};
+  const d=getData();
+  $('allocAmount').textContent=fmtM(val);
+  const list=$('allocAccList');
+  list.innerHTML='';
+  if(!d.wallet.length){
+    list.innerHTML=`<div class="text-sm py-2" style="color:var(--txt3);">Nenhuma conta criada. Confirmar sem alocar?</div>`;
+  } else {
+    d.wallet.forEach(a=>{
+      const row=document.createElement('div');
+      row.className='alloc-acc-row';
+      const inputId='alloc_'+a.id;
+      row.innerHTML=`
+        <span class="flex-1 text-sm font-semibold" style="color:var(--txt);">🏦 ${esc(a.nome||'Conta')}</span>
+        <span class="text-xs mr-2" style="color:var(--txt3);">Atual: ${fmtM(a.valor)}</span>
+        <span class="text-xs mr-1 font-bold" style="color:#059669;">$</span>
+        <input type="number" id="${inputId}" placeholder="0.00" min="0" step="0.01"
+               class="inp w-24 rounded-lg px-2 py-1.5 text-sm font-bold text-right outline-none"
+               style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
+               oninput="updateAllocRemaining(${val})">`;
+      list.appendChild(row);
+      allocInputs[a.id]=inputId;
+    });
+  }
+  updateAllocRemaining(val);
+  $('allocModal').classList.add('open');
+}
+
+function updateAllocRemaining(total){
+  let used=0;
+  Object.values(allocInputs).forEach(id=>{ const el=$(id); if(el) used+=safe(el.value); });
+  const rem=total-used;
+  $('allocRemaining').textContent=`Restante a alocar: ${fmtM(Math.max(0,rem))}`;
+  $('allocRemaining').style.color=rem<=0.005?'#059669':'#d97706';
+}
+
+function confirmAlloc(){
+  if(!pendingAllocItem) return;
+  const d=getData();
+  // Credit each account
+  Object.entries(allocInputs).forEach(([aid,inputId])=>{
+    const el=$(inputId); if(!el) return;
+    const amt=safe(el.value); if(amt<=0) return;
+    const acc=d.wallet.find(a=>a.id===parseFloat(aid)||String(a.id)===String(aid));
+    if(acc){ acc.valor=String(safe(acc.valor)+amt); }
+  });
+  save(d);
+  renderWallet();
+  // Now mark item as done
+  const {rowEl}=pendingAllocItem;
+  const btn=rowEl.querySelector('.chk');
+  toggleItemDone(btn,rowEl);
+  pendingAllocItem=null; allocInputs={};
+  closeModal('allocModal');
+  toast('✅ Investimento alocado!');
+  calcularTudo();
+}
+
+// ─────────────────────────────────────────
 //  DREAMS
-// ═══════════════════════════════════════════════════════
-function toggleDreamDone(id) {
-  const d = getData();
-  const s = d.sonhos.find(x => x.id === id);
-  if (s) { s.done = !s.done; saveData(d); renderDreams(); }
+// ─────────────────────────────────────────
+function addDream(){
+  const nome=$('dreamName').value.trim();
+  const valor=safe($('dreamValue').value);
+  const meses=parseInt($('dreamMonths').value)||0;
+  if(!nome||valor<=0||meses<=0){ toast('⚠️ Preencha todos os campos'); return; }
+  const d=getData();
+  d.sonhos.push({id:Date.now(),nome,valor,meses,done:false});
+  save(d);
+  $('dreamName').value=''; $('dreamValue').value=''; $('dreamMonths').value='';
+  renderDreams(); calcularTudo();
+  toast('🚀 Sonho adicionado!');
 }
-
-function addDream() {
-  const nome = $('dreamName').value.trim();
-  const valor = safeNum($('dreamValue').value);
-  const meses = parseInt($('dreamMonths').value) || 0;
-  if (!nome || valor <= 0 || meses <= 0) { showToast(t('toastDreamReq')); return; }
-  const d = getData();
-  d.sonhos.push({ id: Date.now(), nome, valor, meses, done: false });
-  saveData(d);
-  $('dreamName').value = ''; $('dreamValue').value = ''; $('dreamMonths').value = '';
-  renderDreams();
-  calcularTudo();
-  showToast(t('toastDreamAdded'));
+function deleteDream(id){
+  const d=getData(); d.sonhos=d.sonhos.filter(s=>s.id!==id); save(d);
+  renderDreams(); calcularTudo();
 }
-
-function deleteDream(id) {
-  const d = getData();
-  d.sonhos = d.sonhos.filter(s => s.id !== id);
-  saveData(d);
-  renderDreams();
-  calcularTudo();
+function toggleDreamDone(id){
+  const d=getData(); const s=d.sonhos.find(x=>x.id===id);
+  if(s){ s.done=!s.done; save(d); renderDreams(); }
 }
-
-function renderDreams() {
-  const d = getData();
-  const salario = safeNum($('salario').value);
-  const container = $('dreamsList');
-  const empty = $('dreamsEmpty');
-  container.innerHTML = '';
-  if (!d.sonhos.length) { empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-  d.sonhos.forEach(s => {
-    const parcela = s.valor / s.meses;
-    const pctBruta = salario > 0 ? (parcela / salario * 100) : 0;
-    const progresso = calcProgressoDream(s.id, d);
-    const pctProg = s.valor > 0 ? Math.min(100, progresso / s.valor * 100) : 0;
-    const card = document.createElement('div');
-    card.className = 'dream-card';
-    const removeLabel = t("sonhosRemove");
-    card.className = 'dream-card' + (s.done ? ' done' : '');
-    card.dataset.id = s.id;
-    card.innerHTML = `
-      <div class="dream-card-top">
-        <button class="dream-check-btn" onclick="toggleDreamDone(${s.id})" title="Marcar como concluído">✓</button>
-        <div style="flex:1">
-          <div class="dream-name">🎯 ${s.nome}</div>
-          <div class="dream-meta">Meta: ${fmtMoney(s.valor)} em ${s.meses} meses</div>
+function renderDreams(){
+  const d=getData(); const sal=safe($('salario').value);
+  const c=$('dreamsList'); const e=$('dreamsEmpty');
+  c.innerHTML='';
+  if(!d.sonhos.length){ e.style.display='block'; return; }
+  e.style.display='none';
+  d.sonhos.forEach(s=>{
+    const p=s.valor/s.meses;
+    const pct=sal>0?(p/sal*100):0;
+    const div=document.createElement('div');
+    div.className='rounded-2xl p-4 s fade-in'+(s.done?' opacity-60':'');
+    div.style='background:var(--surf);border:1px solid var(--bdr);';
+    div.innerHTML=`
+      <div class="flex items-start gap-3 mb-3">
+        <button class="chk${s.done?' on':''}" onclick="toggleDreamDone(${s.id})"
+                style="border-color:${s.done?'#059669':'var(--bdr2)'};background:${s.done?'#059669':'transparent'};color:${s.done?'#fff':'transparent'};">✓</button>
+        <div class="flex-1">
+          <div class="font-bold text-sm${s.done?' line-through':''}" style="color:var(--txt);">🎯 ${esc(s.nome)}</div>
+          <div class="text-xs mt-0.5" style="color:var(--txt3);">Meta: ${fmtM(s.valor)} em ${s.meses} meses</div>
         </div>
-        <button class="dream-del" onclick="deleteDream(${s.id})">${removeLabel}</button>
+        <button onclick="deleteDream(${s.id})" class="text-xs px-2 py-1 rounded-lg" style="background:none;border:none;color:var(--txt3);">✕</button>
       </div>
-      <div class="dream-monthly">💸 ${fmtMoney(parcela)}/mês &nbsp;·&nbsp; ${fmt(pctBruta,1)}% do salário</div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${pctProg}%"></div></div>
-      <div class="progress-labels">
-        <span>Acumulado: ${fmtMoney(progresso)}</span>
-        <span>Falta: ${fmtMoney(Math.max(0, s.valor - progresso))}</span>
-      </div>
-    `;
-    container.appendChild(card);
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-2"
+           style="background:#ede9fe;color:#6d28d9;">💸 ${fmtM(p)}/mês &nbsp;·&nbsp; ${fmt(pct,1)}% do salário</div>`;
+    c.appendChild(div);
   });
 }
 
-function calcProgressoDream(id, d) {
-  return d.historico.reduce((acc, h) => acc + safeNum(h.totalInvest), 0);
-}
+// ─────────────────────────────────────────
+//  MAIN CALC
+// ─────────────────────────────────────────
+function calcularTudo(){
+  const sal=safe($('salario').value);
 
-// ═══════════════════════════════════════════════════════
-//  MAIN CALCULATION
-// ═══════════════════════════════════════════════════════
-function calcularTudo() {
-  const salario = safeNum($('salario').value);
-
-  // Get pct or value
-  let pFixo, pInvest;
-  if (mode === 'pct') {
-    pFixo   = Math.max(0, Math.min(100, safeNum($('pctFixo').value)));
-    pInvest = Math.max(0, Math.min(100, safeNum($('pctInvest').value)));
+  let pF,pI;
+  if(mode==='pct'){
+    pF=Math.max(0,Math.min(100,safe($('pctFixo').value)));
+    pI=Math.max(0,Math.min(100,safe($('pctInvest').value)));
   } else {
-    const vFixo   = safeNum($('pctFixo').value);
-    const vInvest = safeNum($('pctInvest').value);
-    pFixo   = salario > 0 ? vFixo / salario * 100 : 0;
-    pInvest = salario > 0 ? vInvest / salario * 100 : 0;
+    pF=sal>0?safe($('pctFixo').value)/sal*100:0;
+    pI=sal>0?safe($('pctInvest').value)/sal*100:0;
   }
 
-  // Sonhos
-  const d = getData();
-  let pSonhos = 0;
-  const sonhoPcts = [];
-  d.sonhos.forEach(s => {
-    const parcela = s.valor / s.meses;
-    const pct = salario > 0 ? (parcela / salario * 100) : 0;
-    sonhoPcts.push({ nome: s.nome, pct, parcela });
-    pSonhos += pct;
+  // sonhos
+  const d=getData();
+  let pS=0; const sPcts=[];
+  d.sonhos.forEach(s=>{ const p=s.valor/s.meses; const pc=sal>0?p/sal*100:0; sPcts.push({nome:s.nome,pct:pc,p}); pS+=pc; });
+
+  const pL=Math.max(0,100-pF-pI-pS);
+  const mF=sal*pF/100, mL=sal*pL/100, mI=sal*pI/100;
+
+  // UI budget cards
+  $('pctLazer').value=fmt(pL,1);
+  $('badge-fixo').textContent=fmt(pF,1)+'%';
+  $('badge-lazer').textContent=fmt(pL,1)+'%';
+  $('badge-invest').textContent=fmt(pI,1)+'%';
+  $('meta-fixo').textContent=fmtM(mF);
+  $('meta-lazer').textContent=fmtM(mL);
+  $('meta-invest').textContent=fmtM(mI);
+
+  if(mode==='pct'){
+    $('valFixo').textContent=fmtM(mF);
+    $('valLazer').textContent=fmtM(mL);
+    $('valInvest').textContent=fmtM(mI);
+  } else {
+    $('valFixo').textContent=fmt(pF,1)+'% do salário';
+    $('valLazer').textContent=fmt(pL,1)+'% do salário';
+    $('valInvest').textContent=fmt(pI,1)+'% do salário';
+  }
+
+  // dist bar
+  $('bar-fixo').style.width=fmt(pF,2)+'%';
+  $('bar-lazer').style.width=fmt(pL,2)+'%';
+  $('bar-invest').style.width=fmt(pI,2)+'%';
+  $('bar-sonhos').style.width=fmt(pS,2)+'%';
+
+  // sonhos pct grid
+  const sg=$('sonhosPctGrid'); sg.innerHTML='';
+  sPcts.forEach(sp=>{
+    const d2=document.createElement('div');
+    d2.className='rounded-xl p-3'; d2.style='background:#f5f3ff;border:1.5px dashed #6d28d9;';
+    d2.innerHTML=`<div class="text-xs font-bold uppercase tracking-wider mb-1 truncate" style="color:#6d28d9;">🎯 ${esc(sp.nome)}</div>
+      <div class="text-base font-black" style="color:#6d28d9;">${fmt(sp.pct,1)}%</div>
+      <div class="text-xs mt-0.5" style="color:#8b5cf6;">${fmtM(sp.p)}/mês</div>`;
+    sg.appendChild(d2);
   });
 
-  // Auto-calc lazer
-  const pLazer = Math.max(0, 100 - pFixo - pInvest - pSonhos);
-  const pTotal = pFixo + pLazer + pInvest + pSonhos;
+  // global alert (dreams overflow)
+  const ga=$('globalAlert');
+  if(pS>0&&pL<=0){
+    ga.className='block mt-3 rounded-xl px-4 py-3 text-xs font-semibold leading-relaxed';
+    ga.style='background:#fee2e2;color:#dc2626;'; ga.innerHTML='🚨 <b>Sonhos a extrapolar o orçamento!</b>';
+  } else if(pS>0){
+    ga.className='block mt-3 rounded-xl px-4 py-3 text-xs font-semibold leading-relaxed';
+    ga.style='background:#d1fae5;color:#059669;';
+    ga.innerHTML=`✅ Lazer ajustado para ${fmt(pL,1)}% para acomodar os sonhos.`;
+  } else { ga.className='hidden'; }
 
-  // Money values
-  const mFixo   = salario * pFixo   / 100;
-  const mLazer  = salario * pLazer  / 100;
-  const mInvest = salario * pInvest / 100;
-  const mSonhos = salario * pSonhos / 100;
+  // re-render fractions (meta values may have changed)
+  renderFracRows('lazer'); renderFracRows('invest');
 
-  // Update UI — labels
-  $('pctLazer').value = fmt(pLazer, 1);
-  $('badge-fixo').textContent   = fmt(pFixo,1) + '%';
-  $('badge-lazer').textContent  = fmt(pLazer,1) + '%';
-  $('badge-invest').textContent = fmt(pInvest,1) + '%';
-  $('meta-fixo').textContent    = fmtMoney(mFixo);
-  $('meta-lazer').textContent   = fmtMoney(mLazer);
-  $('meta-invest').textContent  = fmtMoney(mInvest);
+  // ── Etapa 4: done-item totals ──
+  // For fixo/lazer: sum only DONE items → debit from salary
+  const doneF=sumDoneItems('fixo');
+  const doneL=sumDoneItems('lazer');
+  const doneI=sumDoneItems('invest');
+  // fraction checks contribute to invest total
+  const dFracI=fracCheckedTotal('invest',mI);
+  const dFracL=fracCheckedTotal('lazer',mL);
 
-  // If mode=val update the $ display
-  if (mode === 'pct') {
-    $('pctFixoVal').textContent  = fmtMoney(mFixo);
-    $('pctLazerVal').textContent = fmtMoney(mLazer);
-    $('pctInvestVal').textContent = fmtMoney(mInvest);
-    $('pctFixoSym').textContent  = '%';
-    $('pctLazerSym').textContent = '%';
-    $('pctInvestSym').textContent = '%';
-  } else {
-    $('pctFixoVal').textContent  = fmt(pFixo,1) + '% do salário';
-    $('pctLazerVal').textContent = fmt(pLazer,1) + '% do salário';
-    $('pctInvestVal').textContent = fmt(pInvest,1) + '% do salário';
-    $('pctFixoSym').textContent  = '$';
-    $('pctLazerSym').textContent = '$';
-    $('pctInvestSym').textContent = '$';
-  }
+  // displayed totals (all items regardless of check)
+  const totalF=sumAllItems('fixo');
+  const totalL=sumAllItems('lazer');
+  const totalI=sumAllItems('invest');
+  $('total-fixo').textContent=fmtM(totalF);
+  $('total-lazer').textContent=fmtM(totalL);
+  $('total-invest').textContent=fmtM(totalI);
 
-  // Fractions
-  renderFractions('lazer', mLazer);
-  renderFractions('invest', mInvest);
+  // alerts (based on planned vs limit)
+  setAlert('alert-fixo',totalF,mF,'fixo',false);
+  setAlert('alert-lazer',totalL,mL,'lazer',false);
+  setAlert('alert-invest',totalI+dFracI,mI,'invest',true);
 
-  // Distribution bar
-  $('bar-fixo').style.width   = fmt(pFixo,2) + '%';
-  $('bar-lazer').style.width  = fmt(pLazer,2) + '%';
-  $('bar-invest').style.width = fmt(pInvest,2) + '%';
-  $('bar-sonhos').style.width = fmt(pSonhos,2) + '%';
+  // ── Wallet panel ──
+  const wTotal=walletTotal();
+  // Saldo total = wallet accounts + salary (salary auto-adds to total)
+  const grandTotal=wTotal+sal;
+  $('walletGrand').textContent=fmtM(grandTotal).replace('$','');
 
-  // Sonhos pct grid
-  const sgrid = $('sonhosPctGrid');
-  sgrid.innerHTML = '';
-  sonhoPcts.forEach(sp => {
-    const div = document.createElement('div');
-    div.className = 'pct-card sonho-pct';
-    div.style.borderColor = 'var(--purple)';
-    div.innerHTML = `
-      <div class="pct-label" style="color:var(--purple);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${sp.nome}">🎯 ${sp.nome}</div>
-      <div class="pct-row">
-        <input class="pct-input" disabled value="${fmt(sp.pct,1)}" style="color:var(--purple);background:var(--purple-soft);border-color:transparent;">
-        <span class="pct-sym" style="color:var(--purple);">%</span>
-      </div>
-      <div class="pct-val" style="color:var(--purple);">${fmtMoney(sp.parcela)}</div>
-    `;
-    sgrid.appendChild(div);
-  });
-
-  // Totals from items
-  const totalFixo   = sumItems('fixo');
-  const totalLazer  = sumItems('lazer');
-  const totalInvest = sumItems('invest');
-  const totalGeral  = totalFixo + totalLazer + totalInvest + mSonhos;
-
-  $('total-fixo').textContent   = fmtMoney(totalFixo);
-  $('total-lazer').textContent  = fmtMoney(totalLazer);
-  $('total-invest').textContent = fmtMoney(totalInvest);
-
-  // Balance
-  const saldo = salario - totalGeral;
-  
-  // Calculate accumulated balance (past history + current month investments + current month saldo)
-  const pastAccumulated = d.historico.reduce((acc, h) => acc + safeNum(h.sobra) + safeNum(h.totalInvest), 0);
-  const currentAccumulated = pastAccumulated + saldo + totalInvest;
-  
-  const pill = $('balancePill');
-  if (salario === 0) {
-    pill.textContent = t('noSalary');
-    pill.style.background = 'rgba(245,158,11,0.2)';
-  } else if (currentAccumulated >= 0) {
-    pill.textContent = t('balanceFmt', fmtMoney(currentAccumulated));
-    pill.style.background = 'rgba(16,185,129,0.2)';
-  } else {
-    pill.textContent = t('deficitFmt', fmtMoney(Math.abs(currentAccumulated)));
-    pill.style.background = 'rgba(239,68,68,0.2)';
-  }
-
-  // Alert strips per category
-  setAlert('alert-fixo', totalFixo, mFixo, 'Gastos fixos');
-  setAlert('alert-lazer', totalLazer, mLazer, 'Lazer');
-  setAlert('alert-invest', totalInvest, mInvest, 'Investimentos', true);
-
-  // Global alert (budget overflow by dreams)
-  const gAlert = $('globalAlert');
-  if (pSonhos > 0 && pLazer <= 0) {
-    const overPct = pSonhos - (100 - pFixo - pInvest);
-    const sugestaoMeses = d.sonhos.map(s => {
-      const parcelaSugerida = salario * 0.10; // 10% each max
-      const novosPrazo = Math.ceil(s.valor / parcelaSugerida);
-      return `"${s.nome}" → ${novosPrazo} meses`;
-    }).join(' | ');
-    gAlert.className = 'global-alert show danger';
-    gAlert.innerHTML = t('dreamOver', fmt(pSonhos,1), sugestaoMeses);
-  } else if (pSonhos > 0) {
-    gAlert.className = 'global-alert show success';
-    gAlert.innerHTML = t('dreamAdjust', fmt(pLazer,1), fmtMoney(mSonhos));
-  } else {
-    gAlert.className = 'global-alert';
-  }
-
-  saveItems();
+  // Saldo livre = grandTotal - paid expenses
+  const gastosPagos=doneF+doneL+dFracL;
+  const livreSaldo=grandTotal-gastosPagos;
+  $('walletFree').textContent=fmtM(livreSaldo);
 }
 
-function sumItems(cat) {
-  let total = 0;
-  document.querySelectorAll(`#list-${cat} .item-value`).forEach(el => total += safeNum(el.value));
-  return total;
+function fracCheckedTotal(cat,metaTotal){
+  const d=getData(); const fc=d.fracs[cat];
+  if(!fc||fc.n<=0||!fc.checks) return 0;
+  const part=fc.n>0?metaTotal/fc.n:0;
+  let t=0;
+  fc.checks.forEach((c,i)=>{ if(c&&i<fc.n) t+=part; });
+  return t;
 }
 
-function setAlert(id, atual, meta, label, invertido=false) {
-  const el = $(id);
-  if (!meta && meta !== 0) { el.className='alert-strip'; return; }
-  if (invertido) {
-    // investimento: ok se atual >= meta
-    if (atual >= meta) {
-      el.className = 'alert-strip show ok';
-      el.textContent = t('alertInvestOk');
-    } else {
-      el.className = 'alert-strip show warn';
-      el.textContent = t('alertInvestWarn', fmtMoney(meta - atual));
-    }
+function setAlert(id,atual,meta,cat,isInvest){
+  const el=$(id);
+  if(meta<=0){ el.className='hidden'; return; }
+  if(isInvest){
+    if(atual>=meta){ el.className='block px-4 py-2.5 text-xs font-bold rounded-b-2xl'; el.style='background:#d1fae5;color:#059669;'; el.textContent='🎉 Meta de investimento atingida!'; }
+    else { el.className='block px-4 py-2.5 text-xs font-bold rounded-b-2xl'; el.style='background:#fef3c7;color:#d97706;'; el.textContent=`📉 Faltam ${fmtM(meta-atual)} para a meta.`; }
   } else {
-    if (atual > meta) {
-      el.className = 'alert-strip show danger';
-      el.textContent = t('alertOver', label, fmtMoney(atual - meta));
-    } else if (meta > 0) {
-      el.className = 'alert-strip show ok';
-      el.textContent = t('alertOk', label, fmtMoney(meta - atual));
-    } else {
-      el.className = 'alert-strip';
-    }
+    if(atual>meta){ el.className='block px-4 py-2.5 text-xs font-bold rounded-b-2xl'; el.style='background:#fee2e2;color:#dc2626;'; el.textContent=`🚨 Acima do limite! Excesso: ${fmtM(atual-meta)}`; }
+    else { el.className='block px-4 py-2.5 text-xs font-bold rounded-b-2xl'; el.style='background:#d1fae5;color:#059669;'; el.textContent=`✅ Dentro do limite. Disponível: ${fmtM(meta-atual)}`; }
   }
 }
 
-// ═══════════════════════════════════════════════════════
+// ─────────────────────────────────────────
 //  HISTORY
-// ═══════════════════════════════════════════════════════
-function arquivarMes() {
-  const mesEl = $('mesRef') || { value: '' };
-  // If called from page 1, use current month
-  const hoje = new Date();
-  const mesAtual = hoje.toISOString().slice(0,7);
-  const mes = mesEl.value || mesAtual;
-  if (!mes) { showToast('⚠️ Selecione o mês de referência'); return; }
-
-  const d = getData();
-  const registro = {
-    id: Date.now(),
-    mes,
-    salario: safeNum($('salario').value),
-    totalFixo:   sumItems('fixo'),
-    totalLazer:  sumItems('lazer'),
-    totalInvest: sumItems('invest'),
-    totalSonhos: (() => {
-      const sd = getData(); let ps = 0;
-      const sal = safeNum($('salario').value);
-      sd.sonhos.forEach(s => { ps += s.valor / s.meses; });
-      return ps;
-    })(),
-    sobra: safeNum($('salario').value) - sumItems('fixo') - sumItems('lazer') - sumItems('invest')
+// ─────────────────────────────────────────
+function arquivarMes(){
+  const hoje=new Date().toISOString().slice(0,7);
+  const mes=$('mesRef')?($('mesRef').value||hoje):hoje;
+  const d=getData();
+  const reg={
+    id:Date.now(), mes,
+    salario:safe($('salario').value),
+    totalFixo:sumAllItems('fixo'),
+    totalLazer:sumAllItems('lazer'),
+    totalInvest:sumAllItems('invest'),
+    sobra:safe($('salario').value)-sumAllItems('fixo')-sumAllItems('lazer')-sumAllItems('invest')
   };
-  d.historico = d.historico.filter(h => h.mes !== mes);
-  d.historico.push(registro);
-  saveData(d);
-  renderHistory();
-  showToast(t('toastArchived', mes));
-  if (currentPage !== 'historico') switchPage('historico');
+  d.hist=d.hist.filter(h=>h.mes!==mes);
+  d.hist.push(reg); save(d);
+  renderHistory(); toast(`🔒 Mês ${mes} arquivado!`);
+  if(currentPage!=='historico') switchPage('historico');
 }
-
-function deleteHistory(id) {
-  const d = getData();
-  d.historico = d.historico.filter(h => h.id !== id);
-  saveData(d);
-  renderHistory();
-  showToast(t('toastDeleted'));
+function deleteHistory(id){
+  const d=getData(); d.hist=d.hist.filter(h=>h.id!==id); save(d);
+  renderHistory(); toast('🗑 Eliminado');
 }
-
-function renderHistory() {
-  const d = getData();
-  const container = $('historyList');
-  if (!d.historico.length) {
-    container.innerHTML = `<div class="history-empty"><div class="he-icon">📋</div>${t("historyEmpty")}</div>`;
+function renderHistory(){
+  const d=getData(); const c=$('historyList');
+  if(!d.hist.length){
+    c.innerHTML=`<div class="text-center py-12 text-sm" style="color:var(--txt3);"><div class="text-4xl mb-3">📋</div>Nenhum mês arquivado ainda.</div>`;
     return;
   }
-  const sorted = [...d.historico].sort((a,b) => b.mes.localeCompare(a.mes));
-  container.innerHTML = '';
-  sorted.forEach(h => {
-    const card = document.createElement('div');
-    card.className = 'history-card';
-    card.innerHTML = `
-      <div class="hc-top">
-        <div>
-          <div class="hc-month">📅 ${h.mes}</div>
-          <div class="hc-salary">${t("histSalary", fmtMoney(h.salario))}</div>
-        </div>
-        <button class="hc-del" onclick="deleteHistory(${h.id})">🗑</button>
+  const sorted=[...d.hist].sort((a,b)=>b.mes.localeCompare(a.mes));
+  c.innerHTML='';
+  sorted.forEach(h=>{
+    const card=document.createElement('div');
+    card.className='rounded-2xl p-4 mb-3 s transition-all';
+    card.style='background:var(--surf);border:1px solid var(--bdr);';
+    card.innerHTML=`
+      <div class="flex items-center justify-between mb-3">
+        <div><div class="font-bold" style="color:var(--txt);">📅 ${h.mes}</div>
+             <div class="text-xs" style="color:var(--txt3);">Salário: ${fmtM(h.salario)}</div></div>
+        <button onclick="deleteHistory(${h.id})" class="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
+                style="background:none;border:none;color:var(--txt3);" onmouseover="this.style.background='#fee2e2';this.style.color='#dc2626';" onmouseout="this.style.background='none';this.style.color='var(--txt3)';">🗑</button>
       </div>
-      <div class="hc-metrics">
-        <div class="hc-metric">
-          <div class="hc-metric-label">${t("histFixo")}</div>
-          <div class="hc-metric-value" style="color:var(--primary);">${fmtMoney(h.totalFixo)}</div>
-        </div>
-        <div class="hc-metric">
-          <div class="hc-metric-label">${t("histLazer")}</div>
-          <div class="hc-metric-value" style="color:var(--amber);">${fmtMoney(h.totalLazer)}</div>
-        </div>
-        <div class="hc-metric">
-          <div class="hc-metric-label">${t("histInvest")}</div>
-          <div class="hc-metric-value" style="color:var(--green);">${fmtMoney(h.totalInvest)}</div>
-        </div>
-        <div class="hc-metric">
-          <div class="hc-metric-label">${t("histSobra")}</div>
-          <div class="hc-metric-value" style="color:${safeNum(h.sobra) >= 0 ? 'var(--green)' : 'var(--red)'};">${fmtMoney(h.sobra)}</div>
-        </div>
-      </div>
-    `;
-    container.appendChild(card);
+      <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        ${[['🏠 Fixo',h.totalFixo,'#6d28d9'],['☕ Lazer',h.totalLazer,'#d97706'],['🛡️ Invest.',h.totalInvest,'#059669'],['💰 Sobra',h.sobra,safe(h.sobra)>=0?'#059669':'#dc2626']].map(([l,v,c])=>`
+        <div class="rounded-xl p-2.5 text-center" style="background:var(--surf2);">
+          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">${l}</div>
+          <div class="font-black text-sm" style="color:${c};">${fmtM(v)}</div>
+        </div>`).join('')}
+      </div>`;
+    c.appendChild(card);
   });
 }
 
-// ═══════════════════════════════════════════════════════
-//  INSTALL MODAL
-// ═══════════════════════════════════════════════════════
-function openInstallModal() {
-  const overlay = $('installOverlay');
-  overlay.classList.add('open');
-  // Show PWA button only if available
-  const pwaSection = $('installStepPWA');
-  if (deferredPrompt) {
-    pwaSection.style.display = 'block';
-    $('btnInstallPWA').disabled = false;
-  } else {
-    pwaSection.style.display = 'none';
+// ─────────────────────────────────────────
+//  MODALS
+// ─────────────────────────────────────────
+function openInstallModal(){ $('installOverlay').classList.add('open'); if(deferredPWA) $('pwaInstallBtn').classList.remove('hidden'); }
+function closeModal(id,e){ if(!e||e.target===$(id)){ $(id).classList.remove('open'); } }
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPWA=e; });
+async function triggerInstall(){
+  if(!deferredPWA){ toast('ℹ️ Siga as instruções abaixo'); return; }
+  deferredPWA.prompt(); const{outcome}=await deferredPWA.userChoice;
+  if(outcome==='accepted'){ closeModal('installOverlay'); toast('✅ App instalado!'); }
+  deferredPWA=null;
+}
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+// ─────────────────────────────────────────
+//  I18N
+// ─────────────────────────────────────────
+const TR={
+  pt:{
+    appName:'Calculadora da Virada', appSub:'Gestão financeira inteligente',
+    darkMode:'Modo Escuro', lightMode:'Modo Claro',
+    walletTitle:'SALDO TOTAL', walletFree:'Saldo livre:',
+    accounts:'Minhas contas', addAccount:'＋ Adicionar conta',
+    salaryLabel:'Salário / Renda mensal',
+    distLabel:'Distribuição do orçamento',
+    lFixo:'Fixo', lLazer:'Lazer', lInvest:'Invest.',
+    catLabel:'Categorias', tabFixo:'Gastos Fixos', tabLazer:'Lazer',
+    tabInvest:'Investimentos', tabSonhos:'Sonhos',
+    limitLabel:'Limite', lazerLimit:'Limite', investLimit:'Meta mínima',
+    colDesc:'Descrição', colDue:'Vencimento', colVal:'Valor',
+    addFixo:'➕ Adicionar gasto fixo',
+    addLazer:'➕ Adicionar item de lazer',
+    addInvest:'➕ Adicionar investimento',
+    totalFixo:'Total gastos fixos', totalLazer:'Total lazer', totalInvest:'Total investido',
+    fixoTitle:'🏠 Gastos Fixos', lazerTitle:'☕ Lazer & Estilo de Vida', investTitle:'🛡️ Investimentos',
+    dreamFormTitle:'✨ Novo Sonho / Meta', addDreamBtn:'🚀 Adicionar Sonho',
+    dreamsEmpty:'Nenhum sonho adicionado ainda.',
+    archiveBtn:'🔒 Fechar e Arquivar Mês',
+    navOrc:'Orçamento', navEbook:'Ebook', navHist:'Histórico', navPlan:'Plano',
+    histTitle:'📅 Histórico Mensal',
+    histSelectLabel:'Selecione o mês e arquive o registo atual:',
+    histArchiveBtn:'🔒 Arquivar', histSection:'Registos arquivados',
+    allocTitle:'💼 Alocar Investimento',
+    allocSub:'Em qual conta guardar este valor?',
+    allocConfirm:'✅ Confirmar', allocCancel:'Cancelar',
+    splitLabel:'Dividir meta em partes iguais',
+    installTitle:'Instalar App', installSub:'Acesso rápido, funciona offline.',
+    ebookLoading:'A abrir o Ebook...', ebookSub:'Será redirecionado em instantes.', ebookBtn:'Abrir agora',
+  },
+  es:{
+    appName:'Calculadora del Giro', appSub:'Gestión financiera inteligente',
+    darkMode:'Modo Oscuro', lightMode:'Modo Claro',
+    walletTitle:'SALDO TOTAL', walletFree:'Saldo libre:',
+    accounts:'Mis cuentas', addAccount:'＋ Agregar cuenta',
+    salaryLabel:'Salario / Renta mensual',
+    distLabel:'Distribución del presupuesto',
+    lFixo:'Fijo', lLazer:'Ocio', lInvest:'Inversión',
+    catLabel:'Categorías', tabFixo:'Gastos Fijos', tabLazer:'Ocio',
+    tabInvest:'Inversiones', tabSonhos:'Sueños',
+    limitLabel:'Límite', lazerLimit:'Límite', investLimit:'Meta mínima',
+    colDesc:'Descripción', colDue:'Vencimiento', colVal:'Valor',
+    addFixo:'➕ Agregar gasto fijo',
+    addLazer:'➕ Agregar gasto de ocio',
+    addInvest:'➕ Agregar inversión',
+    totalFixo:'Total gastos fijos', totalLazer:'Total ocio', totalInvest:'Total invertido',
+    fixoTitle:'🏠 Gastos Fijos', lazerTitle:'☕ Ocio & Estilo de Vida', investTitle:'🛡️ Inversiones',
+    dreamFormTitle:'✨ Nuevo Sueño / Meta', addDreamBtn:'🚀 Agregar Sueño',
+    dreamsEmpty:'Ningún sueño agregado aún.',
+    archiveBtn:'🔒 Cerrar y Archivar Mes',
+    navOrc:'Presupuesto', navEbook:'Ebook', navHist:'Historial', navPlan:'Plan',
+    histTitle:'📅 Historial Mensual',
+    histSelectLabel:'Selecciona el mes y archiva el registro:',
+    histArchiveBtn:'🔒 Archivar', histSection:'Registros archivados',
+    allocTitle:'💼 Asignar Inversión',
+    allocSub:'¿En qué cuenta guardar este monto?',
+    allocConfirm:'✅ Confirmar', allocCancel:'Cancelar',
+    splitLabel:'Dividir meta en partes iguales',
+    installTitle:'Instalar App', installSub:'Acceso rápido, funciona sin internet.',
+    ebookLoading:'Abriendo el Ebook...', ebookSub:'Será redirigido en instantes.', ebookBtn:'Abrir ahora',
+  },
+  en:{
+    appName:'Budget Calculator', appSub:'Smart financial management',
+    darkMode:'Dark Mode', lightMode:'Light Mode',
+    walletTitle:'TOTAL BALANCE', walletFree:'Free balance:',
+    accounts:'My accounts', addAccount:'＋ Add account',
+    salaryLabel:'Monthly income',
+    distLabel:'Budget distribution',
+    lFixo:'Fixed', lLazer:'Leisure', lInvest:'Invest.',
+    catLabel:'Categories', tabFixo:'Fixed Expenses', tabLazer:'Leisure',
+    tabInvest:'Investments', tabSonhos:'Dreams',
+    limitLabel:'Limit', lazerLimit:'Limit', investLimit:'Minimum goal',
+    colDesc:'Description', colDue:'Due date', colVal:'Amount',
+    addFixo:'➕ Add fixed expense',
+    addLazer:'➕ Add leisure item',
+    addInvest:'➕ Add investment',
+    totalFixo:'Total fixed', totalLazer:'Total leisure', totalInvest:'Total invested',
+    fixoTitle:'🏠 Fixed Expenses', lazerTitle:'☕ Leisure & Lifestyle', investTitle:'🛡️ Investments',
+    dreamFormTitle:'✨ New Dream / Goal', addDreamBtn:'🚀 Add Dream',
+    dreamsEmpty:'No dreams added yet.',
+    archiveBtn:'🔒 Close and Archive Month',
+    navOrc:'Budget', navEbook:'Ebook', navHist:'History', navPlan:'Plan',
+    histTitle:'📅 Monthly History',
+    histSelectLabel:'Select month and archive current data:',
+    histArchiveBtn:'🔒 Archive', histSection:'Archived records',
+    allocTitle:'💼 Allocate Investment',
+    allocSub:'Which account to save this in?',
+    allocConfirm:'✅ Confirm', allocCancel:'Cancel',
+    splitLabel:'Split goal into equal parts',
+    installTitle:'Install App', installSub:'Quick access, works offline.',
+    ebookLoading:'Opening Ebook...', ebookSub:'You will be redirected shortly.', ebookBtn:'Open now',
   }
+};
+
+function setLang(l){
+  lang=l; localStorage.setItem('cvLang',l);
+  // update checkmarks
+  ['pt','es','en'].forEach(k=>{
+    const el=$('lchk-'+k); if(el) el.classList.toggle('hidden',k!==l);
+    const opt=$('lang'+k.charAt(0).toUpperCase()+k.slice(1));
+    if(opt){
+      opt.style.background=k===l?'#ede9fe':'transparent';
+      opt.style.borderRadius=k===l?'8px':'';
+    }
+  });
+  applyTranslations();
+  closeSettings();
 }
 
-function closeInstallModal(e) {
-  if (!e || e.target === $('installOverlay')) {
-    $('installOverlay').classList.remove('open');
-  }
+function applyTranslations(){
+  const T=TR[lang]||TR.pt;
+  const set=(id,v)=>{ const e=$(id); if(e) e.textContent=v; };
+  document.documentElement.lang=lang;
+  set('t-appName',T.appName); set('t-appSub',T.appSub);
+  set('t-themeLabel',document.documentElement.getAttribute('data-theme')==='dark'?T.lightMode:T.darkMode);
+  set('t-walletTitle',T.walletTitle); set('t-walletFree',T.walletFree);
+  set('t-accounts',T.accounts);
+  const addAccBtn=$('t-addAccount'); if(addAccBtn) addAccBtn.textContent=T.addAccount;
+  set('t-salaryLabel',T.salaryLabel);
+  set('t-distLabel',T.distLabel);
+  set('t-lFixo',T.lFixo); set('t-lLazer',T.lLazer); set('t-lInvest',T.lInvest);
+  set('t-catLabel',T.catLabel);
+  set('t-tabFixo',T.tabFixo); set('t-tabLazer',T.tabLazer);
+  set('t-tabInvest',T.tabInvest); set('t-tabSonhos',T.tabSonhos);
+  set('t-limitLabel',T.limitLabel); set('t-lazerLimit',T.lazerLimit); set('t-investLimit',T.investLimit);
+  set('t-colDesc',T.colDesc); set('t-colDue',T.colDue); set('t-colVal',T.colVal);
+  set('t-colDescL',T.colDesc); set('t-colValL',T.colVal);
+  const adf=$('t-addFixo'); if(adf) adf.textContent=T.addFixo;
+  const adl=$('t-addLazer'); if(adl) adl.textContent=T.addLazer;
+  const adi=$('t-addInvest'); if(adi) adi.textContent=T.addInvest;
+  set('t-totalFixo',T.totalFixo); set('t-totalLazer',T.totalLazer); set('t-totalInvest',T.totalInvest);
+  set('t-fixoTitle',T.fixoTitle); set('t-lazerTitle',T.lazerTitle); set('t-investTitle',T.investTitle);
+  set('t-dreamFormTitle',T.dreamFormTitle);
+  const adbtn=$('t-addDreamBtn'); if(adbtn) adbtn.textContent=T.addDreamBtn;
+  set('t-dreamsEmpty',T.dreamsEmpty);
+  const arch=$('t-archiveBtn'); if(arch) arch.textContent=T.archiveBtn;
+  set('t-navOrc',T.navOrc); set('t-navEbook',T.navEbook); set('t-navHist',T.navHist); set('t-navPlan',T.navPlan);
+  set('t-histTitle',T.histTitle); set('t-histSelectLabel',T.histSelectLabel);
+  const hab=$('t-histArchiveBtn'); if(hab) hab.textContent=T.histArchiveBtn;
+  set('t-histSection',T.histSection);
+  set('t-allocTitle',T.allocTitle); set('t-allocSub',T.allocSub);
+  const acnf=$('t-allocConfirm'); if(acnf) acnf.textContent=T.allocConfirm;
+  const acnl=$('t-allocCancel'); if(acnl) acnl.textContent=T.allocCancel;
+  set('t-splitLabel',T.splitLabel);
+  set('t-installTitle',T.installTitle); set('t-installSub',T.installSub);
+  set('t-ebookLoading',T.ebookLoading); set('t-ebookSub',T.ebookSub);
+  const ebBtn=$('t-ebookBtn'); if(ebBtn) ebBtn.textContent=T.ebookBtn;
+  // item placeholders
+  document.querySelectorAll('.iname').forEach(el=>el.placeholder=T.colDesc+'...');
 }
 
-// ═══════════════════════════════════════════════════════
-//  PWA / INSTALL
-// ═══════════════════════════════════════════════════════
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  // Ready — button in modal will be enabled
-});
-
-async function triggerInstall() {
-  if (!deferredPrompt) {
-    showToast(t('toastInstallInfo'));
-    return;
-  }
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-  if (outcome === 'accepted') {
-    closeInstallModal();
-    showToast(t('toastInstalled'));
-  }
-  deferredPrompt = null;
-}
-
-window.addEventListener('appinstalled', () => {
-  showToast(t('toastAppInstalled'));
-  deferredPrompt = null;
-});
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
-}
-
-// ═══════════════════════════════════════════════════════
-//  EBOOK — TOGGLE CHAPTER
-// ═══════════════════════════════════════════════════════
-function toggleChapter(el) {
-  const isOpen = el.classList.contains('open');
-  // Close all
-  document.querySelectorAll('.ebook-chapter.open').forEach(c => c.classList.remove('open'));
-  // Open clicked if it wasn't open
-  if (!isOpen) el.classList.add('open');
-}
-
-// ═══════════════════════════════════════════════════════
+// ─────────────────────────────────────────
 //  INIT
-// ═══════════════════════════════════════════════════════
-function loadConfig() {
-  const d = getData();
-  if (d.config) {
-    $('salario').value   = d.config.salario || '2000';
-    $('pctFixo').value   = d.config.pctFixo || '50';
-    $('pctInvest').value = d.config.pctInvest || '20';
-    if (d.config.mode) { mode = d.config.mode; setMode(mode); }
-  }
-}
-
-function defaultItems() {
-  const d = getData();
-  if (!d.items || !d.items.fixo || !d.items.fixo.length) {
+// ─────────────────────────────────────────
+function defaultItems(){
+  const d=getData();
+  if(!d.items.fixo||!d.items.fixo.length){
     addItem('fixo','🏠 Aluguel / Habitação','',600);
     addItem('fixo','🛒 Supermercado','',300);
     addItem('lazer','🍕 Restaurantes / Delivery','',150);
@@ -2324,544 +1384,50 @@ function defaultItems() {
   }
 }
 
-function setDefaultMonth() {
-  const hoje = new Date();
-  const m = hoje.toISOString().slice(0,7);
-  if ($('mesRef')) $('mesRef').value = m;
-}
+window.onload=()=>{
+  // theme
+  const savedTheme=localStorage.getItem('cvTheme')||'light';
+  applyTheme(savedTheme);
 
-function goToEbook() {
-  window.location.href = 'ebook-cardss-' + currentLang + '.html';
-}
+  // lang
+  lang=localStorage.getItem('cvLang')||'pt';
+  setLang(lang);
 
-window.onload = () => {
-  loadTheme();
-  // Load mode first (without triggering conversion)
-  const savedMode = localStorage.getItem('cvMode') || 'pct';
-  // Load config WITHOUT calling setMode() to prevent saving empty items
-  const dInit = getData();
-  if (dInit.config) {
-    $('salario').value   = dInit.config.salario  || '2000';
-    $('pctFixo').value   = dInit.config.pctFixo  || '50';
-    $('pctInvest').value = dInit.config.pctInvest|| '20';
-    mode = dInit.config.mode || savedMode;
-  } else {
-    mode = savedMode;
-  }
-  $('modeBtn-pct').classList.toggle('active', mode==='pct');
-  $('modeBtn-val').classList.toggle('active', mode==='val');
-  const sym = mode === 'pct' ? '%' : '$';
-  ['pctFixoSym','pctLazerSym','pctInvestSym'].forEach(id => { if ($(id)) $(id).textContent = sym; });
-  // Load items BEFORE any save operation
-  loadItems();
-  defaultItems();
-  setDefaultMonth();
-  loadLang();
-};
+  // restore config
+  const d=getData();
+  if(d.cfg.salario)   $('salario').value=d.cfg.salario;
+  if(d.cfg.pctFixo)   $('pctFixo').value=d.cfg.pctFixo;
+  if(d.cfg.pctInvest) $('pctInvest').value=d.cfg.pctInvest;
+  mode=d.cfg.mode||localStorage.getItem('cvMode')||'pct';
 
-// ═══════════════════════════════════════════════════════
-//  i18n — TRANSLATIONS
-// ═══════════════════════════════════════════════════════
-const LANGS = {
-  pt: {
-    flag: '🇧🇷', code: 'PT',
-    // topbar
-    appTitle: 'Calculadora da Virada',
-    appSub: 'Gestão financeira inteligente',
-    // install modal
-    installTitle: 'Instalar App',
-    installSub: 'Adicione a Calculadora ao seu celular ou PC — acesso rápido, funciona offline.',
-    installBtnPWA: '📲 Instalar Agora no Dispositivo',
-    installNote: 'Disponível no Chrome, Edge e Android',
-    installStep1Title: '📱 iPhone / iPad — Safari',
-    installStep1Body: 'Toque em <b>Compartilhar ↑</b> (barra inferior) → <b>"Adicionar à Tela de Início"</b>',
-    installStep2Title: '💻 PC — Chrome / Edge',
-    installStep2Body: 'Clique no ícone <b>⊕</b> na barra de endereço → <b>"Instalar Calculadora da Virada"</b>',
-    installStep3Title: '🤖 Android — Chrome',
-    installStep3Body: 'Menu <b>⋮</b> → <b>"Adicionar à tela inicial"</b> ou use o botão acima',
-    installClose: 'Fechar',
-    // lang modal
-    langModalTitle: 'Idioma / Language',
-    langModalSub: 'Escolha o idioma do aplicativo',
-    langClose: 'Fechar',
-    // salary hero
-    salaryLabel: 'Salário mensal',
-    modePct: '% Percentagem',
-    modeVal: '$ Valor',
-    // distribution
-    distHeader: 'Distribuição do orçamento',
-    labelFixo: '🏠 Fixo',
-    labelLazer: '☕ Lazer',
-    labelInvest: '🛡️ Invest.',
-    // categories header
-    catHeader: 'Categorias',
-    tabFixo: '🏠 Gastos Fixos',
-    tabLazer: '☕ Lazer',
-    tabInvest: '🛡️ Investimentos',
-    tabSonhos: '🚀 Sonhos',
-    // fixo panel
-    fixoTitle: '🏠 Gastos Fixos',
-    fixoLimitLabel: 'Limite',
-    fixoColDesc: 'Descrição',
-    fixoColDue: 'Vencimento',
-    fixoColVal: 'Valor',
-    fixoAddBtn: '➕ Adicionar conta fixa',
-    fixoTotal: 'Total gastos fixos',
-    // lazer panel
-    lazerTitle: '☕ Lazer & Estilo de Vida',
-    lazerLimitLabel: 'Limite',
-    lazerColDesc: 'Descrição',
-    lazerColVal: 'Valor',
-    lazerAddBtn: '➕ Adicionar item de lazer',
-    lazerTotal: 'Total lazer',
-    // invest panel
-    investTitle: '🛡️ Investimentos',
-    investLimitLabel: 'Meta mínima',
-    investColDesc: 'Descrição',
-    investColVal: 'Valor',
-    investAddBtn: '➕ Adicionar investimento',
-    investTotal: 'Total investido',
-    // sonhos panel
-    sonhosFormTitle: '✨ Novo Sonho / Meta',
-    sonhosNamePh: 'Ex: iPhone, Carro, Viagem...',
-    sonhosValPh: 'Valor total ($)',
-    sonhosMonthsPh: 'Prazo (meses)',
-    sonhosAddBtn: '🚀 Adicionar Sonho',
-    sonhosEmpty: 'Nenhum sonho adicionado ainda.<br>Adicione o seu primeiro objetivo acima!',
-    sonhosRemove: '✕ Remover',
-    // archive btn
-    archiveBtn: '🔒 Fechar e Arquivar Mês',
-    // history page
-    historyTitle: '📅 Histórico Mensal',
-    historySelectLabel: 'Selecione o mês e arquive o registo atual:',
-    historyArchiveBtn: '🔒 Arquivar',
-    historySectionHeader: 'Registos arquivados',
-    historyEmpty: 'Nenhum mês arquivado ainda.<br>Feche um mês para criar o primeiro registo.',
-    // nav
-    navOrcamento: 'Orçamento',
-    navEbook: 'Ebook',
-    navHistorico: 'Histórico',
-    navPlano: 'Plano',
-    // ebook
-    ebookBadge: '📚 Ebook Exclusivo Incluso',
-    ebookTitle: 'Os Fundamentos',
-    ebookTitleSpan: 'da Mente Próspera',
-    ebookSubtitle: 'O guia completo para transformar sua mentalidade e construir liberdade financeira',
-    ebookPart1: '📊 Parte 1 — Os Fundamentos da Mente',
-    ebookPart2: '🗺️ Parte 2 — O Mapa da Virada',
-    // balance pill
-    balanceFmt: (v) => `💰 Saldo livre: ${v}`,
-    deficitFmt: (v) => `🚨 Défice: ${v}`,
-    noSalary: '⚠️ Insira um salário',
-    // alerts
-    alertOver: (cat, v) => `🚨 ${cat} acima do limite! Excesso: ${v}`,
-    alertOk: (cat, v) => `✅ Dentro do limite. Disponível: ${v}`,
-    alertInvestOk: () => `🎉 Meta de investimento atingida! Ótimo trabalho.`,
-    alertInvestWarn: (v) => `📉 Faltam ${v} para atingir a meta de investimento.`,
-    dreamOver: (pct, sug) => `🚨 <b>Sonhos a extrapolar o orçamento!</b> As suas metas consomem ${pct}% e eliminaram o Lazer.<br>💡 Sugestão: Aumente o prazo → ${sug}`,
-    dreamAdjust: (pct, v) => `✅ Lazer ajustado para ${pct}% para acomodar seus sonhos. ${v}/mês alocados para metas.`,
-    // item placeholders
-    itemDescPh: 'Descrição...',
-    // history card
-    histSalary: (v) => `Salário: ${v}`,
-    histFixo: '🏠 Fixo',
-    histLazer: '☕ Lazer',
-    histInvest: '🛡️ Invest.',
-    histSobra: '💰 Sobra',
-    // toast
-    toastDreamAdded: '🚀 Sonho adicionado!',
-    toastDreamReq: '⚠️ Preencha todos os campos do sonho',
-    toastArchived: (m) => `🔒 Mês ${m} arquivado!`,
-    toastDeleted: '🗑 Registo eliminado',
-    toastInstalled: '✅ App instalado com sucesso!',
-    toastInstallInfo: 'ℹ️ Siga as instruções abaixo para instalar',
-    toastAppInstalled: '🎉 App adicionado ao seu dispositivo!',
-  },
+  // mode buttons
+  $('mBtn-pct').style.background=mode==='pct'?'rgba(255,255,255,.3)':'transparent';
+  $('mBtn-pct').style.color=mode==='pct'?'#fff':'rgba(255,255,255,.4)';
+  $('mBtn-val').style.background=mode==='val'?'rgba(255,255,255,.3)':'transparent';
+  $('mBtn-val').style.color=mode==='val'?'#fff':'rgba(255,255,255,.4)';
 
-  es: {
-    flag: '🌎', code: 'ES',
-    appTitle: 'Calculadora del Giro',
-    appSub: 'Gestión financiera inteligente',
-    installTitle: 'Instalar App',
-    installSub: 'Añade la Calculadora a tu celular o PC — acceso rápido, funciona sin internet.',
-    installBtnPWA: '📲 Instalar Ahora en el Dispositivo',
-    installNote: 'Disponible en Chrome, Edge y Android',
-    installStep1Title: '📱 iPhone / iPad — Safari',
-    installStep1Body: 'Toca en <b>Compartir ↑</b> (barra inferior) → <b>"Agregar a Pantalla de Inicio"</b>',
-    installStep2Title: '💻 PC — Chrome / Edge',
-    installStep2Body: 'Haz clic en el ícono <b>⊕</b> en la barra de direcciones → <b>"Instalar Calculadora del Giro"</b>',
-    installStep3Title: '🤖 Android — Chrome',
-    installStep3Body: 'Menú <b>⋮</b> → <b>"Agregar a pantalla de inicio"</b> o usa el botón de arriba',
-    installClose: 'Cerrar',
-    langModalTitle: 'Idioma / Language',
-    langModalSub: 'Elige el idioma de la aplicación',
-    langClose: 'Cerrar',
-    salaryLabel: 'Salario mensual',
-    modePct: '% Porcentaje',
-    modeVal: '$ Valor',
-    distHeader: 'Distribución del presupuesto',
-    labelFixo: '🏠 Fijo',
-    labelLazer: '☕ Ocio',
-    labelInvest: '🛡️ Inversión',
-    catHeader: 'Categorías',
-    tabFixo: '🏠 Gastos Fijos',
-    tabLazer: '☕ Ocio',
-    tabInvest: '🛡️ Inversiones',
-    tabSonhos: '🚀 Sueños',
-    fixoTitle: '🏠 Gastos Fijos',
-    fixoLimitLabel: 'Límite',
-    fixoColDesc: 'Descripción',
-    fixoColDue: 'Vencimiento',
-    fixoColVal: 'Valor',
-    fixoAddBtn: '➕ Agregar gasto fijo',
-    fixoTotal: 'Total gastos fijos',
-    lazerTitle: '☕ Ocio & Estilo de Vida',
-    lazerLimitLabel: 'Límite',
-    lazerColDesc: 'Descripción',
-    lazerColVal: 'Valor',
-    lazerAddBtn: '➕ Agregar gasto de ocio',
-    lazerTotal: 'Total ocio',
-    investTitle: '🛡️ Inversiones',
-    investLimitLabel: 'Meta mínima',
-    investColDesc: 'Descripción',
-    investColVal: 'Valor',
-    investAddBtn: '➕ Agregar inversión',
-    investTotal: 'Total invertido',
-    sonhosFormTitle: '✨ Nuevo Sueño / Meta',
-    sonhosNamePh: 'Ej: iPhone, Carro, Viaje...',
-    sonhosValPh: 'Valor total ($)',
-    sonhosMonthsPh: 'Plazo (meses)',
-    sonhosAddBtn: '🚀 Agregar Sueño',
-    sonhosEmpty: 'Ningún sueño agregado aún.<br>¡Agrega tu primer objetivo arriba!',
-    sonhosRemove: '✕ Eliminar',
-    archiveBtn: '🔒 Cerrar y Archivar Mes',
-    historyTitle: '📅 Historial Mensual',
-    historySelectLabel: 'Selecciona el mes y archiva el registro actual:',
-    historyArchiveBtn: '🔒 Archivar',
-    historySectionHeader: 'Registros archivados',
-    historyEmpty: 'Ningún mes archivado aún.<br>Cierra un mes para crear el primer registro.',
-    navOrcamento: 'Presupuesto',
-    navEbook: 'Ebook',
-    navHistorico: 'Historial',
-    navPlano: 'Plan',
-    ebookBadge: '📚 Ebook Exclusivo Incluido',
-    ebookTitle: 'Los Fundamentos',
-    ebookTitleSpan: 'de la Mente Próspera',
-    ebookSubtitle: 'La guía completa para transformar tu mentalidad y construir libertad financiera',
-    ebookPart1: '📊 Parte 1 — Los Fundamentos de la Mente',
-    ebookPart2: '🗺️ Parte 2 — El Mapa del Giro',
-    balanceFmt: (v) => `💰 Saldo libre: ${v}`,
-    deficitFmt: (v) => `🚨 Déficit: ${v}`,
-    noSalary: '⚠️ Ingresa tu salario',
-    alertOver: (cat, v) => `🚨 ¡${cat} por encima del límite! Exceso: ${v}`,
-    alertOk: (cat, v) => `✅ Dentro del límite. Disponible: ${v}`,
-    alertInvestOk: () => `🎉 ¡Meta de inversión alcanzada! Excelente trabajo.`,
-    alertInvestWarn: (v) => `📉 Faltan ${v} para alcanzar la meta de inversión.`,
-    dreamOver: (pct, sug) => `🚨 <b>¡Sueños extralimitando el presupuesto!</b> Tus metas consumen ${pct}% y eliminaron el Ocio.<br>💡 Sugerencia: Amplía el plazo → ${sug}`,
-    dreamAdjust: (pct, v) => `✅ Ocio ajustado al ${pct}% para acomodar tus sueños. ${v}/mes asignados a metas.`,
-    itemDescPh: 'Descripción...',
-    histSalary: (v) => `Salario: ${v}`,
-    histFixo: '🏠 Fijo',
-    histLazer: '☕ Ocio',
-    histInvest: '🛡️ Inversión',
-    histSobra: '💰 Sobrante',
-    toastDreamAdded: '🚀 ¡Sueño agregado!',
-    toastDreamReq: '⚠️ Completa todos los campos del sueño',
-    toastArchived: (m) => `🔒 ¡Mes ${m} archivado!`,
-    toastDeleted: '🗑 Registro eliminado',
-    toastInstalled: '✅ ¡App instalada con éxito!',
-    toastInstallInfo: 'ℹ️ Sigue las instrucciones para instalar',
-    toastAppInstalled: '🎉 ¡App agregada a tu dispositivo!',
-  },
+  // fractions select state
+  if(d.fracs.lazer.n>0)   $('fracLazer').value=d.fracs.lazer.n;
+  if(d.fracs.invest.n>0)  $('fracInvest').value=d.fracs.invest.n;
 
-  en: {
-    flag: '🇺🇸', code: 'EN',
-    appTitle: 'Budget Calculator',
-    appSub: 'Smart financial management',
-    installTitle: 'Install App',
-    installSub: 'Add the Calculator to your phone or PC — quick access, works offline.',
-    installBtnPWA: '📲 Install Now on Device',
-    installNote: 'Available on Chrome, Edge and Android',
-    installStep1Title: '📱 iPhone / iPad — Safari',
-    installStep1Body: 'Tap the <b>Share ↑</b> button (bottom bar) → <b>"Add to Home Screen"</b>',
-    installStep2Title: '💻 PC — Chrome / Edge',
-    installStep2Body: 'Click the <b>⊕</b> icon in the address bar → <b>"Install Budget Calculator"</b>',
-    installStep3Title: '🤖 Android — Chrome',
-    installStep3Body: 'Menu <b>⋮</b> → <b>"Add to Home Screen"</b> or use the button above',
-    installClose: 'Close',
-    langModalTitle: 'Language / Idioma',
-    langModalSub: 'Choose the app language',
-    langClose: 'Close',
-    salaryLabel: 'Monthly income',
-    modePct: '% Percentage',
-    modeVal: '$ Amount',
-    distHeader: 'Budget distribution',
-    labelFixo: '🏠 Fixed',
-    labelLazer: '☕ Leisure',
-    labelInvest: '🛡️ Invest.',
-    catHeader: 'Categories',
-    tabFixo: '🏠 Fixed Expenses',
-    tabLazer: '☕ Leisure',
-    tabInvest: '🛡️ Investments',
-    tabSonhos: '🚀 Dreams',
-    fixoTitle: '🏠 Fixed Expenses',
-    fixoLimitLabel: 'Limit',
-    fixoColDesc: 'Description',
-    fixoColDue: 'Due date',
-    fixoColVal: 'Amount',
-    fixoAddBtn: '➕ Add fixed expense',
-    fixoTotal: 'Total fixed expenses',
-    lazerTitle: '☕ Leisure & Lifestyle',
-    lazerLimitLabel: 'Limit',
-    lazerColDesc: 'Description',
-    lazerColVal: 'Amount',
-    lazerAddBtn: '➕ Add leisure item',
-    lazerTotal: 'Total leisure',
-    investTitle: '🛡️ Investments',
-    investLimitLabel: 'Minimum goal',
-    investColDesc: 'Description',
-    investColVal: 'Amount',
-    investAddBtn: '➕ Add investment',
-    investTotal: 'Total invested',
-    sonhosFormTitle: '✨ New Dream / Goal',
-    sonhosNamePh: 'e.g. iPhone, Car, Vacation...',
-    sonhosValPh: 'Total value ($)',
-    sonhosMonthsPh: 'Timeline (months)',
-    sonhosAddBtn: '🚀 Add Dream',
-    sonhosEmpty: 'No dreams added yet.<br>Add your first goal above!',
-    sonhosRemove: '✕ Remove',
-    archiveBtn: '🔒 Close and Archive Month',
-    historyTitle: '📅 Monthly History',
-    historySelectLabel: 'Select month and archive current data:',
-    historyArchiveBtn: '🔒 Archive',
-    historySectionHeader: 'Archived records',
-    historyEmpty: 'No months archived yet.<br>Close a month to create the first record.',
-    navOrcamento: 'Budget',
-    navEbook: 'Ebook',
-    navHistorico: 'History',
-    navPlano: 'Plan',
-    ebookBadge: '📚 Exclusive Ebook Included',
-    ebookTitle: 'The Foundations',
-    ebookTitleSpan: 'of the Prosperous Mind',
-    ebookSubtitle: 'The complete guide to transform your mindset and build true financial freedom',
-    ebookPart1: '📊 Part 1 — Mindset Foundations',
-    ebookPart2: '🗺️ Part 2 — The Roadmap to Change',
-    balanceFmt: (v) => `💰 Free balance: ${v}`,
-    deficitFmt: (v) => `🚨 Deficit: ${v}`,
-    noSalary: '⚠️ Enter your income',
-    alertOver: (cat, v) => `🚨 ${cat} over limit! Excess: ${v}`,
-    alertOk: (cat, v) => `✅ Within limit. Available: ${v}`,
-    alertInvestOk: () => `🎉 Investment goal reached! Great job.`,
-    alertInvestWarn: (v) => `📉 You need ${v} more to reach your investment goal.`,
-    dreamOver: (pct, sug) => `🚨 <b>Dreams over budget!</b> Your goals use ${pct}% and eliminated Leisure.<br>💡 Tip: Extend the timeline → ${sug}`,
-    dreamAdjust: (pct, v) => `✅ Leisure adjusted to ${pct}% to fit your dreams. ${v}/month allocated to goals.`,
-    itemDescPh: 'Description...',
-    histSalary: (v) => `Income: ${v}`,
-    histFixo: '🏠 Fixed',
-    histLazer: '☕ Leisure',
-    histInvest: '🛡️ Invest.',
-    histSobra: '💰 Leftover',
-    toastDreamAdded: '🚀 Dream added!',
-    toastDreamReq: '⚠️ Fill in all dream fields',
-    toastArchived: (m) => `🔒 Month ${m} archived!`,
-    toastDeleted: '🗑 Record deleted',
-    toastInstalled: '✅ App installed successfully!',
-    toastInstallInfo: 'ℹ️ Follow the instructions below to install',
-    toastAppInstalled: '🎉 App added to your device!',
-  }
-};
+  // wallet
+  renderWallet();
 
-let currentLang = 'pt';
+  // items
+  loadItems(); defaultItems();
 
-function t(key, ...args) {
-  const entry = LANGS[currentLang]?.[key];
-  if (typeof entry === 'function') return entry(...args);
-  return entry || LANGS.pt[key] || key;
-}
-
-// ── LANGUAGE MODAL ──────────────────────────────────────
-function openLangModal() {
-  $('langOverlay').classList.add('open');
-}
-function closeLangModal(e) {
-  if (!e || e.target === $('langOverlay')) $('langOverlay').classList.remove('open');
-}
-
-function setLang(lang) {
-  currentLang = lang;
-  localStorage.setItem('cvLang', lang);
-  // Update active option
-  document.querySelectorAll('.lang-option').forEach(el => el.classList.remove('selected'));
-  $('lang-' + lang).classList.add('selected');
-  // Update flag/code btn
-  $('langFlagSm').textContent = LANGS[lang].flag;
-  $('langCodeSm').textContent = LANGS[lang].code;
-  // Apply translations
-  applyTranslations();
-  closeLangModal();
-}
-
-function applyTranslations() {
-  const L = LANGS[currentLang];
-  // html lang attr
-  document.documentElement.lang = currentLang;
-  // topbar
-  const ti = document.querySelector('.topbar-title');
-  const si = document.querySelector('.topbar-sub');
-  if (ti) ti.textContent = L.appTitle;
-  if (si) si.textContent = L.appSub;
-  // install modal
-  const ist = document.querySelector('.install-sheet-title');
-  const iss = document.querySelector('.install-sheet-sub');
-  if (ist) ist.textContent = L.installTitle;
-  if (iss) iss.textContent = L.installSub;
-  const pbtn = $('btnInstallPWA');
-  if (pbtn) pbtn.textContent = L.installBtnPWA;
-  const pn = $('pwaNote');
-  if (pn) pn.textContent = L.installNote;
-  const steps = document.querySelectorAll('.install-step');
-  if (steps[0]) { steps[0].querySelector('h4').textContent = L.installStep1Title; steps[0].querySelector('p').innerHTML = L.installStep1Body; }
-  if (steps[1]) { steps[1].querySelector('h4').textContent = L.installStep2Title; steps[1].querySelector('p').innerHTML = L.installStep2Body; }
-  if (steps[2]) { steps[2].querySelector('h4').textContent = L.installStep3Title; steps[2].querySelector('p').innerHTML = L.installStep3Body; }
-  const icb = document.querySelector('.install-cancel-btn');
-  if (icb) icb.textContent = L.installClose;
-  // lang modal
-  const lmt = $('lmt-title'); if (lmt) lmt.textContent = L.langModalTitle;
-  const lms = $('lmt-sub');   if (lms) lms.textContent = L.langModalSub;
-  const lmc = $('lmt-close'); if (lmc) lmc.textContent = L.langClose;
-  // salary
-  const slbl = document.querySelector('.salary-hero label');
-  if (slbl) slbl.textContent = L.salaryLabel;
-  const mp = $('modeBtn-pct'); if (mp) mp.textContent = L.modePct;
-  const mv = $('modeBtn-val'); if (mv) mv.textContent = L.modeVal;
-  // distribution header
-  const dh = document.querySelector('#page-orcamento .section-header');
-  if (dh) dh.textContent = L.distHeader;
-  // pct labels
-  const labels = document.querySelectorAll('.pct-label');
-  if (labels[0]) labels[0].textContent = L.labelFixo;
-  if (labels[1]) labels[1].textContent = L.labelLazer;
-  if (labels[2]) labels[2].textContent = L.labelInvest;
-  // categories header
-  const catHeaders = document.querySelectorAll('#page-orcamento .section-header');
-  if (catHeaders[1]) catHeaders[1].textContent = L.catHeader;
-  // tab pills
-  const pills = document.querySelectorAll('.tab-pill');
-  if (pills[0]) pills[0].textContent = L.tabFixo;
-  if (pills[1]) pills[1].textContent = L.tabLazer;
-  if (pills[2]) pills[2].textContent = L.tabInvest;
-  if (pills[3]) pills[3].textContent = L.tabSonhos;
-  // fixo panel
-  const fTitle = document.querySelector('#sub-fixo .budget-card-title span:first-child');
-  if (fTitle) fTitle.textContent = L.fixoTitle;
-  const fLim = document.querySelector('#sub-fixo .budget-card-meta');
-  if (fLim) fLim.innerHTML = L.fixoLimitLabel + '<strong id="meta-fixo">' + ($('meta-fixo')?.textContent||'') + '</strong>';
-  const fCols = document.querySelectorAll('#sub-fixo .budget-card-header ~ div > span');
-  if (fCols[0]) fCols[0].textContent = L.fixoColDesc;
-  if (fCols[1]) fCols[1].textContent = L.fixoColDue;
-  if (fCols[2]) fCols[2].textContent = L.fixoColVal;
-  const fAdd = document.querySelector('#sub-fixo .add-item-btn');
-  if (fAdd) fAdd.textContent = L.fixoAddBtn;
-  const fTotLbl = document.querySelector('#sub-fixo .budget-footer-label');
-  if (fTotLbl) fTotLbl.textContent = L.fixoTotal;
-  // lazer panel
-  const lTitle = document.querySelector('#sub-lazer .budget-card-title span:first-child');
-  if (lTitle) lTitle.textContent = L.lazerTitle;
-  const lLim = document.querySelector('#sub-lazer .budget-card-meta');
-  if (lLim) lLim.innerHTML = L.lazerLimitLabel + '<strong id="meta-lazer">' + ($('meta-lazer')?.textContent||'') + '</strong>';
-  const lAdd = document.querySelector('#sub-lazer .add-item-btn');
-  if (lAdd) lAdd.textContent = L.lazerAddBtn;
-  const lTotLbl = document.querySelector('#sub-lazer .budget-footer-label');
-  if (lTotLbl) lTotLbl.textContent = L.lazerTotal;
-  // invest panel
-  const iTitle = document.querySelector('#sub-invest .budget-card-title span:first-child');
-  if (iTitle) iTitle.textContent = L.investTitle;
-  const iLim = document.querySelector('#sub-invest .budget-card-meta');
-  if (iLim) iLim.innerHTML = L.investLimitLabel + '<strong id="meta-invest">' + ($('meta-invest')?.textContent||'') + '</strong>';
-  const iAdd = document.querySelector('#sub-invest .add-item-btn');
-  if (iAdd) iAdd.textContent = L.investAddBtn;
-  const iTotLbl = document.querySelector('#sub-invest .budget-footer-label');
-  if (iTotLbl) iTotLbl.textContent = L.investTotal;
   // sonhos
-  const sTitle = document.querySelector('.dream-form h4');
-  if (sTitle) sTitle.textContent = L.sonhosFormTitle;
-  const sName = $('dreamName'); if (sName) sName.placeholder = L.sonhosNamePh;
-  const sVal  = $('dreamValue'); if (sVal) sVal.placeholder = L.sonhosValPh;
-  const sMon  = $('dreamMonths'); if (sMon) sMon.placeholder = L.sonhosMonthsPh;
-  const sBtn  = document.querySelector('.dream-submit'); if (sBtn) sBtn.textContent = L.sonhosAddBtn;
-  const sEmpty = $('dreamsEmpty');
-  if (sEmpty) sEmpty.innerHTML = '<div style="font-size:36px;margin-bottom:8px;">🌟</div>' + L.sonhosEmpty;
-  // archive btn
-  const ab = document.querySelector('.btn-close'); if (ab) ab.textContent = L.archiveBtn;
-  // history page
-  const hTitle = document.querySelector('#page-historico > div > div:first-child');
-  if (hTitle && hTitle.style) hTitle.textContent = L.historyTitle;
-  const hSel = document.querySelector('#page-historico .card div:first-child');
-  if (hSel) hSel.textContent = L.historySelectLabel;
-  const hArc = document.querySelector('.archive-btn'); if (hArc) hArc.textContent = L.historyArchiveBtn;
-  const hSecH = document.querySelector('#page-historico .section-header');
-  if (hSecH) hSecH.textContent = L.historySectionHeader;
-  // nav
-  const navItems = document.querySelectorAll('.nav-item');
-  if (navItems[0]) navItems[0].lastChild.textContent = L.navOrcamento;
-  if (navItems[1]) navItems[1].lastChild.textContent = L.navEbook;
-  if (navItems[2]) navItems[2].lastChild.textContent = L.navHistorico;
-  if (navItems[3]) navItems[3].lastChild.textContent = L.navPlano;
-  // ebook
-  const ebBadge = document.querySelector('.ebook-badge'); if (ebBadge) ebBadge.textContent = L.ebookBadge;
-  const ebH1 = document.querySelector('.ebook-cover h1');
-  if (ebH1) ebH1.innerHTML = L.ebookTitle + '<br><span>' + L.ebookTitleSpan + '</span>';
-  const ebSub = document.querySelector('.ebook-cover p'); if (ebSub) ebSub.textContent = L.ebookSubtitle;
-  const ebParts = document.querySelectorAll('#page-ebook .section-header');
-  if (ebParts[0]) ebParts[0].textContent = L.ebookPart1;
-  if (ebParts[1]) ebParts[1].textContent = L.ebookPart2;
-  // item placeholders (existing rows)
-  document.querySelectorAll('.item-name').forEach(el => el.placeholder = L.itemDescPh);
-  // re-render dreams (to update remove btn text)
   renderDreams();
-  // re-run calc to update dynamic text (balance pill, alerts)
+
+  // month input
+  if($('mesRef')) $('mesRef').value=new Date().toISOString().slice(0,7);
+
+  // calc
   calcularTudo();
-}
 
-function loadLang() {
-  const saved = localStorage.getItem('cvLang') || 'pt';
-  currentLang = saved;
-  document.querySelectorAll('.lang-option').forEach(el => el.classList.remove('selected'));
-  const opt = $('lang-' + saved);
-  if (opt) opt.classList.add('selected');
-  $('langFlagSm').textContent = LANGS[saved].flag;
-  $('langCodeSm').textContent = LANGS[saved].code;
-  applyTranslations();
-}
-
+  // active tab style
+  switchTab('fixo');
+};
 </script>
-
-<!-- LANGUAGE MODAL -->
-<div class="lang-modal-overlay" id="langOverlay" onclick="closeLangModal(event)">
-  <div class="lang-sheet" onclick="event.stopPropagation()">
-    <div class="lang-handle"></div>
-    <div class="lang-title" id="lmt-title">Idioma / Language</div>
-    <div class="lang-sub" id="lmt-sub">Escolha o idioma do aplicativo</div>
-    <div class="lang-options">
-      <div class="lang-option selected" id="lang-pt" onclick="setLang('pt')">
-        <span class="lang-flag">🇧🇷</span>
-        <div><div class="lang-name">Português</div><div class="lang-native">Brasil</div></div>
-        <span class="lang-check">✓</span>
-      </div>
-      <div class="lang-option" id="lang-es" onclick="setLang('es')">
-        <span class="lang-flag">🌎</span>
-        <div><div class="lang-name">Español</div><div class="lang-native">Latinoamérica</div></div>
-        <span class="lang-check">✓</span>
-      </div>
-      <div class="lang-option" id="lang-en" onclick="setLang('en')">
-        <span class="lang-flag">🇺🇸</span>
-        <div><div class="lang-name">English</div><div class="lang-native">United States</div></div>
-        <span class="lang-check">✓</span>
-      </div>
-    </div>
-    <button class="lang-close-btn" id="lmt-close" onclick="closeLangModal()">Fechar</button>
-  </div>
-</div>
-
 </body>
 </html>
