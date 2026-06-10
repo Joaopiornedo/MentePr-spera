@@ -1651,7 +1651,65 @@ async function triggerInstall(){
   if(outcome==='accepted'){ closeModal('installOverlay'); toast('✅ App instalado!'); }
   deferredPWA=null;
 }
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+// ── Service Worker com detecção de actualização automática ──────
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(reg => {
+
+    // Verifica actualizações a cada vez que a app fica em foco
+    document.addEventListener('visibilitychange', () => {
+      if(document.visibilityState === 'visible') reg.update();
+    });
+
+    // Quando um novo SW termina de instalar, mostra aviso
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      if(!newWorker) return;
+      newWorker.addEventListener('statechange', () => {
+        if(newWorker.state === 'installed' && navigator.serviceWorker.controller){
+          // Há uma nova versão instalada — recarrega silenciosamente
+          // (o SW já chamou skipWaiting, por isso a próxima navegação usa a nova versão)
+          showUpdateToast();
+        }
+      });
+    });
+
+  }).catch(() => {});
+
+  // Mensagem enviada pelo SW quando activa (após apagar caches antigos)
+  navigator.serviceWorker.addEventListener('message', event => {
+    if(event.data && event.data.type === 'SW_UPDATED'){
+      showUpdateToast();
+    }
+  });
+}
+
+function showUpdateToast(){
+  // Evita mostrar múltiplas vezes na mesma sessão
+  if(window._updateShown) return;
+  window._updateShown = true;
+
+  // Cria um banner de actualização persistente (não desaparece sozinho)
+  const banner = document.createElement('div');
+  banner.id = 'update-banner';
+  banner.style.cssText = [
+    'position:fixed','bottom:80px','left:50%','transform:translateX(-50%)',
+    'background:#0f172a','color:#fff','padding:12px 20px','border-radius:14px',
+    'font-size:13px','font-weight:700','z-index:9999','box-shadow:0 4px 24px rgba(0,0,0,.4)',
+    'display:flex','align-items:center','gap:12px','white-space:nowrap',
+    'border:1px solid rgba(255,255,255,.12)',
+  ].join(';');
+  banner.innerHTML = `
+    <span>🔄 Nova versão disponível</span>
+    <button onclick="location.reload(true)"
+            style="background:#6d28d9;color:#fff;border:none;border-radius:8px;
+                   padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">
+      Atualizar agora
+    </button>
+    <button onclick="this.closest('#update-banner').remove()"
+            style="background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:8px;
+                   padding:6px 10px;font-size:12px;cursor:pointer;">✕</button>`;
+  document.body.appendChild(banner);
+}
 
 // ─────────────────────────────────────────
 //  I18N
