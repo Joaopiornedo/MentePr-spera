@@ -245,7 +245,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
         <span class="text-white/50 font-bold text-lg">$</span>
         <input type="number" id="salario" value="2000" min="0" step="0.01" placeholder="0.00"
                class="flex-1 bg-transparent border-none outline-none text-white text-2xl font-black placeholder-white/30"
-               oninput="calcularTudo()">
+               oninput="calcularTudo();saveItems()">
       </div>
     </div>
 
@@ -303,7 +303,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
           <input type="number" id="pctFixo" value="50" min="0" max="100"
                  class="inp flex-1 min-w-0 text-center text-base font-bold outline-none rounded-md py-1 px-1.5"
                  style="background:#fff;border:1px solid var(--bdr);color:var(--txt);"
-                 oninput="calcularTudo()">
+                 oninput="calcularTudo();saveItems()">
           <span class="text-xs" style="color:var(--txt3);" id="symFixo">%</span>
         </div>
         <div class="text-xs mt-1" style="color:var(--txt3);" id="valFixo">$1,000.00</div>
@@ -326,7 +326,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
           <input type="number" id="pctInvest" value="20" min="0" max="100"
                  class="inp flex-1 min-w-0 text-center text-base font-bold outline-none rounded-md py-1 px-1.5"
                  style="background:#fff;border:1px solid var(--bdr);color:var(--txt);"
-                 oninput="calcularTudo()">
+                 oninput="calcularTudo();saveItems()">
           <span class="text-xs" style="color:var(--txt3);" id="symInvest">%</span>
         </div>
         <div class="text-xs mt-1" style="color:var(--txt3);" id="valInvest">$400.00</div>
