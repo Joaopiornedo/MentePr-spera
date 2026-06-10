@@ -242,21 +242,27 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
     <div class="flex items-center justify-between mb-3">
       <div class="text-xs font-bold uppercase tracking-widest" style="color:var(--txt3);" id="t-distLabel">Distribuição do orçamento</div>
       <!-- mode toggle moved here -->
-      <div class="flex rounded-lg overflow-hidden" style="background:var(--bdr);">
+      <div class="flex rounded-lg overflow-hidden flex-shrink-0"
+           style="background:var(--bdr);min-width:0;">
         <button id="mBtn-pct" onclick="setMode('pct')"
-                class="px-3 py-1.5 text-xs font-bold transition-all rounded-md"
-                style="background:#6d28d9;color:#fff;">% Perc.</button>
+                class="transition-all rounded-md"
+                style="background:#6d28d9;color:#fff;border:none;cursor:pointer;
+                       font-size:11px;font-weight:700;padding:6px 10px;white-space:nowrap;"
+                id="t-mBtnPct">% Perc.</button>
         <button id="mBtn-val" onclick="setMode('val')"
-                class="px-3 py-1.5 text-xs font-bold transition-all rounded-md"
-                style="background:transparent;color:var(--txt3);">$ Valor</button>
+                class="transition-all rounded-md"
+                style="background:transparent;color:var(--txt3);border:none;cursor:pointer;
+                       font-size:11px;font-weight:700;padding:6px 10px;white-space:nowrap;"
+                id="t-mBtnVal">$ Valor</button>
       </div>
     </div>
     <!-- bar -->
     <div class="h-2.5 rounded-full overflow-hidden flex mb-4" style="background:var(--bdr);">
-      <div class="dseg" id="bar-fixo"   style="background:#6d28d9;"></div>
-      <div class="dseg" id="bar-lazer"  style="background:#d97706;"></div>
-      <div class="dseg" id="bar-invest" style="background:#059669;"></div>
-      <div class="dseg" id="bar-sonhos" style="background:#8b5cf6;"></div>
+      <div class="dseg" id="bar-fixo"       style="background:#6d28d9;"></div>
+      <div class="dseg" id="bar-parcelado"  style="background:#0891b2;"></div>
+      <div class="dseg" id="bar-lazer"      style="background:#d97706;"></div>
+      <div class="dseg" id="bar-invest"     style="background:#059669;"></div>
+      <div class="dseg" id="bar-sonhos"     style="background:#8b5cf6;"></div>
     </div>
     <!-- 3 pct cards -->
     <div class="grid grid-cols-3 gap-2.5">
@@ -298,6 +304,8 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
     </div>
     <!-- sonhos dynamic grid -->
     <div id="sonhosPctGrid" class="mt-2.5" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
+    <!-- parcelados dynamic grid -->
+    <div id="parceladoPctGrid" class="mt-2" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
     <!-- global alert -->
     <div id="globalAlert" class="hidden mt-3 rounded-xl px-4 py-3 text-xs font-semibold leading-relaxed"></div>
   </div>
@@ -307,6 +315,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
   <div class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--txt3);" id="t-catLabel">Categorias</div>
   <div class="flex gap-2 overflow-x-auto pb-1 mb-3" style="scrollbar-width:none;">
     <button class="tab-pill t-fixo active" onclick="switchTab('fixo')" id="tab-fixo">🏠 <span id="t-tabFixo">Gastos Fixos</span></button>
+    <button class="tab-pill t-parcelado" onclick="switchTab('parcelado')" id="tab-parcelado">💳 <span id="t-tabParcelado">Parcelados</span></button>
     <button class="tab-pill t-lazer" onclick="switchTab('lazer')" id="tab-lazer">☕ <span id="t-tabLazer">Lazer</span></button>
     <button class="tab-pill t-invest" onclick="switchTab('invest')" id="tab-invest">🛡️ <span id="t-tabInvest">Investimentos</span></button>
     <button class="tab-pill t-sonhos" onclick="switchTab('sonhos')" id="tab-sonhos">🚀 <span id="t-tabSonhos">Sonhos</span></button>
@@ -340,6 +349,36 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
         <span class="text-base font-black" style="color:#6d28d9;" id="total-fixo">$0.00</span>
       </div>
       <div id="alert-fixo" class="hidden px-4 py-2.5 text-xs font-bold rounded-b-2xl"></div>
+    </div>
+  </div>
+
+
+  <!-- ══ SUB-PANEL PARCELADOS ══ -->
+  <div class="sub-panel" id="sub-parcelado">
+    <div class="rounded-2xl overflow-hidden s" style="background:var(--surf);border:1px solid var(--bdr);box-shadow:var(--shadow);">
+      <div class="flex items-center justify-between px-4 py-3" style="border-bottom:1px solid var(--bdr);">
+        <div class="flex items-center gap-2">
+          <span class="font-bold" style="color:#0891b2;" id="t-parceladoTitle">💳 Compras Parceladas</span>
+        </div>
+        <div class="text-right">
+          <div class="text-xs" style="color:var(--txt3);" id="t-parceladoTotal">Total em parcelas</div>
+          <div class="font-bold text-sm" style="color:#0891b2;" id="total-parcelado">$0.00</div>
+        </div>
+      </div>
+      <!-- col headers -->
+      <div class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider" style="color:var(--txt3);border-bottom:1px solid var(--bdr);">
+        <span style="flex:1 1 0;" id="t-colDescP">Descrição</span>
+        <span style="width:64px;flex-shrink:0;text-align:center;" id="t-colParcN">Parcela</span>
+        <span style="width:72px;flex-shrink:0;text-align:right;" id="t-colValP">Valor/mês</span>
+        <span style="width:28px;flex-shrink:0;"></span>
+      </div>
+      <div id="list-parcelado" class="divide-y" style="border-color:var(--bdr);"></div>
+      <button class="add-dashed" onclick="addParcelado()" id="t-addParcelado">💳 Adicionar compra parcelada</button>
+      <div class="flex items-center justify-between px-4 py-3" style="background:var(--surf2);border-top:1px solid var(--bdr);">
+        <span class="text-xs font-bold" style="color:var(--txt3);" id="t-parceladoFooter">Debitado do salário ao dar ✓</span>
+        <span class="text-base font-black" style="color:#0891b2;" id="total-parcelado-foot">$0.00</span>
+      </div>
+      <div id="alert-parcelado" class="hidden px-4 py-2.5 text-xs font-bold rounded-b-2xl"></div>
     </div>
   </div>
 
@@ -517,60 +556,60 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
   <!-- header -->
   <div class="flex items-center justify-between mb-4">
     <div>
-      <div class="text-xl font-black" style="color:var(--txt);">📈 Plano de Investimento</div>
-      <div class="text-xs mt-0.5" style="color:var(--txt3);">Personalizado com base no seu orçamento</div>
+      <div class="text-xl font-black" style="color:var(--txt);">📈 <span id="t-planoTitle">Plano de Investimento</span></div>
+      <div class="text-xs mt-0.5" style="color:var(--txt3);"><span id="t-planoSub">Personalizado com base no seu orçamento</span></div>
     </div>
   </div>
 
   <!-- perfil de risco -->
   <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
-    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);">Perfil de Investidor</div>
+    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);" id="t-planoProfile">Perfil de Investidor</div>
     <div class="grid grid-cols-3 gap-2" id="riskButtons">
       <button onclick="setRisk('conservador')" id="risk-conservador"
               class="risk-btn py-3 rounded-xl text-xs font-bold border transition-all"
               style="border-color:var(--bdr);color:var(--txt2);background:var(--surf2);">
-        🛡️<br>Conservador
+        🛡️<br><span id="t-riskC">Conservador</span>
       </button>
       <button onclick="setRisk('moderado')" id="risk-moderado"
               class="risk-btn py-3 rounded-xl text-xs font-bold border transition-all active-risk"
               style="border-color:#6d28d9;color:#fff;background:#6d28d9;">
-        ⚖️<br>Moderado
+        ⚖️<br><span id="t-riskM">Moderado</span>
       </button>
       <button onclick="setRisk('arrojado')" id="risk-arrojado"
               class="risk-btn py-3 rounded-xl text-xs font-bold border transition-all"
               style="border-color:var(--bdr);color:var(--txt2);background:var(--surf2);">
-        🚀<br>Arrojado
+        🚀<br><span id="t-riskA">Arrojado</span>
       </button>
     </div>
   </div>
 
   <!-- calculadora de juros compostos -->
   <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
-    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);">Simulador de Crescimento</div>
+    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);" id="t-planoSim">Simulador de Crescimento</div>
     <div class="grid grid-cols-2 gap-3 mb-3">
       <div>
-        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);">Aporte inicial ($)</label>
+        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);" id="t-lInicial">Aporte inicial ($)</label>
         <input type="number" id="plano-inicial" value="0" min="0" step="0.01"
                class="inp w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none"
                style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
                oninput="calcPlano()">
       </div>
       <div>
-        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);">Aporte mensal ($)</label>
+        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);" id="t-lMensal">Aporte mensal ($)</label>
         <input type="number" id="plano-mensal" value="0" min="0" step="0.01"
                class="inp w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none"
                style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
                oninput="calcPlano()">
       </div>
       <div>
-        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);">Taxa anual (%)</label>
+        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);" id="t-lTaxa">Taxa anual (%)</label>
         <input type="number" id="plano-taxa" value="10" min="0" max="100" step="0.1"
                class="inp w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none"
                style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
                oninput="calcPlano()">
       </div>
       <div>
-        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);">Período (anos)</label>
+        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);" id="t-lAnos">Período (anos)</label>
         <input type="number" id="plano-anos" value="10" min="1" max="50"
                class="inp w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none"
                style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
@@ -580,15 +619,15 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
     <!-- result cards -->
     <div class="grid grid-cols-3 gap-2 mb-3" id="plano-results">
       <div class="rounded-xl p-3 text-center" style="background:#ede9fe;">
-        <div class="text-xs font-bold mb-1" style="color:#6d28d9;">Total investido</div>
+        <div class="text-xs font-bold mb-1" style="color:#6d28d9;" id="t-rInvestido">Total investido</div>
         <div class="text-sm font-black" style="color:#6d28d9;" id="plano-r-investido">$0</div>
       </div>
       <div class="rounded-xl p-3 text-center" style="background:#d1fae5;">
-        <div class="text-xs font-bold mb-1" style="color:#059669;">Rendimento</div>
+        <div class="text-xs font-bold mb-1" style="color:#059669;" id="t-rRendimento">Rendimento</div>
         <div class="text-sm font-black" style="color:#059669;" id="plano-r-rendimento">$0</div>
       </div>
       <div class="rounded-xl p-3 text-center" style="background:linear-gradient(135deg,#4c1d95,#6d28d9);">
-        <div class="text-xs font-bold mb-1 text-white/70">Patrimônio final</div>
+        <div class="text-xs font-bold mb-1 text-white/70" id="t-rFinal">Patrimônio final</div>
         <div class="text-sm font-black text-white" id="plano-r-final">$0</div>
       </div>
     </div>
@@ -598,19 +637,19 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
       <div id="plano-bar-rend" class="h-full transition-all" style="background:#059669;width:50%;"></div>
     </div>
     <div class="flex justify-between text-xs mt-1" style="color:var(--txt3);">
-      <span>🟣 Capital aportado</span><span>🟢 Juros compostos</span>
+      <span id="t-barCapital">🟣 Capital aportado</span><span id="t-barJuros">🟢 Juros compostos</span>
     </div>
   </div>
 
   <!-- alocação recomendada por perfil -->
   <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
-    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);">Alocação Recomendada</div>
+    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);" id="t-planoAlloc">Alocação Recomendada</div>
     <div id="plano-alloc" class="flex flex-col gap-2"></div>
   </div>
 
   <!-- milestones -->
   <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
-    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);">Marcos ao Longo do Tempo</div>
+    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);" id="t-planoMilestones">Marcos ao Longo do Tempo</div>
     <div id="plano-milestones" class="flex flex-col gap-2"></div>
   </div>
 
@@ -897,7 +936,8 @@ function renderFracRows(cat){
     const pI=mode==='pct'?safe($('pctInvest').value):sal>0?safe($('pctInvest').value)/sal*100:0;
     const d2=getData(); let pS=0;
     d2.sonhos.forEach(s=>{ pS+=sal>0?(s.valor/s.meses/sal*100):0; });
-    pct=Math.max(0,100-pF-pI-pS);
+    let pP2=0; (d2.parcelados||[]).forEach(p=>{ pP2+=sal>0?safe(p.valor)/sal*100:0; });
+    pct=Math.max(0,100-pF-pI-pS-pP2);
   } else {
     pct=mode==='pct'?safe($('pctInvest').value):sal>0?safe($('pctInvest').value)/sal*100:0;
   }
@@ -1120,7 +1160,13 @@ function deleteDream(id){
 }
 function toggleDreamDone(id){
   const d=getData(); const s=d.sonhos.find(x=>x.id===id);
-  if(s){ s.done=!s.done; save(d); renderDreams(); }
+  if(!s) return;
+  const wasDone = s.done;
+  s.done = !wasDone;
+  // parcelasPagas = contador acumulado permanente (nunca vai abaixo de 0)
+  if(s.done)  s.parcelasPagas = (s.parcelasPagas||0) + 1;
+  else        s.parcelasPagas = Math.max(0, (s.parcelasPagas||1) - 1);
+  save(d); renderDreams(); calcularTudo();
 }
 function renderDreams(){
   const d=getData(); const sal=safe($('salario').value);
@@ -1129,25 +1175,155 @@ function renderDreams(){
   if(!d.sonhos.length){ e.style.display='block'; return; }
   e.style.display='none';
   d.sonhos.forEach(s=>{
-    const p=s.valor/s.meses;
-    const pct=sal>0?(p/sal*100):0;
+    const parcMensal = s.valor/s.meses;
+    const pct = sal>0 ? (parcMensal/sal*100) : 0;
+    const pagas = s.parcelasPagas||0;
+    const acumulado = Math.min(pagas*parcMensal, s.valor);
+    const progPct = s.valor>0 ? Math.min(100, acumulado/s.valor*100) : 0;
+    const concluido = pagas >= s.meses;
     const div=document.createElement('div');
-    div.className='rounded-2xl p-4 s fade-in'+(s.done?' opacity-60':'');
+    div.className='rounded-2xl p-4 s fade-in';
     div.style='background:var(--surf);border:1px solid var(--bdr);';
     div.innerHTML=`
-      <div class="flex items-start gap-3 mb-3">
+      <div class="flex items-start gap-3 mb-2">
         <button class="chk${s.done?' on':''}" onclick="toggleDreamDone(${s.id})"
+                title="Marcar parcela do mês como paga"
                 style="border-color:${s.done?'#059669':'var(--bdr2)'};background:${s.done?'#059669':'transparent'};color:${s.done?'#fff':'transparent'};">✓</button>
-        <div class="flex-1">
-          <div class="font-bold text-sm${s.done?' line-through':''}" style="color:var(--txt);">🎯 ${esc(s.nome)}</div>
-          <div class="text-xs mt-0.5" style="color:var(--txt3);">Meta: ${fmtM(s.valor)} em ${s.meses} meses</div>
+        <div class="flex-1 min-w-0">
+          <div class="font-bold text-sm${concluido?' line-through':''}" style="color:var(--txt);">🎯 ${esc(s.nome)}</div>
+          <div class="text-xs mt-0.5" style="color:var(--txt3);">Meta: ${fmtM(s.valor)} · ${s.meses} meses</div>
         </div>
-        <button onclick="deleteDream(${s.id})" class="text-xs px-2 py-1 rounded-lg" style="background:none;border:none;color:var(--txt3);">✕</button>
+        <button onclick="deleteDream(${s.id})" class="text-xs px-2 py-1 rounded-lg flex-shrink-0" style="background:none;border:none;color:var(--txt3);">✕</button>
       </div>
+      <!-- monthly pill -->
       <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-2"
-           style="background:#ede9fe;color:#6d28d9;">💸 ${fmtM(p)}/mês &nbsp;·&nbsp; ${fmt(pct,1)}% do salário</div>`;
+           style="background:#ede9fe;color:#6d28d9;">
+        💸 ${fmtM(parcMensal)}/mês &nbsp;·&nbsp; ${fmt(pct,1)}% do salário
+        &nbsp;·&nbsp; <span style="color:${pagas>=s.meses?'#059669':'#6d28d9'};">${pagas}/${s.meses} pagas</span>
+      </div>
+      <!-- progress bar -->
+      <div class="h-2 rounded-full overflow-hidden mb-1" style="background:var(--bdr);">
+        <div class="h-full rounded-full transition-all" style="width:${progPct.toFixed(1)}%;background:linear-gradient(90deg,#6d28d9,#8b5cf6);"></div>
+      </div>
+      <div class="flex justify-between text-xs" style="color:var(--txt3);">
+        <span>Acumulado: ${fmtM(acumulado)}</span>
+        <span>Falta: ${fmtM(Math.max(0,s.valor-acumulado))}</span>
+      </div>`;
     c.appendChild(div);
   });
+}
+
+
+// ─────────────────────────────────────────
+//  COMPRAS PARCELADAS
+// ─────────────────────────────────────────
+function addParcelado(nome='', parcAtual=1, parcTotal=1, valor='', done=false){
+  const list = $('list-parcelado');
+  const row = document.createElement('div');
+  row.className = 'item-row fade-in flex items-center gap-2 px-4 py-2.5' + (done?' done':'');
+  row.dataset.cat = 'parcelado';
+  row.dataset.done = done ? '1' : '0';
+  row.innerHTML = `
+    <button class="chk${done?' on':''}"
+            style="border-color:${done?'#059669':'var(--bdr2)'};background:${done?'#059669':'transparent'};color:${done?'#fff':'transparent'};"
+            onclick="handleParceladoCheck(this)" title="Marcar parcela como paga">✓</button>
+    <input type="text" class="iname inp flex-1 min-w-0 rounded-lg px-2.5 py-1.5 text-sm outline-none"
+           style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
+           placeholder="Descrição..." value="${esc(nome)}"
+           oninput="calcParcelado();saveParcelados();">
+    <!-- parcela X de Y -->
+    <div class="flex items-center gap-1 flex-shrink-0" style="width:64px;">
+      <input type="number" class="parc-atual inp w-7 rounded-md px-1 py-1.5 text-xs font-bold text-center outline-none"
+             style="background:var(--surf2);border:1px solid var(--bdr);color:#0891b2;"
+             min="1" value="${parcAtual}" oninput="calcParcelado();saveParcelados();">
+      <span class="text-xs" style="color:var(--txt3);">/</span>
+      <input type="number" class="parc-total inp w-7 rounded-md px-1 py-1.5 text-xs font-bold text-center outline-none"
+             style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt3);"
+             min="1" value="${parcTotal}" oninput="calcParcelado();saveParcelados();">
+    </div>
+    <input type="number" class="ival inp flex-shrink-0 rounded-lg px-2 py-1.5 text-sm font-bold text-right outline-none"
+           style="width:72px;background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
+           placeholder="0.00" min="0" step="0.01" value="${esc(valor)}"
+           oninput="calcParcelado();saveParcelados();">
+    <button onclick="removeParcelado(this)"
+            class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-all"
+            style="background:none;border:none;color:var(--txt3);"
+            onmouseover="this.style.background='#fee2e2';this.style.color='#dc2626';"
+            onmouseout="this.style.background='none';this.style.color='var(--txt3)';">🗑</button>`;
+  list.appendChild(row);
+  calcParcelado(); saveParcelados();
+}
+
+function handleParceladoCheck(btn){
+  const row = btn.closest('.item-row');
+  const nowDone = row.dataset.done !== '1';
+  row.dataset.done = nowDone ? '1' : '0';
+  row.classList.toggle('done', nowDone);
+  btn.classList.toggle('on', nowDone);
+  btn.style.background = nowDone ? '#059669' : 'transparent';
+  btn.style.borderColor = nowDone ? '#059669' : 'var(--bdr2)';
+  btn.style.color = nowDone ? '#fff' : 'transparent';
+  calcParcelado(); calcularTudo(); saveParcelados();
+}
+
+function removeParcelado(btn){ btn.closest('.item-row').remove(); calcParcelado(); calcularTudo(); saveParcelados(); }
+
+function sumAllParcelados(){
+  let t = 0;
+  document.querySelectorAll('#list-parcelado .ival').forEach(el => t += safe(el.value));
+  return t;
+}
+function sumDoneParcelados(){
+  let t = 0;
+  document.querySelectorAll('#list-parcelado .item-row').forEach(row => {
+    if(row.dataset.done === '1') t += safe(row.querySelector('.ival').value);
+  });
+  return t;
+}
+
+function calcParcelado(){
+  const total = sumAllParcelados();
+  const footEl = $('total-parcelado-foot');
+  const headEl = $('total-parcelado');
+  if(footEl) footEl.textContent = fmtM(total);
+  if(headEl) headEl.textContent = fmtM(total);
+  // progress badge on each row
+  document.querySelectorAll('#list-parcelado .item-row').forEach(row => {
+    const pa = safe(row.querySelector('.parc-atual')?.value||1);
+    const pt = safe(row.querySelector('.parc-total')?.value||1);
+    const pct = pt > 0 ? Math.round(pa/pt*100) : 0;
+    let badge = row.querySelector('.parc-badge');
+    if(!badge){
+      badge = document.createElement('div');
+      badge.className = 'parc-badge text-xs rounded-full px-1.5 py-0.5 font-bold flex-shrink-0 hidden';
+      badge.style.cssText = 'background:#cffafe;color:#0891b2;white-space:nowrap;';
+    }
+    // show remaining parcelas count
+    const restam = Math.max(0, pt - pa + 1);
+    badge.textContent = `${restam} restante${restam!==1?'s':''}`;
+    badge.classList.toggle('hidden', pt <= 1);
+    if(!row.querySelector('.parc-badge')) row.insertBefore(badge, row.querySelector('.ival'));
+  });
+}
+
+function saveParcelados(){
+  const d = getData();
+  d.parcelados = [];
+  document.querySelectorAll('#list-parcelado .item-row').forEach(row => {
+    d.parcelados.push({
+      nome:  row.querySelector('.iname').value,
+      parcAtual: safe(row.querySelector('.parc-atual')?.value||1),
+      parcTotal: safe(row.querySelector('.parc-total')?.value||1),
+      valor: row.querySelector('.ival').value,
+      done:  row.dataset.done === '1',
+    });
+  });
+  save(d);
+}
+
+function loadParcelados(){
+  const d = getData();
+  (d.parcelados||[]).forEach(p => addParcelado(p.nome, p.parcAtual||1, p.parcTotal||1, p.valor, p.done||false));
 }
 
 // ─────────────────────────────────────────
@@ -1170,7 +1346,11 @@ function calcularTudo(){
   let pS=0; const sPcts=[];
   d.sonhos.forEach(s=>{ const p=s.valor/s.meses; const pc=sal>0?p/sal*100:0; sPcts.push({nome:s.nome,pct:pc,p}); pS+=pc; });
 
-  const pL=Math.max(0,100-pF-pI-pS);
+  // parcelados — each instalment has a monthly value that occupies % of salary
+  let pParc=0; const parcPcts=[];
+  (d.parcelados||[]).forEach(p=>{ const v=safe(p.valor); const pc=sal>0?v/sal*100:0; if(v>0){ parcPcts.push({nome:p.nome,pct:pc,v,parcAtual:p.parcAtual,parcTotal:p.parcTotal}); pParc+=pc; } });
+
+  const pL=Math.max(0,100-pF-pI-pS-pParc);
   const mF=sal*pF/100, mL=sal*pL/100, mI=sal*pI/100;
 
   // UI budget cards
@@ -1194,6 +1374,7 @@ function calcularTudo(){
 
   // dist bar
   $('bar-fixo').style.width=fmt(pF,2)+'%';
+  $('bar-parcelado').style.width=fmt(pParc,2)+'%';
   $('bar-lazer').style.width=fmt(pL,2)+'%';
   $('bar-invest').style.width=fmt(pI,2)+'%';
   $('bar-sonhos').style.width=fmt(pS,2)+'%';
@@ -1209,15 +1390,39 @@ function calcularTudo(){
     sg.appendChild(d2);
   });
 
-  // global alert (dreams overflow)
+  // parcelados pct grid
+  const pg=$('parceladoPctGrid'); pg.innerHTML='';
+  parcPcts.forEach(pp=>{
+    const restam=Math.max(0, pp.parcTotal - pp.parcAtual + 1);
+    const d3=document.createElement('div');
+    d3.className='rounded-xl p-3'; d3.style='background:#ecfeff;border:1.5px dashed #0891b2;cursor:pointer;';
+    d3.onclick=()=>switchTab('parcelado');
+    d3.innerHTML=`
+      <div class="text-xs font-bold uppercase tracking-wider mb-1 truncate" style="color:#0891b2;">💳 ${esc(pp.nome)}</div>
+      <div class="text-base font-black" style="color:#0891b2;">${fmt(pp.pct,1)}%</div>
+      <div class="text-xs mt-0.5" style="color:#0891b2;">${fmtM(pp.v)}/mês</div>
+      ${restam>0?`<div class="text-xs mt-0.5 font-semibold" style="color:#0e7490;">${restam} parcela${restam!==1?'s':''} restante${restam!==1?'s':''}</div>`:'<div class="text-xs mt-0.5 font-bold" style="color:#059669;">✅ Quitada</div>'}`;
+    pg.appendChild(d3);
+  });
+  if(parcPcts.length===0) pg.innerHTML='';
+
+  // global alert (overflow)
   const ga=$('globalAlert');
-  if(pS>0&&pL<=0){
+  const totalComprometido=pF+pI+pS+pParc;
+  if(totalComprometido>=100&&pL<=0){
     ga.className='block mt-3 rounded-xl px-4 py-3 text-xs font-semibold leading-relaxed';
-    ga.style='background:#fee2e2;color:#dc2626;'; ga.innerHTML='🚨 <b>Sonhos a extrapolar o orçamento!</b>';
-  } else if(pS>0){
+    ga.style='background:#fee2e2;color:#dc2626;';
+    const causas=[];
+    if(pS>0) causas.push(`Sonhos ${fmt(pS,1)}%`);
+    if(pParc>0) causas.push(`Parcelados ${fmt(pParc,1)}%`);
+    ga.innerHTML=`🚨 <b>Orçamento extrapolado!</b> ${causas.join(' + ')} eliminaram o Lazer.`;
+  } else if((pS>0||pParc>0)&&pL>0){
     ga.className='block mt-3 rounded-xl px-4 py-3 text-xs font-semibold leading-relaxed';
     ga.style='background:#d1fae5;color:#059669;';
-    ga.innerHTML=`✅ Lazer ajustado para ${fmt(pL,1)}% para acomodar os sonhos.`;
+    const partes=[];
+    if(pS>0) partes.push(`Sonhos`);
+    if(pParc>0) partes.push(`Parcelados`);
+    ga.innerHTML=`✅ Lazer ajustado para ${fmt(pL,1)}% para acomodar ${partes.join(' e ')}.`;
   } else { ga.className='hidden'; }
 
   // re-render fractions (meta values may have changed)
@@ -1261,7 +1466,14 @@ function calcularTudo(){
   // Lazer conta como custo: usar checked fracs OU done itens manuais
   const gastosPagos = doneF + (fracLazerActive ? dFracL : doneL);
   const investPagos = fracInvestActive ? dFracI : doneI;
-  const salRestante = sal - gastosPagos - investPagos;
+  // parcelados: sum done rows
+  const parceladosPagos = sumDoneParcelados();
+  // sonhos: each ✓ click deducts one monthly parcela from salary
+  const sonhosPagos = (() => {
+    const dd=getData(); const s=safe($('salario').value);
+    return dd.sonhos.reduce((acc,so)=>{ const pp=so.parcelasPagas||0; return acc+(pp>0?(so.valor/so.meses):0); },0);
+  })();
+  const salRestante = sal - gastosPagos - investPagos - parceladosPagos - sonhosPagos;
   $('salarioRestante').textContent = fmtM(Math.max(0, salRestante));
   const srEl=$('salarioRestante');
   if(srEl) srEl.style.color = salRestante < 0 ? '#fca5a5' : '#fff';
@@ -1307,7 +1519,8 @@ function arquivarMes(){
     pI=sal>0?safe($('pctInvest').value)/sal*100:0;
   }
   let pS=0; d.sonhos.forEach(s=>{ pS+=sal>0?(s.valor/s.meses/sal*100):0; });
-  const pL=Math.max(0,100-pF-pI-pS);
+  let pParcArch=0; (d.parcelados||[]).forEach(p=>{ pParcArch+=sal>0?safe(p.valor)/sal*100:0; });
+  const pL=Math.max(0,100-pF-pI-pS-pParcArch);
   const mF=sal*pF/100, mL=sal*pL/100, mI=sal*pI/100;
 
   // real spending
@@ -1317,20 +1530,34 @@ function arquivarMes(){
   const gastoL=fracLazerActive ? fracCheckedTotal('lazer',mL) : sumAllItems('lazer');
   const gastoI=fracInvestActive ? fracCheckedTotal('invest',mI) : sumAllItems('invest');
 
-  // sobra = o que NÃO foi gasto dentro do limite (fixo + lazer)
-  const sobraF=Math.max(0, mF-gastoF);
-  const sobraL=Math.max(0, mL-gastoL);
-  const sobra=sobraF+sobraL;
+  // parcelados paid this month
+  const gastoParcelados = sumDoneParcelados();
+  // sonhos: sum of monthly parcelas actually checked this month
+  const gastoSonhos = d.sonhos.reduce((acc,s)=>{
+    const pp = s.parcelasPagas||0;
+    return acc + (pp>0 ? (s.valor/s.meses) : 0);
+  },0);
+  // sobra = economia em fixo + economia em lazer + (salário - total gastos - invest)
+  const sobraF = Math.max(0, mF - gastoF);
+  const sobraL = Math.max(0, mL - gastoL);
+  // each sonho contributes its monthly parcela toward sobra (it's being saved, not spent)
+  const sobraSonhos = gastoSonhos; // money set aside for dreams = positive outcome
+  const sobra = sobraF + sobraL + sobraSonhos;
 
   const reg={
     id:Date.now(), mes, salario:sal,
     totalFixo:gastoF, limiteFixo:mF,
     totalLazer:gastoL, limiteLazer:mL,
     totalInvest:gastoI, limiteInvest:mI,
+    totalParcelados:gastoParcelados,
+    totalSonhos:gastoSonhos,
     sobra
   };
   d.hist=d.hist.filter(h=>h.mes!==mes);
-  d.hist.push(reg); save(d);
+  d.hist.push(reg);
+  // reset dream monthly check so next month starts unchecked
+  d.sonhos.forEach(s=>{ s.done=false; });
+  save(d);
   renderHistory(); toast(`🔒 Mês ${mes} arquivado!`);
   if(currentPage!=='historico') switchPage('historico');
 }
@@ -1368,8 +1595,8 @@ function renderHistory(){
                 onmouseover="this.style.background='#fee2e2';this.style.color='#dc2626';"
                 onmouseout="this.style.background='none';this.style.color='var(--txt3)';">🗑</button>
       </div>
-      <!-- grid 4 cols -->
-      <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 mb-2">
+      <!-- grid -->
+      <div class="grid grid-cols-2 gap-2 mb-2" style="grid-template-columns:repeat(2,1fr);">
         <div class="rounded-xl p-2.5 text-center" style="background:var(--surf2);">
           <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">🏠 Fixo</div>
           <div class="font-black text-sm" style="color:#6d28d9;">${fmtM(h.totalFixo)}</div>
@@ -1384,8 +1611,19 @@ function renderHistory(){
           <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">🛡️ Invest.</div>
           <div class="font-black text-sm" style="color:#059669;">${fmtM(h.totalInvest)}</div>
         </div>
-        <div class="rounded-xl p-2.5 text-center" style="background:${sobra>0?'#d1fae5':'var(--surf2)'};">
-          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">💰 Sobra</div>
+        ${h.totalParcelados>0?`
+        <div class="rounded-xl p-2.5 text-center" style="background:#cffafe;">
+          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">💳 Parcelados</div>
+          <div class="font-black text-sm" style="color:#0891b2;">${fmtM(h.totalParcelados)}</div>
+        </div>`:''}
+        ${h.totalSonhos>0?`
+        <div class="rounded-xl p-2.5 text-center" style="background:#ede9fe;">
+          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">🎯 Sonhos</div>
+          <div class="font-black text-sm" style="color:#6d28d9;">${fmtM(h.totalSonhos)}</div>
+          <div class="text-xs mt-0.5" style="color:#8b5cf6;">guardado</div>
+        </div>`:''}
+        <div class="rounded-xl p-2.5 text-center col-span-2" style="background:${sobra>0?'#d1fae5':'var(--surf2)'};">
+          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">💰 Sobra total</div>
           <div class="font-black text-sm" style="color:${sobra>0?'#059669':'#94a3b8'};">${fmtM(sobra)}</div>
           ${sobra>0?`<div class="text-xs mt-0.5" style="color:#059669;">economia do mês</div>`:''}
         </div>
@@ -1427,11 +1665,12 @@ const TR={
     salaryLabel:'Salário / Renda mensal',
     distLabel:'Distribuição do orçamento',
     lFixo:'Fixo', lLazer:'Lazer', lInvest:'Invest.',
-    catLabel:'Categorias', tabFixo:'Gastos Fixos', tabLazer:'Lazer',
+    catLabel:'Categorias', tabFixo:'Gastos Fixos', tabParcelado:'Parcelados', tabLazer:'Lazer',
     tabInvest:'Investimentos', tabSonhos:'Sonhos',
     limitLabel:'Limite', lazerLimit:'Limite', investLimit:'Meta mínima',
     colDesc:'Descrição', colDue:'Vencimento', colVal:'Valor',
     addFixo:'➕ Adicionar gasto fixo',
+    addParcelado:'💳 Adicionar compra parcelada', parceladoTitle:'💳 Compras Parceladas', colParcN:'Parcela', parceladoFooter:'Debitado do salário ao dar ✓',
     addLazer:'➕ Adicionar item de lazer',
     addInvest:'➕ Adicionar investimento',
     totalFixo:'Total gastos fixos', totalLazer:'Total lazer', totalInvest:'Total investido',
@@ -1449,6 +1688,43 @@ const TR={
     splitLabel:'Dividir meta em partes iguais',
     installTitle:'Instalar App', installSub:'Acesso rápido, funciona offline.',
     ebookLoading:'A abrir o Ebook...', ebookSub:'Será redirecionado em instantes.', ebookBtn:'Abrir agora',
+    // ── Plano ──
+    planoTitle:'Plano de Investimento', planoSub:'Personalizado com base no seu orçamento',
+    planoProfile:'Perfil de Investidor',
+    riskC:'Conservador', riskM:'Moderado', riskA:'Arrojado',
+    planoSim:'Simulador de Crescimento',
+    lInicial:'Aporte inicial ($)', lMensal:'Aporte mensal ($)', lTaxa:'Taxa anual (%)', lAnos:'Período (anos)',
+    rInvestido:'Total investido', rRendimento:'Rendimento', rFinal:'Patrimônio final',
+    barCapital:'🟣 Capital aportado', barJuros:'🟢 Juros compostos',
+    planoAlloc:'Alocação Recomendada', planoMilestones:'Marcos ao Longo do Tempo',
+    mBtnPct:'% Perc.', mBtnVal:'$ Valor',
+    tipsTitle:'💡 Dicas para o Perfil',
+    milestonesYr:'a', milestonesInterest:'em juros',
+    allocLabels:{
+      conservador:['Tesouro Direto / Renda Fixa','Fundos de Baixo Risco','Reserva de Emergência (CDB)'],
+      moderado:['Renda Fixa / Tesouro','Fundos Multimercado','Ações / ETFs','FIIs (Fundos Imobiliários)'],
+      arrojado:['Ações Nacionais','Ações Internacionais / BDRs','Criptoativos','Renda Fixa (reserva)','Startups / Venture'],
+    },
+    tips:{
+      conservador:[
+        '🛡️ Mantenha 6 meses de gastos fixos em reserva de emergência antes de investir.',
+        '📊 Priorize CDBs com liquidez diária para a reserva.',
+        '📅 Títulos do Tesouro Selic protegem da inflação com baixo risco.',
+        '🔄 Reinvista os rendimentos mensalmente para acelerar os juros compostos.',
+      ],
+      moderado:[
+        '⚖️ Diversifique entre renda fixa e variável para equilibrar risco e retorno.',
+        '📈 ETFs de índice (ex: BOVA11) permitem exposição ao mercado com baixo custo.',
+        '🏢 FIIs distribuem rendimentos mensais — boa fonte de renda passiva.',
+        '🔁 Rebalanceie a carteira a cada 6 meses para manter as proporções.',
+      ],
+      arrojado:[
+        '🚀 Ativos de alto risco exigem horizonte de pelo menos 5–10 anos.',
+        '₿ Limite criptoativos a no máximo 10–15% da carteira total.',
+        '🌍 Diversificação internacional reduz risco cambial e geopolítico.',
+        '📉 Nunca invista em renda variável dinheiro que pode precisar em menos de 2 anos.',
+      ],
+    },
   },
   es:{
     appName:'Calculadora del Giro', appSub:'Gestión financiera inteligente',
@@ -1458,11 +1734,12 @@ const TR={
     salaryLabel:'Salario / Renta mensual',
     distLabel:'Distribución del presupuesto',
     lFixo:'Fijo', lLazer:'Ocio', lInvest:'Inversión',
-    catLabel:'Categorías', tabFixo:'Gastos Fijos', tabLazer:'Ocio',
+    catLabel:'Categorías', tabFixo:'Gastos Fijos', tabParcelado:'Pagos a plazos', tabLazer:'Ocio',
     tabInvest:'Inversiones', tabSonhos:'Sueños',
     limitLabel:'Límite', lazerLimit:'Límite', investLimit:'Meta mínima',
     colDesc:'Descripción', colDue:'Vencimiento', colVal:'Valor',
     addFixo:'➕ Agregar gasto fijo',
+    addParcelado:'💳 Agregar compra a plazos', parceladoTitle:'💳 Compras a Plazos', colParcN:'Cuota', parceladoFooter:'Deducido del salario al marcar ✓',
     addLazer:'➕ Agregar gasto de ocio',
     addInvest:'➕ Agregar inversión',
     totalFixo:'Total gastos fijos', totalLazer:'Total ocio', totalInvest:'Total invertido',
@@ -1480,6 +1757,43 @@ const TR={
     splitLabel:'Dividir meta en partes iguales',
     installTitle:'Instalar App', installSub:'Acceso rápido, funciona sin internet.',
     ebookLoading:'Abriendo el Ebook...', ebookSub:'Será redirigido en instantes.', ebookBtn:'Abrir ahora',
+    // ── Plano ──
+    planoTitle:'Plan de Inversión', planoSub:'Personalizado según tu presupuesto',
+    planoProfile:'Perfil de Inversor',
+    riskC:'Conservador', riskM:'Moderado', riskA:'Agresivo',
+    planoSim:'Simulador de Crecimiento',
+    lInicial:'Aporte inicial ($)', lMensal:'Aporte mensual ($)', lTaxa:'Tasa anual (%)', lAnos:'Período (años)',
+    rInvestido:'Total invertido', rRendimiento:'Rendimiento', rFinal:'Patrimonio final',
+    barCapital:'🟣 Capital aportado', barJuros:'🟢 Interés compuesto',
+    planoAlloc:'Asignación Recomendada', planoMilestones:'Hitos a lo Largo del Tiempo',
+    mBtnPct:'% Porc.', mBtnVal:'$ Valor',
+    tipsTitle:'💡 Consejos para el Perfil',
+    milestonesYr:'a', milestonesInterest:'en intereses',
+    allocLabels:{
+      conservador:['Bonos del Estado / Renta Fija','Fondos de Bajo Riesgo','Reserva de Emergencia (depósito)'],
+      moderado:['Renta Fija / Bonos','Fondos Mixtos','Acciones / ETFs','REITs (Fondos Inmobiliarios)'],
+      arrojado:['Acciones Nacionales','Acciones Internacionales / ADRs','Criptomonedas','Renta Fija (reserva)','Startups / Capital de Riesgo'],
+    },
+    tips:{
+      conservador:[
+        '🛡️ Mantén 6 meses de gastos fijos en reserva de emergencia antes de invertir.',
+        '📊 Prioriza depósitos a plazo con liquidez diaria para la reserva.',
+        '📅 Los bonos del gobierno protegen del riesgo con retorno estable.',
+        '🔄 Reinvierte los rendimientos mensualmente para acelerar el interés compuesto.',
+      ],
+      moderado:[
+        '⚖️ Diversifica entre renta fija y variable para equilibrar riesgo y retorno.',
+        '📈 Los ETFs de índice permiten exposición al mercado con bajo costo.',
+        '🏢 Los REITs distribuyen rendimientos mensuales — buena fuente de ingreso pasivo.',
+        '🔁 Rebalancea la cartera cada 6 meses para mantener las proporciones.',
+      ],
+      arrojado:[
+        '🚀 Los activos de alto riesgo requieren horizonte de al menos 5–10 años.',
+        '₿ Limita las criptomonedas a un máximo del 10–15% de la cartera total.',
+        '🌍 La diversificación internacional reduce el riesgo cambiario y geopolítico.',
+        '📉 Nunca inviertas en renta variable dinero que puedas necesitar en menos de 2 años.',
+      ],
+    },
   },
   en:{
     appName:'Budget Calculator', appSub:'Smart financial management',
@@ -1489,11 +1803,12 @@ const TR={
     salaryLabel:'Monthly income',
     distLabel:'Budget distribution',
     lFixo:'Fixed', lLazer:'Leisure', lInvest:'Invest.',
-    catLabel:'Categories', tabFixo:'Fixed Expenses', tabLazer:'Leisure',
+    catLabel:'Categories', tabFixo:'Fixed Expenses', tabParcelado:'Instalments', tabLazer:'Leisure',
     tabInvest:'Investments', tabSonhos:'Dreams',
     limitLabel:'Limit', lazerLimit:'Limit', investLimit:'Minimum goal',
     colDesc:'Description', colDue:'Due date', colVal:'Amount',
     addFixo:'➕ Add fixed expense',
+    addParcelado:'💳 Add instalment purchase', parceladoTitle:'💳 Instalment Purchases', colParcN:'Instalment', parceladoFooter:'Deducted from salary on ✓',
     addLazer:'➕ Add leisure item',
     addInvest:'➕ Add investment',
     totalFixo:'Total fixed', totalLazer:'Total leisure', totalInvest:'Total invested',
@@ -1511,6 +1826,43 @@ const TR={
     splitLabel:'Split goal into equal parts',
     installTitle:'Install App', installSub:'Quick access, works offline.',
     ebookLoading:'Opening Ebook...', ebookSub:'You will be redirected shortly.', ebookBtn:'Open now',
+    // ── Plano ──
+    planoTitle:'Investment Plan', planoSub:'Personalised based on your budget',
+    planoProfile:'Investor Profile',
+    riskC:'Conservative', riskM:'Moderate', riskA:'Aggressive',
+    planoSim:'Growth Simulator',
+    lInicial:'Initial deposit ($)', lMensal:'Monthly contribution ($)', lTaxa:'Annual rate (%)', lAnos:'Period (years)',
+    rInvestido:'Total invested', rRendimento:'Returns', rFinal:'Final wealth',
+    barCapital:'🟣 Capital invested', barJuros:'🟢 Compound interest',
+    planoAlloc:'Recommended Allocation', planoMilestones:'Milestones Over Time',
+    mBtnPct:'% Pct.', mBtnVal:'$ Value',
+    tipsTitle:'💡 Tips for the Profile',
+    milestonesYr:'y', milestonesInterest:'in interest',
+    allocLabels:{
+      conservador:['Government Bonds / Fixed Income','Low-Risk Funds','Emergency Fund (savings)'],
+      moderado:['Fixed Income / Bonds','Mixed Funds','Stocks / ETFs','REITs'],
+      arrojado:['Domestic Stocks','International Stocks / ETFs','Crypto','Fixed Income (reserve)','Startups / Venture Capital'],
+    },
+    tips:{
+      conservador:[
+        '🛡️ Keep 6 months of fixed expenses in an emergency fund before investing.',
+        '📊 Prioritise high-liquidity savings accounts for your reserve.',
+        '📅 Government bonds protect against inflation with minimal risk.',
+        '🔄 Reinvest earnings monthly to accelerate compound interest.',
+      ],
+      moderado:[
+        '⚖️ Diversify between fixed income and equities to balance risk and return.',
+        '📈 Index ETFs provide market exposure at low cost.',
+        '🏢 REITs distribute monthly income — a great passive income source.',
+        '🔁 Rebalance your portfolio every 6 months to maintain target allocations.',
+      ],
+      arrojado:[
+        '🚀 High-risk assets require a horizon of at least 5–10 years.',
+        '₿ Limit crypto to a maximum of 10–15% of your total portfolio.',
+        '🌍 International diversification reduces currency and geopolitical risk.',
+        '📉 Never invest money you might need within 2 years in equities.',
+      ],
+    },
   }
 };
 
@@ -1542,7 +1894,7 @@ function applyTranslations(){
   set('t-distLabel',T.distLabel);
   set('t-lFixo',T.lFixo); set('t-lLazer',T.lLazer); set('t-lInvest',T.lInvest);
   set('t-catLabel',T.catLabel);
-  set('t-tabFixo',T.tabFixo); set('t-tabLazer',T.tabLazer);
+  set('t-tabFixo',T.tabFixo); set('t-tabParcelado',T.tabParcelado||'Parcelados'); set('t-tabLazer',T.tabLazer);
   set('t-tabInvest',T.tabInvest); set('t-tabSonhos',T.tabSonhos);
   set('t-limitLabel',T.limitLabel); set('t-lazerLimit',T.lazerLimit); set('t-investLimit',T.investLimit);
   set('t-colDesc',T.colDesc); set('t-colDue',T.colDue); set('t-colVal',T.colVal);
@@ -1550,7 +1902,11 @@ function applyTranslations(){
   const adf=$('t-addFixo'); if(adf) adf.textContent=T.addFixo;
   const adl=$('t-addLazer'); if(adl) adl.textContent=T.addLazer;
   const adi=$('t-addInvest'); if(adi) adi.textContent=T.addInvest;
-  set('t-totalFixo',T.totalFixo); set('t-totalLazer',T.totalLazer); set('t-totalInvest',T.totalInvest);
+  set('t-totalFixo',T.totalFixo);
+  set('t-parceladoTitle',T.parceladoTitle||'💳 Compras Parceladas');
+  set('t-colParcN',T.colParcN||'Parcela');
+  set('t-parceladoFooter',T.parceladoFooter||'Debitado do salário ao dar ✓');
+  const apBtn=$('t-addParcelado'); if(apBtn) apBtn.textContent=T.addParcelado||'💳 Adicionar compra parcelada'; set('t-totalLazer',T.totalLazer); set('t-totalInvest',T.totalInvest);
   set('t-fixoTitle',T.fixoTitle); set('t-lazerTitle',T.lazerTitle); set('t-investTitle',T.investTitle);
   set('t-dreamFormTitle',T.dreamFormTitle);
   const adbtn=$('t-addDreamBtn'); if(adbtn) adbtn.textContent=T.addDreamBtn;
@@ -1569,6 +1925,19 @@ function applyTranslations(){
   const ebBtn=$('t-ebookBtn'); if(ebBtn) ebBtn.textContent=T.ebookBtn;
   // item placeholders
   document.querySelectorAll('.iname').forEach(el=>el.placeholder=T.colDesc+'...');
+  // ── Plano page static strings ──
+  set('t-planoTitle',T.planoTitle); set('t-planoSub',T.planoSub);
+  set('t-planoProfile',T.planoProfile);
+  set('t-riskC',T.riskC); set('t-riskM',T.riskM); set('t-riskA',T.riskA);
+  set('t-planoSim',T.planoSim);
+  set('t-lInicial',T.lInicial); set('t-lMensal',T.lMensal); set('t-lTaxa',T.lTaxa); set('t-lAnos',T.lAnos);
+  set('t-rInvestido',T.rInvestido); set('t-rRendimento',T.rRendimento||T.rRendimiento); set('t-rFinal',T.rFinal);
+  set('t-barCapital',T.barCapital); set('t-barJuros',T.barJuros);
+  set('t-planoAlloc',T.planoAlloc); set('t-planoMilestones',T.planoMilestones);
+  const mpp=$('t-mBtnPct'); if(mpp) mpp.textContent=T.mBtnPct;
+  const mpv=$('t-mBtnVal'); if(mpv) mpv.textContent=T.mBtnVal;
+  // re-render dynamic plano content if visible
+  if(currentPage==='plano'){ renderPlanoAlloc(); renderPlanoTips(); renderMilestones(safe($('plano-inicial').value),safe($('plano-mensal').value),(Math.pow(1+safe($('plano-taxa').value)/100,1/12)-1),parseInt($('plano-anos').value)||10); }
 }
 
 // ─────────────────────────────────────────
@@ -1620,6 +1989,8 @@ window.onload=()=>{
 
   // items
   loadItems(); defaultItems();
+  // parcelados
+  loadParcelados();
 
   // sonhos
   renderDreams();
@@ -1645,6 +2016,16 @@ window.onload=()=>{
 // ─────────────────────────────────────────
 let riskProfile = 'moderado';
 
+// PROFILES now only stores numeric/style data; text comes from TR[lang]
+function getProfileText(r){
+  const T=TR[lang]||TR.pt;
+  return {
+    label: T['riskC riskM riskA'.split(' ')[['conservador','moderado','arrojado'].indexOf(r)]],
+    allocLabels: T.allocLabels[r],
+    tips: T.tips[r],
+    tipsTitle: T.tipsTitle,
+  };
+}
 const PROFILES = {
   conservador: {
     label: 'Conservador 🛡️',
@@ -1776,14 +2157,14 @@ function renderMilestones(inicial, mensal, taxaMes, totalAnos){
     row.innerHTML = `
       <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black flex-shrink-0"
            style="background:${isLast?'rgba(255,255,255,.2)':'var(--bdr)'};color:${isLast?'#fff':'var(--txt3)'};">
-        ${anos}a
+        ${anos}${(TR[lang]||TR.pt).milestonesYr}
       </div>
       <div class="flex-1 min-w-0">
         <div class="text-sm font-black ${isLast?'text-white':''}">
           ${fmtM(fv)}
         </div>
         <div class="text-xs ${isLast?'text-white/60':''}">
-          +${fmtM(rend)} em juros
+          +${fmtM(rend)} ${(TR[lang]||TR.pt).milestonesInterest}
         </div>
       </div>
       <div class="text-xs font-bold flex-shrink-0 ${isLast?'text-white/80':''}">
@@ -1796,14 +2177,16 @@ function renderMilestones(inicial, mensal, taxaMes, totalAnos){
 function renderPlanoAlloc(){
   const container = $('plano-alloc'); if(!container) return;
   const p = PROFILES[riskProfile];
+  const pt = getProfileText(riskProfile);
   container.innerHTML = '';
-  p.alloc.forEach(a=>{
+  p.alloc.forEach((a,i)=>{
+    const label = (pt.allocLabels && pt.allocLabels[i]) ? pt.allocLabels[i] : a.label;
     const row = document.createElement('div');
     row.className = 'flex items-center gap-3';
     row.innerHTML = `
       <div class="flex-1">
         <div class="flex justify-between items-center mb-1">
-          <span class="text-xs font-bold" style="color:var(--txt);">${a.label}</span>
+          <span class="text-xs font-bold" style="color:var(--txt);">${label}</span>
           <span class="text-xs font-black" style="color:${a.color};">${a.pct}%</span>
         </div>
         <div class="h-1.5 rounded-full overflow-hidden" style="background:var(--bdr);">
@@ -1817,14 +2200,18 @@ function renderPlanoAlloc(){
 function renderPlanoTips(){
   const container = $('plano-tips'); if(!container) return;
   const p = PROFILES[riskProfile];
+  const pt = getProfileText(riskProfile);
+  const profileLabel = pt.label || p.label;
+  const tips = (pt.tips && pt.tips.length) ? pt.tips : p.tips;
+  const tipsTitle = pt.tipsTitle || '💡 Dicas para o Perfil';
   container.style.background = p.bg || '#ede9fe';
   container.style.borderColor = p.color;
   container.innerHTML = `
     <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:${p.color};">
-      💡 Dicas para o Perfil ${p.label}
+      ${tipsTitle} ${profileLabel}
     </div>
     <div class="flex flex-col gap-2">
-      ${p.tips.map(t=>`
+      ${tips.map(t=>`
         <div class="flex gap-2 items-start text-xs leading-relaxed" style="color:var(--txt2);">
           <span class="flex-shrink-0 mt-0.5">•</span><span>${t}</span>
         </div>`).join('')}
