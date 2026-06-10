@@ -193,17 +193,17 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 
     <!-- Total saldo -->
     <div class="px-5 pt-5 pb-2">
-      <div class="text-xs font-bold uppercase tracking-widest text-white/60 mb-1" id="t-walletTitle">SALDO TOTAL</div>
+      <div class="text-xs font-bold uppercase tracking-widest text-white/60 mb-1" id="t-walletTitle">SALDO DAS CONTAS</div>
       <div class="flex items-end gap-2 mb-1">
         <span class="text-3xl font-black text-white/50">$</span>
         <span class="text-5xl font-black text-white leading-none tracking-tight" id="walletGrand">0.00</span>
       </div>
-      <!-- saldo livre pill -->
-      <div class="inline-flex items-center gap-2 mt-2 px-3 py-1.5 rounded-full text-sm font-bold text-white"
+      <!-- salário restante (sal − gastos com check) -->
+      <div class="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-full text-sm font-bold text-white"
            style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);">
-        <span>🔓</span>
-        <span id="t-walletFree">Saldo livre:</span>
-        <span id="walletFree" class="font-black">$0.00</span>
+        <span>💼</span>
+        <span id="t-salRest">Salário restante:</span>
+        <span id="salarioRestante" class="font-black">$0.00</span>
       </div>
     </div>
 
@@ -367,14 +367,16 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
         </div>
         <div id="fracLazerRows" class="flex flex-col gap-1.5"></div>
       </div>
-      <!-- col headers (no date col for lazer/invest) -->
-      <div class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider" style="color:var(--txt3);border-bottom:1px solid var(--bdr);">
-        <span style="flex:1 1 0;" id="t-colDescL">Descrição</span>
-        <span style="width:72px;flex-shrink:0;text-align:right;" id="t-colValL">Valor</span>
-        <span style="width:28px;flex-shrink:0;"></span>
+      <!-- manual area — hidden when auto-frac is active -->
+      <div id="manualAreaLazer">
+        <div class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider" style="color:var(--txt3);border-bottom:1px solid var(--bdr);">
+          <span style="flex:1 1 0;" id="t-colDescL">Descrição</span>
+          <span style="width:72px;flex-shrink:0;text-align:right;" id="t-colValL">Valor</span>
+          <span style="width:28px;flex-shrink:0;"></span>
+        </div>
+        <div id="list-lazer" class="divide-y" style="border-color:var(--bdr);"></div>
+        <button class="add-dashed" onclick="addItem('lazer')" id="t-addLazer">➕ Adicionar item de lazer</button>
       </div>
-      <div id="list-lazer" class="divide-y" style="border-color:var(--bdr);"></div>
-      <button class="add-dashed" onclick="addItem('lazer')" id="t-addLazer">➕ Adicionar item de lazer</button>
       <div class="flex items-center justify-between px-4 py-3" style="background:var(--surf2);border-top:1px solid var(--bdr);">
         <span class="text-xs font-bold" style="color:var(--txt3);" id="t-totalLazer">Total lazer</span>
         <span class="text-base font-black" style="color:#d97706;" id="total-lazer">$0.00</span>
@@ -410,13 +412,16 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
         </div>
         <div id="fracInvestRows" class="flex flex-col gap-1.5"></div>
       </div>
-      <div class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider" style="color:var(--txt3);border-bottom:1px solid var(--bdr);">
-        <span style="flex:1 1 0;">Descrição</span>
-        <span style="width:72px;flex-shrink:0;text-align:right;">Valor</span>
-        <span style="width:28px;flex-shrink:0;"></span>
+      <!-- manual area — hidden when auto-frac is active -->
+      <div id="manualAreaInvest">
+        <div class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider" style="color:var(--txt3);border-bottom:1px solid var(--bdr);">
+          <span style="flex:1 1 0;">Descrição</span>
+          <span style="width:72px;flex-shrink:0;text-align:right;">Valor</span>
+          <span style="width:28px;flex-shrink:0;"></span>
+        </div>
+        <div id="list-invest" class="divide-y" style="border-color:var(--bdr);"></div>
+        <button class="add-dashed" onclick="addItem('invest')" id="t-addInvest">➕ Adicionar investimento</button>
       </div>
-      <div id="list-invest" class="divide-y" style="border-color:var(--bdr);"></div>
-      <button class="add-dashed" onclick="addItem('invest')" id="t-addInvest">➕ Adicionar investimento</button>
       <div class="flex items-center justify-between px-4 py-3" style="background:var(--surf2);border-top:1px solid var(--bdr);">
         <span class="text-xs font-bold" style="color:var(--txt3);" id="t-totalInvest">Total investido</span>
         <span class="text-base font-black" style="color:#059669;" id="total-invest">$0.00</span>
@@ -749,10 +754,14 @@ function applyFrac(cat){
   const d=getData();
   d.fracs[cat].n=n;
   if(n>0){
-    // preserve existing names up to n
     while(d.fracs[cat].names.length<n) d.fracs[cat].names.push('');
   }
-  save(d); calcularTudo(); renderFracRows(cat);
+  save(d);
+  // show/hide manual area: visible only when mode is manual (n===0)
+  const manualArea=$('manualArea'+cap(cat));
+  if(manualArea) manualArea.style.display=n>0?'none':'block';
+  calcularTudo();
+  renderFracRows(cat);
 }
 function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
@@ -762,7 +771,6 @@ function renderFracRows(cat){
   container.innerHTML='';
   if(!fc||fc.n<=0) return;
 
-  // get current meta value
   const sal=safe($('salario').value);
   let pct;
   if(cat==='lazer'){
@@ -776,18 +784,22 @@ function renderFracRows(cat){
   }
   const total=sal*pct/100;
   const part=total/fc.n;
+  const color=cat==='lazer'?'#d97706':'#059669';
 
   for(let i=0;i<fc.n;i++){
-    const isChecked=fc.checks&&fc.checks[i];
+    const isChecked=!!(fc.checks&&fc.checks[i]);
     const row=document.createElement('div');
-    row.className='flex items-center gap-2 py-1';
+    row.className='flex items-center gap-2 py-1.5 px-1 rounded-lg transition-all'+(isChecked?' opacity-60':'');
     row.innerHTML=`
-      <button class="chk${isChecked?' on':''}" onclick="toggleFracCheck('${cat}',${i},this)" title="Marcar como feito">✓</button>
+      <button class="chk${isChecked?' on':''}"
+              style="border-color:${isChecked?'#059669':'var(--bdr2)'};background:${isChecked?'#059669':'transparent'};color:${isChecked?'#fff':'transparent'};"
+              onclick="toggleFracCheck('${cat}',${i},this)">✓</button>
       <input type="text" value="${esc(fc.names[i]||'')}" placeholder="Parte ${i+1}"
              class="inp flex-1 min-w-0 rounded-lg px-2.5 py-1.5 text-xs font-semibold outline-none"
-             style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
+             style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);${isChecked?'text-decoration:line-through;opacity:.5':''}"
              oninput="saveFracName('${cat}',${i},this.value)">
-      <span class="text-xs font-black flex-shrink-0" style="color:${cat==='lazer'?'#d97706':'#059669'};">${fmtM(part)}</span>`;
+      <span class="text-xs font-black flex-shrink-0 px-2 py-1 rounded-lg"
+            style="color:${color};background:${cat==='lazer'?'#fef3c7':'#d1fae5'};">${fmtM(part)}</span>`;
     container.appendChild(row);
   }
 }
@@ -1101,29 +1113,39 @@ function calcularTudo(){
   const dFracI=fracCheckedTotal('invest',mI);
   const dFracL=fracCheckedTotal('lazer',mL);
 
-  // displayed totals (all items regardless of check)
+  // ── totals displayed (all items regardless of check) ──
   const totalF=sumAllItems('fixo');
-  const totalL=sumAllItems('lazer');
-  const totalI=sumAllItems('invest');
+  // For lazer total: when auto-frac active use meta value so display shows the goal, not 0
+  const fracLazerActive=getData().fracs.lazer.n>0;
+  const fracInvestActive=getData().fracs.invest.n>0;
+  const totalL=fracLazerActive ? mL : sumAllItems('lazer');
+  const totalI=fracInvestActive ? mI : sumAllItems('invest');
   $('total-fixo').textContent=fmtM(totalF);
   $('total-lazer').textContent=fmtM(totalL);
   $('total-invest').textContent=fmtM(totalI);
 
-  // alerts (based on planned vs limit)
-  setAlert('alert-fixo',totalF,mF,'fixo',false);
-  setAlert('alert-lazer',totalL,mL,'lazer',false);
-  setAlert('alert-invest',totalI+dFracI,mI,'invest',true);
+  // ── alert strips (planned vs limit) ──
+  // fixo: compare real items vs limit
+  setAlert('alert-fixo', totalF, mF, 'fixo', false);
+  // lazer: when frac active compare checked fracs vs meta; else real items
+  const lazerCheckedAmt = fracLazerActive ? dFracL : doneL;
+  setAlert('alert-lazer', fracLazerActive ? dFracL : totalL, mL, 'lazer', false);
+  // invest
+  setAlert('alert-invest', fracInvestActive ? dFracI : (totalI+dFracI), mI, 'invest', true);
 
   // ── Wallet panel ──
+  // Saldo Total = apenas soma das contas (salário NÃO entra)
   const wTotal=walletTotal();
-  // Saldo total = wallet accounts + salary (salary auto-adds to total)
-  const grandTotal=wTotal+sal;
-  $('walletGrand').textContent=fmtM(grandTotal).replace('$','');
+  $('walletGrand').textContent=fmtM(wTotal).replace('$','');
 
-  // Saldo livre = grandTotal - paid expenses
-  const gastosPagos=doneF+doneL+dFracL;
-  const livreSaldo=grandTotal-gastosPagos;
-  $('walletFree').textContent=fmtM(livreSaldo);
+  // Salário restante = salário − gastos com ✓ (fixo + lazer + invest)
+  // Lazer conta como custo: usar checked fracs OU done itens manuais
+  const gastosPagos = doneF + (fracLazerActive ? dFracL : doneL);
+  const investPagos = fracInvestActive ? dFracI : doneI;
+  const salRestante = sal - gastosPagos - investPagos;
+  $('salarioRestante').textContent = fmtM(Math.max(0, salRestante));
+  const srEl=$('salarioRestante');
+  if(srEl) srEl.style.color = salRestante < 0 ? '#fca5a5' : '#fff';
 }
 
 function fracCheckedTotal(cat,metaTotal){
@@ -1154,13 +1176,39 @@ function arquivarMes(){
   const hoje=new Date().toISOString().slice(0,7);
   const mes=$('mesRef')?($('mesRef').value||hoje):hoje;
   const d=getData();
+  const sal=safe($('salario').value);
+
+  // resolve limits (same logic as calcularTudo)
+  let pF,pI;
+  if(mode==='pct'){
+    pF=Math.max(0,Math.min(100,safe($('pctFixo').value)));
+    pI=Math.max(0,Math.min(100,safe($('pctInvest').value)));
+  } else {
+    pF=sal>0?safe($('pctFixo').value)/sal*100:0;
+    pI=sal>0?safe($('pctInvest').value)/sal*100:0;
+  }
+  let pS=0; d.sonhos.forEach(s=>{ pS+=sal>0?(s.valor/s.meses/sal*100):0; });
+  const pL=Math.max(0,100-pF-pI-pS);
+  const mF=sal*pF/100, mL=sal*pL/100, mI=sal*pI/100;
+
+  // real spending
+  const fracLazerActive=d.fracs.lazer.n>0;
+  const fracInvestActive=d.fracs.invest.n>0;
+  const gastoF=sumAllItems('fixo');
+  const gastoL=fracLazerActive ? fracCheckedTotal('lazer',mL) : sumAllItems('lazer');
+  const gastoI=fracInvestActive ? fracCheckedTotal('invest',mI) : sumAllItems('invest');
+
+  // sobra = o que NÃO foi gasto dentro do limite (fixo + lazer)
+  const sobraF=Math.max(0, mF-gastoF);
+  const sobraL=Math.max(0, mL-gastoL);
+  const sobra=sobraF+sobraL;
+
   const reg={
-    id:Date.now(), mes,
-    salario:safe($('salario').value),
-    totalFixo:sumAllItems('fixo'),
-    totalLazer:sumAllItems('lazer'),
-    totalInvest:sumAllItems('invest'),
-    sobra:safe($('salario').value)-sumAllItems('fixo')-sumAllItems('lazer')-sumAllItems('invest')
+    id:Date.now(), mes, salario:sal,
+    totalFixo:gastoF, limiteFixo:mF,
+    totalLazer:gastoL, limiteLazer:mL,
+    totalInvest:gastoI, limiteInvest:mI,
+    sobra
   };
   d.hist=d.hist.filter(h=>h.mes!==mes);
   d.hist.push(reg); save(d);
@@ -1180,23 +1228,56 @@ function renderHistory(){
   const sorted=[...d.hist].sort((a,b)=>b.mes.localeCompare(a.mes));
   c.innerHTML='';
   sorted.forEach(h=>{
+    // backward compat: old records may not have limit fields
+    const lF=h.limiteFixo||h.salario||0;
+    const lL=h.limiteLazer||0;
+    const sobraF=Math.max(0,lF-h.totalFixo);
+    const sobraL=Math.max(0,lL-h.totalLazer);
+    const sobra=h.sobra!==undefined ? h.sobra : sobraF+sobraL;
+
     const card=document.createElement('div');
     card.className='rounded-2xl p-4 mb-3 s transition-all';
     card.style='background:var(--surf);border:1px solid var(--bdr);';
     card.innerHTML=`
       <div class="flex items-center justify-between mb-3">
-        <div><div class="font-bold" style="color:var(--txt);">📅 ${h.mes}</div>
-             <div class="text-xs" style="color:var(--txt3);">Salário: ${fmtM(h.salario)}</div></div>
+        <div>
+          <div class="font-bold" style="color:var(--txt);">📅 ${h.mes}</div>
+          <div class="text-xs" style="color:var(--txt3);">Salário: ${fmtM(h.salario)}</div>
+        </div>
         <button onclick="deleteHistory(${h.id})" class="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
-                style="background:none;border:none;color:var(--txt3);" onmouseover="this.style.background='#fee2e2';this.style.color='#dc2626';" onmouseout="this.style.background='none';this.style.color='var(--txt3)';">🗑</button>
+                style="background:none;border:none;color:var(--txt3);"
+                onmouseover="this.style.background='#fee2e2';this.style.color='#dc2626';"
+                onmouseout="this.style.background='none';this.style.color='var(--txt3)';">🗑</button>
       </div>
-      <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        ${[['🏠 Fixo',h.totalFixo,'#6d28d9'],['☕ Lazer',h.totalLazer,'#d97706'],['🛡️ Invest.',h.totalInvest,'#059669'],['💰 Sobra',h.sobra,safe(h.sobra)>=0?'#059669':'#dc2626']].map(([l,v,c])=>`
+      <!-- grid 4 cols -->
+      <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 mb-2">
         <div class="rounded-xl p-2.5 text-center" style="background:var(--surf2);">
-          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">${l}</div>
-          <div class="font-black text-sm" style="color:${c};">${fmtM(v)}</div>
-        </div>`).join('')}
-      </div>`;
+          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">🏠 Fixo</div>
+          <div class="font-black text-sm" style="color:#6d28d9;">${fmtM(h.totalFixo)}</div>
+          <div class="text-xs mt-0.5" style="color:var(--txt3);">limite ${fmtM(lF)}</div>
+        </div>
+        <div class="rounded-xl p-2.5 text-center" style="background:var(--surf2);">
+          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">☕ Lazer</div>
+          <div class="font-black text-sm" style="color:#d97706;">${fmtM(h.totalLazer)}</div>
+          <div class="text-xs mt-0.5" style="color:var(--txt3);">limite ${fmtM(lL)}</div>
+        </div>
+        <div class="rounded-xl p-2.5 text-center" style="background:var(--surf2);">
+          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">🛡️ Invest.</div>
+          <div class="font-black text-sm" style="color:#059669;">${fmtM(h.totalInvest)}</div>
+        </div>
+        <div class="rounded-xl p-2.5 text-center" style="background:${sobra>0?'#d1fae5':'var(--surf2)'};">
+          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">💰 Sobra</div>
+          <div class="font-black text-sm" style="color:${sobra>0?'#059669':'#94a3b8'};">${fmtM(sobra)}</div>
+          ${sobra>0?`<div class="text-xs mt-0.5" style="color:#059669;">economia do mês</div>`:''}
+        </div>
+      </div>
+      <!-- sobra breakdown when available -->
+      ${(sobraF>0||sobraL>0)?`
+      <div class="flex gap-2 flex-wrap">
+        ${sobraF>0?`<span class="text-xs px-2 py-1 rounded-full font-semibold" style="background:#ede9fe;color:#6d28d9;">🏠 poupou ${fmtM(sobraF)} em fixo</span>`:''}
+        ${sobraL>0?`<span class="text-xs px-2 py-1 rounded-full font-semibold" style="background:#fef3c7;color:#d97706;">☕ poupou ${fmtM(sobraL)} em lazer</span>`:''}
+      </div>`:''}
+    `;
     c.appendChild(card);
   });
 }
@@ -1222,7 +1303,7 @@ const TR={
   pt:{
     appName:'Calculadora da Virada', appSub:'Gestão financeira inteligente',
     darkMode:'Modo Escuro', lightMode:'Modo Claro',
-    walletTitle:'SALDO TOTAL', walletFree:'Saldo livre:',
+    walletTitle:'SALDO DAS CONTAS', salRest:'Salário restante:',
     accounts:'Minhas contas', addAccount:'＋ Adicionar conta',
     salaryLabel:'Salário / Renda mensal',
     distLabel:'Distribuição do orçamento',
@@ -1253,7 +1334,7 @@ const TR={
   es:{
     appName:'Calculadora del Giro', appSub:'Gestión financiera inteligente',
     darkMode:'Modo Oscuro', lightMode:'Modo Claro',
-    walletTitle:'SALDO TOTAL', walletFree:'Saldo libre:',
+    walletTitle:'SALDO DE CUENTAS', salRest:'Salario restante:',
     accounts:'Mis cuentas', addAccount:'＋ Agregar cuenta',
     salaryLabel:'Salario / Renta mensual',
     distLabel:'Distribución del presupuesto',
@@ -1284,7 +1365,7 @@ const TR={
   en:{
     appName:'Budget Calculator', appSub:'Smart financial management',
     darkMode:'Dark Mode', lightMode:'Light Mode',
-    walletTitle:'TOTAL BALANCE', walletFree:'Free balance:',
+    walletTitle:'ACCOUNT BALANCE', salRest:'Salary left:',
     accounts:'My accounts', addAccount:'＋ Add account',
     salaryLabel:'Monthly income',
     distLabel:'Budget distribution',
@@ -1335,7 +1416,7 @@ function applyTranslations(){
   document.documentElement.lang=lang;
   set('t-appName',T.appName); set('t-appSub',T.appSub);
   set('t-themeLabel',document.documentElement.getAttribute('data-theme')==='dark'?T.lightMode:T.darkMode);
-  set('t-walletTitle',T.walletTitle); set('t-walletFree',T.walletFree);
+  set('t-walletTitle',T.walletTitle); set('t-salRest',T.salRest);
   set('t-accounts',T.accounts);
   const addAccBtn=$('t-addAccount'); if(addAccBtn) addAccBtn.textContent=T.addAccount;
   set('t-salaryLabel',T.salaryLabel);
@@ -1406,9 +1487,15 @@ window.onload=()=>{
   $('mBtn-val').style.background=mode==='val'?'rgba(255,255,255,.3)':'transparent';
   $('mBtn-val').style.color=mode==='val'?'#fff':'rgba(255,255,255,.4)';
 
-  // fractions select state
-  if(d.fracs.lazer.n>0)   $('fracLazer').value=d.fracs.lazer.n;
-  if(d.fracs.invest.n>0)  $('fracInvest').value=d.fracs.invest.n;
+  // fractions select state + hide manual area if auto-frac was saved
+  if(d.fracs.lazer.n>0){
+    $('fracLazer').value=d.fracs.lazer.n;
+    const ma=$('manualAreaLazer'); if(ma) ma.style.display='none';
+  }
+  if(d.fracs.invest.n>0){
+    $('fracInvest').value=d.fracs.invest.n;
+    const ma=$('manualAreaInvest'); if(ma) ma.style.display='none';
+  }
 
   // wallet
   renderWallet();
