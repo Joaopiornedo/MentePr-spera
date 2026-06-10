@@ -504,6 +504,119 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 </div>
 
 
+
+<!-- ══════════════════════════════════════
+     PAGE 4 — PLANO
+══════════════════════════════════════ -->
+<div class="page" id="page-plano">
+<div class="max-w-2xl mx-auto px-4 pb-28 pt-5">
+
+  <!-- header -->
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <div class="text-xl font-black" style="color:var(--txt);">📈 Plano de Investimento</div>
+      <div class="text-xs mt-0.5" style="color:var(--txt3);">Personalizado com base no seu orçamento</div>
+    </div>
+  </div>
+
+  <!-- perfil de risco -->
+  <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
+    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);">Perfil de Investidor</div>
+    <div class="grid grid-cols-3 gap-2" id="riskButtons">
+      <button onclick="setRisk('conservador')" id="risk-conservador"
+              class="risk-btn py-3 rounded-xl text-xs font-bold border transition-all"
+              style="border-color:var(--bdr);color:var(--txt2);background:var(--surf2);">
+        🛡️<br>Conservador
+      </button>
+      <button onclick="setRisk('moderado')" id="risk-moderado"
+              class="risk-btn py-3 rounded-xl text-xs font-bold border transition-all active-risk"
+              style="border-color:#6d28d9;color:#fff;background:#6d28d9;">
+        ⚖️<br>Moderado
+      </button>
+      <button onclick="setRisk('arrojado')" id="risk-arrojado"
+              class="risk-btn py-3 rounded-xl text-xs font-bold border transition-all"
+              style="border-color:var(--bdr);color:var(--txt2);background:var(--surf2);">
+        🚀<br>Arrojado
+      </button>
+    </div>
+  </div>
+
+  <!-- calculadora de juros compostos -->
+  <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
+    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);">Simulador de Crescimento</div>
+    <div class="grid grid-cols-2 gap-3 mb-3">
+      <div>
+        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);">Aporte inicial ($)</label>
+        <input type="number" id="plano-inicial" value="0" min="0" step="0.01"
+               class="inp w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none"
+               style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
+               oninput="calcPlano()">
+      </div>
+      <div>
+        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);">Aporte mensal ($)</label>
+        <input type="number" id="plano-mensal" value="0" min="0" step="0.01"
+               class="inp w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none"
+               style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
+               oninput="calcPlano()">
+      </div>
+      <div>
+        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);">Taxa anual (%)</label>
+        <input type="number" id="plano-taxa" value="10" min="0" max="100" step="0.1"
+               class="inp w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none"
+               style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
+               oninput="calcPlano()">
+      </div>
+      <div>
+        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);">Período (anos)</label>
+        <input type="number" id="plano-anos" value="10" min="1" max="50"
+               class="inp w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none"
+               style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
+               oninput="calcPlano()">
+      </div>
+    </div>
+    <!-- result cards -->
+    <div class="grid grid-cols-3 gap-2 mb-3" id="plano-results">
+      <div class="rounded-xl p-3 text-center" style="background:#ede9fe;">
+        <div class="text-xs font-bold mb-1" style="color:#6d28d9;">Total investido</div>
+        <div class="text-sm font-black" style="color:#6d28d9;" id="plano-r-investido">$0</div>
+      </div>
+      <div class="rounded-xl p-3 text-center" style="background:#d1fae5;">
+        <div class="text-xs font-bold mb-1" style="color:#059669;">Rendimento</div>
+        <div class="text-sm font-black" style="color:#059669;" id="plano-r-rendimento">$0</div>
+      </div>
+      <div class="rounded-xl p-3 text-center" style="background:linear-gradient(135deg,#4c1d95,#6d28d9);">
+        <div class="text-xs font-bold mb-1 text-white/70">Patrimônio final</div>
+        <div class="text-sm font-black text-white" id="plano-r-final">$0</div>
+      </div>
+    </div>
+    <!-- mini progress bar: invested vs returns -->
+    <div class="h-2 rounded-full overflow-hidden flex" style="background:var(--bdr);">
+      <div id="plano-bar-inv" class="h-full transition-all" style="background:#6d28d9;width:50%;"></div>
+      <div id="plano-bar-rend" class="h-full transition-all" style="background:#059669;width:50%;"></div>
+    </div>
+    <div class="flex justify-between text-xs mt-1" style="color:var(--txt3);">
+      <span>🟣 Capital aportado</span><span>🟢 Juros compostos</span>
+    </div>
+  </div>
+
+  <!-- alocação recomendada por perfil -->
+  <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
+    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);">Alocação Recomendada</div>
+    <div id="plano-alloc" class="flex flex-col gap-2"></div>
+  </div>
+
+  <!-- milestones -->
+  <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
+    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);">Marcos ao Longo do Tempo</div>
+    <div id="plano-milestones" class="flex flex-col gap-2"></div>
+  </div>
+
+  <!-- dicas por perfil -->
+  <div class="rounded-2xl p-4 mb-4" id="plano-tips" style="background:#ede9fe;border:1.5px solid #6d28d9;"></div>
+
+</div>
+</div>
+
 <!-- ══════════════════════════════════════
      BOTTOM NAV
 ══════════════════════════════════════ -->
@@ -522,7 +635,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
     <span class="text-xl">📅</span><span id="t-navHist">Histórico</span>
   </button>
   <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
-          id="nav-plano">
+          id="nav-plano" onclick="switchPage('plano')">
     <span class="text-xl">📈</span><span id="t-navPlan">Plano</span>
   </button>
 </nav>
@@ -654,13 +767,16 @@ document.addEventListener('click',e=>{ if(!$('settingsWrap').contains(e.target))
 //  NAVIGATION
 // ─────────────────────────────────────────
 function switchPage(p){
+  // ebook redirects externally — never save as active page
+  if(p==='ebook'){ goToEbook(); return; }
   currentPage=p;
+  localStorage.setItem('cvPage',p);
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
   $('page-'+p).classList.add('active');
   const n=$('nav-'+p); if(n) n.classList.add('active');
   if(p==='historico') renderHistory();
-  if(p==='ebook'){ goToEbook(); return; }
+  if(p==='plano') renderPlano();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -1514,7 +1630,237 @@ window.onload=()=>{
 
   // active tab style
   switchTab('fixo');
+
+  // restore last active page (PWA fix — ebook never saved, so we always land on orcamento or last real page)
+  const savedPage = localStorage.getItem('cvPage') || 'orcamento';
+  if(savedPage && savedPage !== 'ebook' && $('page-'+savedPage)){
+    switchPage(savedPage);
+  }
 };
+
+// ─────────────────────────────────────────
+//  PLANO DE INVESTIMENTO
+// ─────────────────────────────────────────
+let riskProfile = 'moderado';
+
+const PROFILES = {
+  conservador: {
+    label: 'Conservador 🛡️',
+    taxa: 7,
+    color: '#2563eb',
+    alloc: [
+      { label: 'Tesouro Direto / Renda Fixa', pct: 60, color: '#2563eb', bg: '#dbeafe' },
+      { label: 'Fundos de Baixo Risco',        pct: 25, color: '#0891b2', bg: '#cffafe' },
+      { label: 'Reserva de Emergência (CDB)',   pct: 15, color: '#059669', bg: '#d1fae5' },
+    ],
+    tips: [
+      '🛡️ Mantenha 6 meses de gastos fixos em reserva de emergência antes de investir.',
+      '📊 Priorize CDBs com liquidez diária para a reserva.',
+      '📅 Títulos do Tesouro Selic protegem da inflação com baixo risco.',
+      '🔄 Reinvista os rendimentos mensalmente para acelerar os juros compostos.',
+    ]
+  },
+  moderado: {
+    label: 'Moderado ⚖️',
+    taxa: 12,
+    color: '#6d28d9',
+    alloc: [
+      { label: 'Renda Fixa / Tesouro',   pct: 40, color: '#6d28d9', bg: '#ede9fe' },
+      { label: 'Fundos Multimercado',     pct: 30, color: '#d97706', bg: '#fef3c7' },
+      { label: 'Ações / ETFs',            pct: 20, color: '#059669', bg: '#d1fae5' },
+      { label: 'FIIs (Fundos Imobiliários)', pct: 10, color: '#0891b2', bg: '#cffafe' },
+    ],
+    tips: [
+      '⚖️ Diversifique entre renda fixa e variável para equilibrar risco e retorno.',
+      '📈 ETFs de índice (ex: BOVA11) permitem exposição ao mercado com baixo custo.',
+      '🏢 FIIs distribuem rendimentos mensais — boa fonte de renda passiva.',
+      '🔁 Rebalanceie a carteira a cada 6 meses para manter as proporções.',
+    ]
+  },
+  arrojado: {
+    label: 'Arrojado 🚀',
+    taxa: 18,
+    color: '#dc2626',
+    alloc: [
+      { label: 'Ações Nacionais',        pct: 35, color: '#dc2626', bg: '#fee2e2' },
+      { label: 'Ações Internacionais / BDRs', pct: 25, color: '#d97706', bg: '#fef3c7' },
+      { label: 'Criptoativos',           pct: 15, color: '#8b5cf6', bg: '#ede9fe' },
+      { label: 'Renda Fixa (reserva)',   pct: 15, color: '#059669', bg: '#d1fae5' },
+      { label: 'Startups / Venture',     pct: 10, color: '#0891b2', bg: '#cffafe' },
+    ],
+    tips: [
+      '🚀 Ativos de alto risco exigem horizonte de pelo menos 5–10 anos.',
+      '₿ Limite criptoativos a no máximo 10–15% da carteira total.',
+      '🌍 Diversificação internacional reduz risco cambial e geopolítico.',
+      '📉 Nunca invista em renda variável dinheiro que pode precisar em menos de 2 anos.',
+    ]
+  }
+};
+
+function setRisk(r){
+  riskProfile = r;
+  const d = getData(); d.cfg.riskProfile = r; save(d);
+  document.querySelectorAll('.risk-btn').forEach(b=>{
+    b.style.background = 'var(--surf2)';
+    b.style.color = 'var(--txt2)';
+    b.style.borderColor = 'var(--bdr)';
+  });
+  const active = $('risk-'+r);
+  if(active){
+    active.style.background = PROFILES[r].color;
+    active.style.color = '#fff';
+    active.style.borderColor = PROFILES[r].color;
+  }
+  // sync taxa sugerida
+  const taxaEl = $('plano-taxa');
+  if(taxaEl && (!taxaEl.dataset.userEdited)) taxaEl.value = PROFILES[r].taxa;
+  calcPlano();
+  renderPlanoAlloc();
+  renderPlanoTips();
+}
+
+function calcPlano(){
+  const inicial  = safe($('plano-inicial').value);
+  const mensal   = safe($('plano-mensal').value);
+  const taxaAnual= safe($('plano-taxa').value) / 100;
+  const anos     = Math.max(1, parseInt($('plano-anos').value)||1);
+  const meses    = anos * 12;
+  const taxaMes  = Math.pow(1 + taxaAnual, 1/12) - 1;
+
+  // Juros compostos: FV = PV*(1+r)^n + PMT * [((1+r)^n - 1) / r]
+  let fv = inicial * Math.pow(1 + taxaMes, meses);
+  if(taxaMes > 0){
+    fv += mensal * ((Math.pow(1 + taxaMes, meses) - 1) / taxaMes);
+  } else {
+    fv += mensal * meses;
+  }
+
+  const totalInvestido = inicial + mensal * meses;
+  const rendimento = Math.max(0, fv - totalInvestido);
+
+  const rI = $('plano-r-investido'); if(rI) rI.textContent = fmtM(totalInvestido);
+  const rR = $('plano-r-rendimento'); if(rR) rR.textContent = fmtM(rendimento);
+  const rF = $('plano-r-final'); if(rF) rF.textContent = fmtM(fv);
+
+  // bar proportions
+  const pctInv = fv > 0 ? (totalInvestido / fv * 100) : 50;
+  const barI = $('plano-bar-inv'); if(barI) barI.style.width = pctInv.toFixed(1)+'%';
+  const barR = $('plano-bar-rend'); if(barR) barR.style.width = (100-pctInv).toFixed(1)+'%';
+
+  renderMilestones(inicial, mensal, taxaMes, anos);
+}
+
+function renderMilestones(inicial, mensal, taxaMes, totalAnos){
+  const container = $('plano-milestones'); if(!container) return;
+  container.innerHTML = '';
+  const checkpoints = [1, 2, 5, 10, 15, 20, 30].filter(y => y <= totalAnos+1);
+  if(!checkpoints.includes(totalAnos)) checkpoints.push(totalAnos);
+  checkpoints.sort((a,b)=>a-b);
+
+  checkpoints.forEach(anos=>{
+    const n = anos * 12;
+    let fv = inicial * Math.pow(1+taxaMes, n);
+    if(taxaMes > 0) fv += mensal * ((Math.pow(1+taxaMes,n)-1)/taxaMes);
+    else fv += mensal * n;
+    const inv = inicial + mensal * n;
+    const rend = Math.max(0, fv - inv);
+    const isLast = anos === checkpoints[checkpoints.length-1];
+
+    const row = document.createElement('div');
+    row.className = 'flex items-center gap-3 py-2 rounded-xl px-3 transition-all';
+    row.style = isLast
+      ? 'background:linear-gradient(135deg,#4c1d95,#6d28d9);'
+      : 'background:var(--surf2);border:1px solid var(--bdr);';
+    row.innerHTML = `
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black flex-shrink-0"
+           style="background:${isLast?'rgba(255,255,255,.2)':'var(--bdr)'};color:${isLast?'#fff':'var(--txt3)'};">
+        ${anos}a
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="text-sm font-black ${isLast?'text-white':''}">
+          ${fmtM(fv)}
+        </div>
+        <div class="text-xs ${isLast?'text-white/60':''}">
+          +${fmtM(rend)} em juros
+        </div>
+      </div>
+      <div class="text-xs font-bold flex-shrink-0 ${isLast?'text-white/80':''}">
+        ${rend>0?'×'+( fv/Math.max(inv,1) ).toFixed(1):''}
+      </div>`;
+    container.appendChild(row);
+  });
+}
+
+function renderPlanoAlloc(){
+  const container = $('plano-alloc'); if(!container) return;
+  const p = PROFILES[riskProfile];
+  container.innerHTML = '';
+  p.alloc.forEach(a=>{
+    const row = document.createElement('div');
+    row.className = 'flex items-center gap-3';
+    row.innerHTML = `
+      <div class="flex-1">
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-xs font-bold" style="color:var(--txt);">${a.label}</span>
+          <span class="text-xs font-black" style="color:${a.color};">${a.pct}%</span>
+        </div>
+        <div class="h-1.5 rounded-full overflow-hidden" style="background:var(--bdr);">
+          <div class="h-full rounded-full transition-all" style="width:${a.pct}%;background:${a.color};"></div>
+        </div>
+      </div>`;
+    container.appendChild(row);
+  });
+}
+
+function renderPlanoTips(){
+  const container = $('plano-tips'); if(!container) return;
+  const p = PROFILES[riskProfile];
+  container.style.background = p.bg || '#ede9fe';
+  container.style.borderColor = p.color;
+  container.innerHTML = `
+    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:${p.color};">
+      💡 Dicas para o Perfil ${p.label}
+    </div>
+    <div class="flex flex-col gap-2">
+      ${p.tips.map(t=>`
+        <div class="flex gap-2 items-start text-xs leading-relaxed" style="color:var(--txt2);">
+          <span class="flex-shrink-0 mt-0.5">•</span><span>${t}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderPlano(){
+  const d = getData();
+  // restore risk profile
+  if(d.cfg.riskProfile) riskProfile = d.cfg.riskProfile;
+
+  // sync aporte mensal with invest meta from budget
+  const sal  = safe($('salario').value);
+  let pI;
+  if(mode==='pct') pI = Math.max(0, Math.min(100, safe($('pctInvest').value)));
+  else pI = sal > 0 ? safe($('pctInvest').value)/sal*100 : 0;
+  const mI = sal * pI / 100;
+  if(mI > 0 && !$('plano-mensal').dataset.userEdited){
+    $('plano-mensal').value = fmt(mI);
+  }
+
+  // set taxa from profile if not user-edited
+  if(!$('plano-taxa').dataset.userEdited){
+    $('plano-taxa').value = PROFILES[riskProfile].taxa;
+  }
+
+  setRisk(riskProfile);
+  calcPlano();
+}
+
+// mark user-edited on manual input
+['plano-taxa','plano-mensal','plano-inicial','plano-anos'].forEach(id=>{
+  document.addEventListener('DOMContentLoaded',()=>{
+    const el = $(id);
+    if(el) el.addEventListener('input',()=>{ el.dataset.userEdited='1'; });
+  });
+});
+
 </script>
 </body>
 </html>
