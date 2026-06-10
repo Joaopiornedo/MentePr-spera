@@ -1651,64 +1651,71 @@ async function triggerInstall(){
   if(outcome==='accepted'){ closeModal('installOverlay'); toast('✅ App instalado!'); }
   deferredPWA=null;
 }
-// ── Service Worker com detecção de actualização automática ──────
+// ── Service Worker — registo e detecção de actualização ─────────
+// O SW nunca toca no localStorage. Os dados do utilizador estão seguros.
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').then(reg => {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
 
-    // Verifica actualizações a cada vez que a app fica em foco
-    document.addEventListener('visibilitychange', () => {
-      if(document.visibilityState === 'visible') reg.update();
-    });
-
-    // Quando um novo SW termina de instalar, mostra aviso
-    reg.addEventListener('updatefound', () => {
-      const newWorker = reg.installing;
-      if(!newWorker) return;
-      newWorker.addEventListener('statechange', () => {
-        if(newWorker.state === 'installed' && navigator.serviceWorker.controller){
-          // Há uma nova versão instalada — recarrega silenciosamente
-          // (o SW já chamou skipWaiting, por isso a próxima navegação usa a nova versão)
-          showUpdateToast();
-        }
+      // Verifica se há update disponível cada vez que a app fica em foco
+      document.addEventListener('visibilitychange', () => {
+        if(document.visibilityState === 'visible') reg.update();
       });
+
+      // Detecta novo SW instalado em segundo plano
+      reg.addEventListener('updatefound', () => {
+        const incoming = reg.installing;
+        if(!incoming) return;
+        incoming.addEventListener('statechange', () => {
+          // Só mostra banner se já havia um SW activo (não na 1ª instalação)
+          if(incoming.state === 'installed' && navigator.serviceWorker.controller){
+            showUpdateBanner();
+          }
+        });
+      });
+
+    }).catch(() => {});
+
+    // Mensagem enviada pelo SW quando activa com versão nova
+    navigator.serviceWorker.addEventListener('message', ev => {
+      if(ev.data && ev.data.type === 'SW_UPDATED') showUpdateBanner();
     });
-
-  }).catch(() => {});
-
-  // Mensagem enviada pelo SW quando activa (após apagar caches antigos)
-  navigator.serviceWorker.addEventListener('message', event => {
-    if(event.data && event.data.type === 'SW_UPDATED'){
-      showUpdateToast();
-    }
   });
 }
 
-function showUpdateToast(){
-  // Evita mostrar múltiplas vezes na mesma sessão
-  if(window._updateShown) return;
-  window._updateShown = true;
-
-  // Cria um banner de actualização persistente (não desaparece sozinho)
-  const banner = document.createElement('div');
-  banner.id = 'update-banner';
-  banner.style.cssText = [
+function showUpdateBanner(){
+  if(document.getElementById('update-banner')) return; // já existe
+  const b = document.createElement('div');
+  b.id = 'update-banner';
+  b.style.cssText = [
     'position:fixed','bottom:80px','left:50%','transform:translateX(-50%)',
-    'background:#0f172a','color:#fff','padding:12px 20px','border-radius:14px',
-    'font-size:13px','font-weight:700','z-index:9999','box-shadow:0 4px 24px rgba(0,0,0,.4)',
-    'display:flex','align-items:center','gap:12px','white-space:nowrap',
-    'border:1px solid rgba(255,255,255,.12)',
+    'background:#0f172a','color:#fff','padding:11px 16px','border-radius:14px',
+    'font-size:13px','font-weight:700','z-index:9999',
+    'box-shadow:0 4px 24px rgba(0,0,0,.45)',
+    'display:flex','align-items:center','gap:10px',
+    'white-space:nowrap','border:1px solid rgba(255,255,255,.12)',
+    'max-width:calc(100vw - 32px)',
   ].join(';');
-  banner.innerHTML = `
+  b.innerHTML = `
     <span>🔄 Nova versão disponível</span>
-    <button onclick="location.reload(true)"
+    <button id="btn-do-update"
             style="background:#6d28d9;color:#fff;border:none;border-radius:8px;
-                   padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;">
-      Atualizar agora
+                   padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">
+      Atualizar
     </button>
-    <button onclick="this.closest('#update-banner').remove()"
-            style="background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:8px;
-                   padding:6px 10px;font-size:12px;cursor:pointer;">✕</button>`;
-  document.body.appendChild(banner);
+    <button onclick="document.getElementById('update-banner').remove()"
+            style="background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:8px;
+                   padding:6px 9px;font-size:12px;cursor:pointer;flex-shrink:0;">✕</button>`;
+  document.body.appendChild(b);
+
+  document.getElementById('btn-do-update').addEventListener('click', () => {
+    // Garante que o SW toma controlo e depois recarrega
+    if(navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+    }
+    // Pequeno delay para o SW processar, depois recarrega
+    setTimeout(() => window.location.reload(), 300);
+  });
 }
 
 // ─────────────────────────────────────────
