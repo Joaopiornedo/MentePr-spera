@@ -707,23 +707,27 @@ body{
 <!-- ══════════════════════════════════════
      BOTTOM NAV
 ══════════════════════════════════════ -->
-<nav class="bottom-nav fixed bottom-0 left-0 right-0 z-50 grid grid-cols-4"
-     style="background:var(--surf);border-top:1px solid var(--bdr);">
-  <button class="nav-item active flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
+<nav class="bottom-nav fixed bottom-0 left-0 right-0 z-50 grid"
+     style="background:var(--surf);border-top:1px solid var(--bdr);grid-template-columns:repeat(5,1fr);">
+  <button class="nav-item active flex flex-col items-center justify-center gap-0.5 py-2 text-xs font-bold"
           id="nav-orcamento" onclick="switchPage('orcamento')">
     <span class="text-xl">💰</span><span id="t-navOrc">Orçamento</span>
   </button>
-  <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
+  <button class="nav-item flex flex-col items-center justify-center gap-0.5 py-2 text-xs font-bold"
           id="nav-ebook" onclick="switchPage('ebook')">
     <span class="text-xl">📚</span><span id="t-navEbook">Ebook</span>
   </button>
-  <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
+  <button class="nav-item flex flex-col items-center justify-center gap-0.5 py-2 text-xs font-bold"
           id="nav-historico" onclick="switchPage('historico')">
     <span class="text-xl">📅</span><span id="t-navHist">Histórico</span>
   </button>
-  <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
+  <button class="nav-item flex flex-col items-center justify-center gap-0.5 py-2 text-xs font-bold"
           id="nav-plano" onclick="switchPage('plano')">
     <span class="text-xl">📈</span><span id="t-navPlan">Plano</span>
+  </button>
+  <button class="nav-item flex flex-col items-center justify-center gap-0.5 py-2 text-xs font-bold"
+          id="nav-mais" onclick="openMaisSheet()">
+    <span class="text-xl">⚡</span><span id="t-navMais">Mais</span>
   </button>
 </nav>
 
@@ -1704,6 +1708,22 @@ async function triggerInstall(){
   if(outcome==='accepted'){ closeModal('installOverlay'); toast('✅ App instalado!'); }
   deferredPWA=null;
 }
+// ── Mais Sheet ────────────────────────────────────────────────────
+function openMaisSheet(){
+  const ov=$('maisOverlay');
+  ov.classList.remove('hidden');
+  // de-activate any active nav
+  document.querySelectorAll('.nav-item').forEach(n=>n.style.color='');
+  $('nav-mais').style.color='#6d28d9';
+}
+function closeMaisSheet(){
+  $('maisOverlay').classList.add('hidden');
+  // restore current page nav colour
+  const cur=$('nav-'+currentPage);
+  if(cur) cur.style.color='#6d28d9';
+  $('nav-mais').style.color='';
+}
+
 // ── Service Worker — registo e detecção de actualização ─────────
 // O SW nunca toca no localStorage. Os dados do utilizador estão seguros.
 if('serviceWorker' in navigator){
@@ -1797,6 +1817,15 @@ const TR={
     dreamsEmpty:'Nenhum sonho adicionado ainda.',
     archiveBtn:'🔒 Fechar e Arquivar Mês',
     navOrc:'Orçamento', navEbook:'Ebook', navHist:'Histórico', navPlan:'Plano',
+    navMais:'Mais',
+    maisTitle:'Bónus & Recursos', maisSub:'Ferramentas incluídas no teu combo',
+    maisLblAprender:'APRENDER', maisLblBonus:'BÓNUS INCLUÍDOS', maisLblApp:'APP',
+    maisTutorialT:'Tutorial Completo', maisTutorialS:'Aprende a usar todas as ferramentas passo a passo',
+    maisDiagT:'Planilha de Diagnóstico', maisDiagS:'Raio-X completo das tuas finanças · Excel / Google Sheets',
+    maisMetasT:'Pack de Templates de Metas', maisMetasS:'7 cartões de objetivos imprimíveis · PDF',
+    maisLibT:'Calculadora de Liberdade Financeira', maisLibS:'Quantos anos faltam para viveres dos rendimentos',
+    maisLandingT:'Partilhar com Amigos', maisLandingS:'Página de apresentação do combo completo',
+    maisInstallT:'Instalar no Telemóvel', maisInstallS:'Adicionar à tela inicial como app nativa',
     histTitle:'📅 Histórico Mensal',
     histSelectLabel:'Selecione o mês e arquive o registo atual:',
     histArchiveBtn:'🔒 Arquivar', histSection:'Registos arquivados',
@@ -1866,6 +1895,15 @@ const TR={
     dreamsEmpty:'Ningún sueño agregado aún.',
     archiveBtn:'🔒 Cerrar y Archivar Mes',
     navOrc:'Presupuesto', navEbook:'Ebook', navHist:'Historial', navPlan:'Plan',
+    navMais:'Más',
+    maisTitle:'Bonos & Recursos', maisSub:'Herramientas incluidas en tu combo',
+    maisLblAprender:'APRENDER', maisLblBonus:'BONOS INCLUIDOS', maisLblApp:'APP',
+    maisTutorialT:'Tutorial Completo', maisTutorialS:'Aprende a usar todas las herramientas paso a paso',
+    maisDiagT:'Planilla de Diagnóstico', maisDiagS:'Radiografía completa de tus finanzas · Excel / Google Sheets',
+    maisMetasT:'Pack de Templates de Metas', maisMetasS:'7 tarjetas de objetivos imprimibles · PDF',
+    maisLibT:'Calculadora de Libertad Financiera', maisLibS:'Cuántos años faltan para vivir de tus rentas',
+    maisLandingT:'Compartir con Amigos', maisLandingS:'Página de presentación del combo completo',
+    maisInstallT:'Instalar en el Celular', maisInstallS:'Agregar a la pantalla de inicio como app nativa',
     histTitle:'📅 Historial Mensual',
     histSelectLabel:'Selecciona el mes y archiva el registro:',
     histArchiveBtn:'🔒 Archivar', histSection:'Registros archivados',
@@ -1935,6 +1973,15 @@ const TR={
     dreamsEmpty:'No dreams added yet.',
     archiveBtn:'🔒 Close and Archive Month',
     navOrc:'Budget', navEbook:'Ebook', navHist:'History', navPlan:'Plan',
+    navMais:'More',
+    maisTitle:'Bonuses & Resources', maisSub:'Tools included in your bundle',
+    maisLblAprender:'LEARN', maisLblBonus:'INCLUDED BONUSES', maisLblApp:'APP',
+    maisTutorialT:'Full Tutorial', maisTutorialS:'Learn to use every tool step by step',
+    maisDiagT:'Diagnosis Spreadsheet', maisDiagS:'Full financial X-ray · Excel / Google Sheets',
+    maisMetasT:'Goals Templates Pack', maisMetasS:'7 printable goal cards · PDF',
+    maisLibT:'Financial Freedom Calculator', maisLibS:'How many years until you live off your income',
+    maisLandingT:'Share with Friends', maisLandingS:'Presentation page for the full bundle',
+    maisInstallT:'Install on Phone', maisInstallS:'Add to home screen as a native app',
     histTitle:'📅 Monthly History',
     histSelectLabel:'Select month and archive current data:',
     histArchiveBtn:'🔒 Archive', histSection:'Archived records',
@@ -2030,7 +2077,19 @@ function applyTranslations(){
   const adbtn=$('t-addDreamBtn'); if(adbtn) adbtn.textContent=T.addDreamBtn;
   set('t-dreamsEmpty',T.dreamsEmpty);
   const arch=$('t-archiveBtn'); if(arch) arch.textContent=T.archiveBtn;
-  set('t-navOrc',T.navOrc); set('t-navEbook',T.navEbook); set('t-navHist',T.navHist); set('t-navPlan',T.navPlan);
+  set('t-navOrc',T.navOrc); set('t-navEbook',T.navEbook); set('t-navHist',T.navHist); set('t-navPlan',T.navPlan); set('t-navMais',T.navMais||'Mais');
+  // Mais sheet labels
+  const mFields={
+    'mais-title':T.maisTitle,'mais-sub':T.maisSub,
+    'mais-lbl-aprender':T.maisLblAprender,'mais-lbl-bonus':T.maisLblBonus,'mais-lbl-app':T.maisLblApp,
+    'mais-tutorial-t':T.maisTutorialT,'mais-tutorial-s':T.maisTutorialS,
+    'mais-diag-t':T.maisDiagT,'mais-diag-s':T.maisDiagS,
+    'mais-metas-t':T.maisMetasT,'mais-metas-s':T.maisMetasS,
+    'mais-lib-t':T.maisLibT,'mais-lib-s':T.maisLibS,
+    'mais-landing-t':T.maisLandingT,'mais-landing-s':T.maisLandingS,
+    'mais-install-t':T.maisInstallT,'mais-install-s':T.maisInstallS,
+  };
+  Object.entries(mFields).forEach(([id,v])=>set(id,v||''));
   set('t-histTitle',T.histTitle); set('t-histSelectLabel',T.histSelectLabel);
   const hab=$('t-histArchiveBtn'); if(hab) hab.textContent=T.histArchiveBtn;
   set('t-histSection',T.histSection);
@@ -2369,5 +2428,131 @@ function renderPlano(){
 });
 
 </script>
+
+<!-- ══════════════════════════════════════
+     MAIS SHEET — Bónus & Tutorial
+══════════════════════════════════════ -->
+<div id="maisOverlay" class="hidden fixed inset-0 z-[400]"
+     style="background:rgba(0,0,0,.55);backdrop-filter:blur(4px);"
+     onclick="closeMaisSheet()">
+  <div id="maisSheet" onclick="event.stopPropagation()"
+       class="absolute bottom-0 left-0 right-0 rounded-t-3xl pb-safe"
+       style="background:var(--surf);max-height:85vh;overflow-y:auto;">
+
+    <!-- handle -->
+    <div class="w-10 h-1 rounded-full mx-auto mt-4 mb-1" style="background:var(--bdr2,#cbd5e1);"></div>
+
+    <!-- header -->
+    <div class="px-5 pt-3 pb-4" style="border-bottom:1px solid var(--bdr);">
+      <div class="text-base font-black" style="color:var(--txt);" id="mais-title">Bónus & Recursos</div>
+      <div class="text-xs mt-0.5" style="color:var(--txt3);" id="mais-sub">Ferramentas incluídas no teu combo</div>
+    </div>
+
+    <!-- content -->
+    <div class="px-4 py-3 flex flex-col gap-2">
+
+      <!-- Tutorial -->
+      <div class="mais-section-label" id="mais-lbl-aprender" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);padding:8px 0 4px;">APRENDER</div>
+
+      <a href="tutorial.html" class="mais-row" style="text-decoration:none;"
+         onclick="closeMaisSheet()">
+        <div class="mais-icon" style="background:#ede9fe;">🎓</div>
+        <div class="mais-info">
+          <div class="mais-row-title" id="mais-tutorial-t" style="color:var(--txt);">Tutorial Completo</div>
+          <div class="mais-row-sub" id="mais-tutorial-s" style="color:var(--txt3);">Aprende a usar todas as ferramentas passo a passo</div>
+        </div>
+        <span style="color:var(--txt3);font-size:14px;">›</span>
+      </a>
+
+      <!-- divider -->
+      <div class="mais-section-label" id="mais-lbl-bonus" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);padding:8px 0 4px;">BÓNUS INCLUÍDOS</div>
+
+      <!-- Diagnóstico -->
+      <a href="diagnostico-financeiro.xlsx" download class="mais-row"
+         onclick="closeMaisSheet()">
+        <div class="mais-icon" style="background:#d1fae5;">📊</div>
+        <div class="mais-info">
+          <div class="mais-row-title" id="mais-diag-t" style="color:var(--txt);">Planilha de Diagnóstico</div>
+          <div class="mais-row-sub" id="mais-diag-s" style="color:var(--txt3);">Raio-X completo das tuas finanças · Excel / Google Sheets</div>
+        </div>
+        <span class="mais-tag" style="background:#d1fae5;color:#059669;">↓ Excel</span>
+      </a>
+
+      <!-- Pack Metas -->
+      <a href="pack-templates-metas.pdf" download class="mais-row"
+         onclick="closeMaisSheet()">
+        <div class="mais-icon" style="background:#fef3c7;">🎯</div>
+        <div class="mais-info">
+          <div class="mais-row-title" id="mais-metas-t" style="color:var(--txt);">Pack de Templates de Metas</div>
+          <div class="mais-row-sub" id="mais-metas-s" style="color:var(--txt3);">7 cartões de objetivos imprimíveis · PDF</div>
+        </div>
+        <span class="mais-tag" style="background:#fef3c7;color:#d97706;">↓ PDF</span>
+      </a>
+
+      <!-- Liberdade Financeira -->
+      <a href="calculadora-liberdade-financeira.html" class="mais-row"
+         onclick="closeMaisSheet()">
+        <div class="mais-icon" style="background:#cffafe;">🏆</div>
+        <div class="mais-info">
+          <div class="mais-row-title" id="mais-lib-t" style="color:var(--txt);">Calculadora de Liberdade Financeira</div>
+          <div class="mais-row-sub" id="mais-lib-s" style="color:var(--txt3);">Quantos anos faltam para viveres dos rendimentos</div>
+        </div>
+        <span style="color:var(--txt3);font-size:14px;">›</span>
+      </a>
+
+      <!-- Landing page -->
+      <a href="landing.html" class="mais-row"
+         onclick="closeMaisSheet()">
+        <div class="mais-icon" style="background:#ede9fe;">🚀</div>
+        <div class="mais-info">
+          <div class="mais-row-title" id="mais-landing-t" style="color:var(--txt);">Partilhar com Amigos</div>
+          <div class="mais-row-sub" id="mais-landing-s" style="color:var(--txt3);">Página de apresentação do combo completo</div>
+        </div>
+        <span style="color:var(--txt3);font-size:14px;">›</span>
+      </a>
+
+      <!-- divider -->
+      <div class="mais-section-label" id="mais-lbl-app" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);padding:8px 0 4px;">APP</div>
+
+      <!-- Install -->
+      <button class="mais-row" onclick="openInstallModal();closeMaisSheet()" style="background:none;border:none;cursor:pointer;width:100%;text-align:left;">
+        <div class="mais-icon" style="background:#ede9fe;">📲</div>
+        <div class="mais-info">
+          <div class="mais-row-title" id="mais-install-t" style="color:var(--txt);">Instalar no Telemóvel</div>
+          <div class="mais-row-sub" id="mais-install-s" style="color:var(--txt3);">Adicionar à tela inicial como app nativa</div>
+        </div>
+        <span style="color:var(--txt3);font-size:14px;">›</span>
+      </button>
+
+    </div>
+
+    <!-- bottom safe area spacer -->
+    <div style="height:calc(env(safe-area-inset-bottom, 0px) + 16px);"></div>
+  </div>
+</div>
+
+<style>
+/* ── Mais sheet styles ── */
+#maisSheet{animation:slideUp .28s cubic-bezier(.32,.72,0,1)}
+.mais-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:16px;
+  background:var(--surf2);border:1px solid var(--bdr);
+  transition:all .15s;
+}
+.mais-row:hover,.mais-row:active{border-color:#6d28d9;background:#ede9fe;}
+.mais-icon{
+  width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.mais-info{flex:1;min-width:0}
+.mais-row-title{font-size:13px;font-weight:700;margin-bottom:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mais-row-sub{font-size:11px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mais-tag{
+  font-size:10px;font-weight:800;padding:3px 8px;border-radius:100px;
+  flex-shrink:0;white-space:nowrap;
+}
+</style>
+
 </body>
 </html>
