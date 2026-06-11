@@ -190,38 +190,17 @@ body{
     <button onclick="openInstallModal()" id="btnInstall"
             class="w-9 h-9 rounded-xl flex items-center justify-center text-lg text-white"
             style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);border:none;">📲</button>
-    <!-- settings gear -->
-    <div class="relative" id="settingsWrap">
-      <button onclick="toggleSettings()"
-              class="w-9 h-9 rounded-xl flex items-center justify-center text-xl transition-all"
-              style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);">⚙️</button>
-      <div id="settingsMenu" class="s">
-        <!-- theme row -->
-        <div class="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all hover:bg-violet-50"
-             onclick="toggleTheme()" style="color:var(--txt);">
-          <span class="text-sm font-semibold" id="t-themeLabel">Modo Escuro</span>
-          <span id="themeIcon" class="text-base">🌙</span>
-        </div>
-        <!-- divider -->
-        <div style="height:1px;background:var(--bdr);margin:4px 0;"></div>
-        <!-- language options -->
-        <div class="px-2 pb-1">
-          <div class="text-xs font-bold uppercase tracking-wider mb-1.5 px-1" style="color:var(--txt3);">Idioma</div>
-          <div id="langPt" onclick="setLang('pt')" class="lang-opt flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all" style="color:var(--txt);">
-            <span>🇧🇷</span><span class="text-sm font-semibold">Português</span>
-            <span class="ml-auto text-sm font-black" style="color:#6d28d9;" id="lchk-pt">✓</span>
-          </div>
-          <div id="langEs" onclick="setLang('es')" class="lang-opt flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all" style="color:var(--txt);">
-            <span>🌎</span><span class="text-sm font-semibold">Español</span>
-            <span class="ml-auto text-sm font-black hidden" style="color:#6d28d9;" id="lchk-es">✓</span>
-          </div>
-          <div id="langEn" onclick="setLang('en')" class="lang-opt flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all" style="color:var(--txt);">
-            <span>🇺🇸</span><span class="text-sm font-semibold">English</span>
-            <span class="ml-auto text-sm font-black hidden" style="color:#6d28d9;" id="lchk-en">✓</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- nav menu button (replaces settings gear) -->
+    <button onclick="openNavSheet()"
+            class="flex items-center gap-1.5 px-3 h-9 rounded-xl transition-all"
+            style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);">
+      <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect y="0"  width="16" height="2" rx="1" fill="currentColor"/>
+        <rect y="6"  width="12" height="2" rx="1" fill="currentColor"/>
+        <rect y="12" width="8"  height="2" rx="1" fill="currentColor"/>
+      </svg>
+      <span class="text-xs font-bold" id="t-navMenuBtn">Menu</span>
+    </button>
   </div>
 </header>
 
@@ -726,8 +705,8 @@ body{
     <span class="text-xl">📈</span><span id="t-navPlan">Plano</span>
   </button>
   <button class="nav-item flex flex-col items-center justify-center gap-0.5 py-2 text-xs font-bold"
-          id="nav-mais" onclick="openMaisSheet()">
-    <span class="text-xl">⚡</span><span id="t-navMais">Mais</span>
+          id="nav-liberdade" onclick="goToLiberdade()">
+    <span class="text-xl">🏆</span><span id="t-navLib">Liberdade</span>
   </button>
 </nav>
 
@@ -842,6 +821,7 @@ function applyTheme(t){
   $('themeIcon').textContent=t==='dark'?'☀️':'🌙';
   $('t-themeLabel').textContent=t==='dark'?TR[lang].lightMode:TR[lang].darkMode;
   localStorage.setItem('cvTheme',t);
+  syncNavSheetTheme();
 }
 
 // ─────────────────────────────────────────
@@ -1709,19 +1689,37 @@ async function triggerInstall(){
   deferredPWA=null;
 }
 // ── Mais Sheet ────────────────────────────────────────────────────
-function openMaisSheet(){
-  const ov=$('maisOverlay');
-  ov.classList.remove('hidden');
-  // de-activate any active nav
-  document.querySelectorAll('.nav-item').forEach(n=>n.style.color='');
-  $('nav-mais').style.color='#6d28d9';
+function openNavSheet(){
+  $('navSheetOverlay').classList.remove('hidden');
+  syncNavSheetLang();
+  syncNavSheetTheme();
 }
-function closeMaisSheet(){
-  $('maisOverlay').classList.add('hidden');
-  // restore current page nav colour
-  const cur=$('nav-'+currentPage);
-  if(cur) cur.style.color='#6d28d9';
-  $('nav-mais').style.color='';
+function closeNavSheet(){
+  $('navSheetOverlay').classList.add('hidden');
+}
+function goToLiberdade(){
+  localStorage.setItem('cvPage','orcamento'); // don't save liberdade as app page
+  window.location.href='calculadora-liberdade-financeira.html';
+}
+// keep lang buttons in sheet in sync
+function syncNavSheetLang(){
+  ['pt','es','en'].forEach(l=>{
+    const btn=$('ns-lbtn-'+l);
+    if(!btn) return;
+    const active=(lang||'pt')===l;
+    btn.style.background=active?'#6d28d9':'var(--surf2)';
+    btn.style.color=active?'#fff':'var(--txt2)';
+    btn.style.borderColor=active?'#6d28d9':'var(--bdr)';
+  });
+}
+// keep theme toggle in sheet in sync
+function syncNavSheetTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const icon=$('ns-theme-icon'); const t=$('ns-theme-t'); const tog=$('ns-theme-toggle'); const ball=$('ns-toggle-ball');
+  if(icon) icon.textContent=dark?'☀️':'🌙';
+  if(t){const T=TR&&TR[lang||'pt']; if(T) t.textContent=dark?(T.lightMode||'Modo Claro'):(T.darkMode||'Modo Escuro');}
+  if(tog) tog.style.background=dark?'#6d28d9':'#cbd5e1';
+  if(ball) ball.style.transform=dark?'translateX(0)':'translateX(-16px)';
 }
 
 // ── Service Worker — registo e detecção de actualização ─────────
@@ -1817,7 +1815,14 @@ const TR={
     dreamsEmpty:'Nenhum sonho adicionado ainda.',
     archiveBtn:'🔒 Fechar e Arquivar Mês',
     navOrc:'Orçamento', navEbook:'Ebook', navHist:'Histórico', navPlan:'Plano',
-    navMais:'Mais',
+    navMenuBtn:'Menu',
+    nsTitle:'Menu', nsSub:'Calculadora da Virada',
+    nsLblLearn:'APRENDER', nsLblTools:'FERRAMENTAS', nsLblConfig:'CONFIGURAÇÕES',
+    nsTutT:'Tutorial Completo', nsTutS:'Aprende a usar todas as ferramentas passo a passo',
+    nsLibT:'Calculadora de Liberdade Financeira', nsLibS:'Quantos anos faltam para viveres dos rendimentos',
+    nsThemeT:'Modo Escuro', nsThemeS:'Alternar entre tema claro e escuro',
+    nsLangT:'Idioma',
+    nsInstallT:'Instalar no Telemóvel', nsInstallS:'Adicionar à tela inicial como app nativa',
     maisTitle:'Bónus & Recursos', maisSub:'Ferramentas incluídas no teu combo',
     maisLblAprender:'APRENDER', maisLblBonus:'BÓNUS INCLUÍDOS', maisLblApp:'APP',
     maisTutorialT:'Tutorial Completo', maisTutorialS:'Aprende a usar todas as ferramentas passo a passo',
@@ -1895,7 +1900,14 @@ const TR={
     dreamsEmpty:'Ningún sueño agregado aún.',
     archiveBtn:'🔒 Cerrar y Archivar Mes',
     navOrc:'Presupuesto', navEbook:'Ebook', navHist:'Historial', navPlan:'Plan',
-    navMais:'Más',
+    navMenuBtn:'Menú',
+    nsTitle:'Menú', nsSub:'Calculadora del Giro',
+    nsLblLearn:'APRENDER', nsLblTools:'HERRAMIENTAS', nsLblConfig:'CONFIGURACIONES',
+    nsTutT:'Tutorial Completo', nsTutS:'Aprende a usar todas las herramientas paso a paso',
+    nsLibT:'Calculadora de Libertad Financiera', nsLibS:'Cuántos años faltan para vivir de tus rentas',
+    nsThemeT:'Modo Oscuro', nsThemeS:'Cambiar entre tema claro y oscuro',
+    nsLangT:'Idioma',
+    nsInstallT:'Instalar en el Celular', nsInstallS:'Agregar a la pantalla de inicio como app nativa',
     maisTitle:'Bonos & Recursos', maisSub:'Herramientas incluidas en tu combo',
     maisLblAprender:'APRENDER', maisLblBonus:'BONOS INCLUIDOS', maisLblApp:'APP',
     maisTutorialT:'Tutorial Completo', maisTutorialS:'Aprende a usar todas las herramientas paso a paso',
@@ -1973,7 +1985,14 @@ const TR={
     dreamsEmpty:'No dreams added yet.',
     archiveBtn:'🔒 Close and Archive Month',
     navOrc:'Budget', navEbook:'Ebook', navHist:'History', navPlan:'Plan',
-    navMais:'More',
+    navMenuBtn:'Menu',
+    nsTitle:'Menu', nsSub:'Calculadora da Virada',
+    nsLblLearn:'LEARN', nsLblTools:'TOOLS', nsLblConfig:'SETTINGS',
+    nsTutT:'Full Tutorial', nsTutS:'Learn to use every tool step by step',
+    nsLibT:'Financial Freedom Calculator', nsLibS:'How many years until you live off your income',
+    nsThemeT:'Dark Mode', nsThemeS:'Switch between light and dark theme',
+    nsLangT:'Language',
+    nsInstallT:'Install on Phone', nsInstallS:'Add to home screen as a native app',
     maisTitle:'Bonuses & Resources', maisSub:'Tools included in your bundle',
     maisLblAprender:'LEARN', maisLblBonus:'INCLUDED BONUSES', maisLblApp:'APP',
     maisTutorialT:'Full Tutorial', maisTutorialS:'Learn to use every tool step by step',
@@ -2044,6 +2063,8 @@ function setLang(l){
   });
   applyTranslations();
   closeSettings();
+  syncNavSheetLang();
+  syncNavSheetTheme();
 }
 
 function applyTranslations(){
@@ -2077,19 +2098,20 @@ function applyTranslations(){
   const adbtn=$('t-addDreamBtn'); if(adbtn) adbtn.textContent=T.addDreamBtn;
   set('t-dreamsEmpty',T.dreamsEmpty);
   const arch=$('t-archiveBtn'); if(arch) arch.textContent=T.archiveBtn;
-  set('t-navOrc',T.navOrc); set('t-navEbook',T.navEbook); set('t-navHist',T.navHist); set('t-navPlan',T.navPlan); set('t-navMais',T.navMais||'Mais');
-  // Mais sheet labels
-  const mFields={
-    'mais-title':T.maisTitle,'mais-sub':T.maisSub,
-    'mais-lbl-aprender':T.maisLblAprender,'mais-lbl-bonus':T.maisLblBonus,'mais-lbl-app':T.maisLblApp,
-    'mais-tutorial-t':T.maisTutorialT,'mais-tutorial-s':T.maisTutorialS,
-    'mais-diag-t':T.maisDiagT,'mais-diag-s':T.maisDiagS,
-    'mais-metas-t':T.maisMetasT,'mais-metas-s':T.maisMetasS,
-    'mais-lib-t':T.maisLibT,'mais-lib-s':T.maisLibS,
-    'mais-landing-t':T.maisLandingT,'mais-landing-s':T.maisLandingS,
-    'mais-install-t':T.maisInstallT,'mais-install-s':T.maisInstallS,
+  set('t-navOrc',T.navOrc); set('t-navEbook',T.navEbook); set('t-navHist',T.navHist); set('t-navPlan',T.navPlan);
+  set('t-navLib',T.navLib||'Liberdade'); set('t-navMenuBtn',T.navMenuBtn||'Menu');
+  // Nav sheet strings
+  const nsf={
+    'ns-title':T.nsTitle,'ns-sub':T.nsSub,
+    'ns-lbl-learn':T.nsLblLearn,'ns-lbl-tools':T.nsLblTools,'ns-lbl-config':T.nsLblConfig,
+    'ns-tut-t':T.nsTutT,'ns-tut-s':T.nsTutS,
+    'ns-lib-t':T.nsLibT,'ns-lib-s':T.nsLibS,
+    'ns-theme-s':T.nsThemeS,'ns-lang-t':T.nsLangT,
+    'ns-install-t':T.nsInstallT,'ns-install-s':T.nsInstallS,
   };
-  Object.entries(mFields).forEach(([id,v])=>set(id,v||''));
+  Object.entries(nsf).forEach(([id,v])=>{ const e=document.getElementById(id); if(e&&v) e.textContent=v; });
+  syncNavSheetTheme(); syncNavSheetLang();
+
   set('t-histTitle',T.histTitle); set('t-histSelectLabel',T.histSelectLabel);
   const hab=$('t-histArchiveBtn'); if(hab) hab.textContent=T.histArchiveBtn;
   set('t-histSection',T.histSection);
@@ -2430,128 +2452,125 @@ function renderPlano(){
 </script>
 
 <!-- ══════════════════════════════════════
-     MAIS SHEET — Bónus & Tutorial
+     NAV SHEET — Menu lateral
 ══════════════════════════════════════ -->
-<div id="maisOverlay" class="hidden fixed inset-0 z-[400]"
+<div id="navSheetOverlay" class="hidden fixed inset-0 z-[400]"
      style="background:rgba(0,0,0,.55);backdrop-filter:blur(4px);"
-     onclick="closeMaisSheet()">
-  <div id="maisSheet" onclick="event.stopPropagation()"
-       class="absolute bottom-0 left-0 right-0 rounded-t-3xl pb-safe"
-       style="background:var(--surf);max-height:85vh;overflow-y:auto;">
+     onclick="closeNavSheet()">
+  <div id="navSheet" onclick="event.stopPropagation()"
+       class="absolute bottom-0 left-0 right-0 rounded-t-3xl"
+       style="background:var(--surf);max-height:88vh;overflow-y:auto;">
 
     <!-- handle -->
-    <div class="w-10 h-1 rounded-full mx-auto mt-4 mb-1" style="background:var(--bdr2,#cbd5e1);"></div>
+    <div class="w-10 h-1 rounded-full mx-auto mt-4 mb-2" style="background:var(--bdr2,#cbd5e1);"></div>
 
     <!-- header -->
-    <div class="px-5 pt-3 pb-4" style="border-bottom:1px solid var(--bdr);">
-      <div class="text-base font-black" style="color:var(--txt);" id="mais-title">Bónus & Recursos</div>
-      <div class="text-xs mt-0.5" style="color:var(--txt3);" id="mais-sub">Ferramentas incluídas no teu combo</div>
+    <div class="px-5 py-3 flex items-center justify-between" style="border-bottom:1px solid var(--bdr);">
+      <div>
+        <div class="text-base font-black" style="color:var(--txt);" id="ns-title">Menu</div>
+        <div class="text-xs mt-0.5" style="color:var(--txt3);" id="ns-sub">Calculadora da Virada</div>
+      </div>
+      <button onclick="closeNavSheet()" class="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold"
+              style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt3);">✕</button>
     </div>
 
-    <!-- content -->
     <div class="px-4 py-3 flex flex-col gap-2">
 
-      <!-- Tutorial -->
-      <div class="mais-section-label" id="mais-lbl-aprender" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);padding:8px 0 4px;">APRENDER</div>
+      <!-- APRENDER -->
+      <div class="ns-section-label" id="ns-lbl-learn" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);padding:8px 0 4px;">APRENDER</div>
 
-      <a href="tutorial.html" class="mais-row" style="text-decoration:none;"
-         onclick="closeMaisSheet()">
-        <div class="mais-icon" style="background:#ede9fe;">🎓</div>
-        <div class="mais-info">
-          <div class="mais-row-title" id="mais-tutorial-t" style="color:var(--txt);">Tutorial Completo</div>
-          <div class="mais-row-sub" id="mais-tutorial-s" style="color:var(--txt3);">Aprende a usar todas as ferramentas passo a passo</div>
+      <a href="tutorial.html" class="ns-row" onclick="closeNavSheet()">
+        <div class="ns-icon" style="background:#ede9fe;">🎓</div>
+        <div class="ns-info">
+          <div class="ns-row-title" id="ns-tut-t" style="color:var(--txt);">Tutorial Completo</div>
+          <div class="ns-row-sub" id="ns-tut-s" style="color:var(--txt3);">Aprende a usar todas as ferramentas passo a passo</div>
         </div>
-        <span style="color:var(--txt3);font-size:14px;">›</span>
+        <span style="color:var(--txt3);font-size:16px;">›</span>
       </a>
 
-      <!-- divider -->
-      <div class="mais-section-label" id="mais-lbl-bonus" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);padding:8px 0 4px;">BÓNUS INCLUÍDOS</div>
+      <!-- FERRAMENTAS -->
+      <div class="ns-section-label" id="ns-lbl-tools" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);padding:8px 0 4px;">FERRAMENTAS</div>
 
-      <!-- Diagnóstico -->
-      <a href="diagnostico-financeiro.xlsx" download class="mais-row"
-         onclick="closeMaisSheet()">
-        <div class="mais-icon" style="background:#d1fae5;">📊</div>
-        <div class="mais-info">
-          <div class="mais-row-title" id="mais-diag-t" style="color:var(--txt);">Planilha de Diagnóstico</div>
-          <div class="mais-row-sub" id="mais-diag-s" style="color:var(--txt3);">Raio-X completo das tuas finanças · Excel / Google Sheets</div>
+      <a href="calculadora-liberdade-financeira.html" class="ns-row" onclick="closeNavSheet()">
+        <div class="ns-icon" style="background:#cffafe;">🏆</div>
+        <div class="ns-info">
+          <div class="ns-row-title" id="ns-lib-t" style="color:var(--txt);">Calculadora de Liberdade Financeira</div>
+          <div class="ns-row-sub" id="ns-lib-s" style="color:var(--txt3);">Quantos anos faltam para viveres dos rendimentos</div>
         </div>
-        <span class="mais-tag" style="background:#d1fae5;color:#059669;">↓ Excel</span>
+        <span style="color:var(--txt3);font-size:16px;">›</span>
       </a>
 
-      <!-- Pack Metas -->
-      <a href="pack-templates-metas.pdf" download class="mais-row"
-         onclick="closeMaisSheet()">
-        <div class="mais-icon" style="background:#fef3c7;">🎯</div>
-        <div class="mais-info">
-          <div class="mais-row-title" id="mais-metas-t" style="color:var(--txt);">Pack de Templates de Metas</div>
-          <div class="mais-row-sub" id="mais-metas-s" style="color:var(--txt3);">7 cartões de objetivos imprimíveis · PDF</div>
-        </div>
-        <span class="mais-tag" style="background:#fef3c7;color:#d97706;">↓ PDF</span>
-      </a>
+      <!-- CONFIGURAÇÕES -->
+      <div class="ns-section-label" id="ns-lbl-config" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);padding:8px 0 4px;">CONFIGURAÇÕES</div>
 
-      <!-- Liberdade Financeira -->
-      <a href="calculadora-liberdade-financeira.html" class="mais-row"
-         onclick="closeMaisSheet()">
-        <div class="mais-icon" style="background:#cffafe;">🏆</div>
-        <div class="mais-info">
-          <div class="mais-row-title" id="mais-lib-t" style="color:var(--txt);">Calculadora de Liberdade Financeira</div>
-          <div class="mais-row-sub" id="mais-lib-s" style="color:var(--txt3);">Quantos anos faltam para viveres dos rendimentos</div>
+      <!-- Theme toggle -->
+      <button class="ns-row" onclick="toggleTheme()" style="background:none;border:none;cursor:pointer;width:100%;text-align:left;">
+        <div class="ns-icon" style="background:var(--surf2);" id="ns-theme-icon">🌙</div>
+        <div class="ns-info">
+          <div class="ns-row-title" id="ns-theme-t" style="color:var(--txt);">Modo Escuro</div>
+          <div class="ns-row-sub" id="ns-theme-s" style="color:var(--txt3);">Alternar entre tema claro e escuro</div>
         </div>
-        <span style="color:var(--txt3);font-size:14px;">›</span>
-      </a>
-
-      <!-- Landing page -->
-      <a href="landing.html" class="mais-row"
-         onclick="closeMaisSheet()">
-        <div class="mais-icon" style="background:#ede9fe;">🚀</div>
-        <div class="mais-info">
-          <div class="mais-row-title" id="mais-landing-t" style="color:var(--txt);">Partilhar com Amigos</div>
-          <div class="mais-row-sub" id="mais-landing-s" style="color:var(--txt3);">Página de apresentação do combo completo</div>
+        <div id="ns-theme-toggle"
+             class="flex-shrink-0 w-10 h-6 rounded-full relative transition-all"
+             style="background:#6d28d9;">
+          <div id="ns-toggle-ball" class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-white shadow transition-all"></div>
         </div>
-        <span style="color:var(--txt3);font-size:14px;">›</span>
-      </a>
+      </button>
 
-      <!-- divider -->
-      <div class="mais-section-label" id="mais-lbl-app" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);padding:8px 0 4px;">APP</div>
+      <!-- Language -->
+      <div class="ns-row" style="cursor:default;flex-direction:column;align-items:stretch;gap:10px;">
+        <div class="flex items-center gap-3">
+          <div class="ns-icon" style="background:var(--surf2);">🌍</div>
+          <div class="ns-info">
+            <div class="ns-row-title" id="ns-lang-t" style="color:var(--txt);">Idioma</div>
+            <div class="ns-row-sub" style="color:var(--txt3);">PT · ES · EN</div>
+          </div>
+        </div>
+        <div class="flex gap-2 pl-1">
+          <button onclick="setLang('pt')" id="ns-lbtn-pt"
+                  class="flex-1 py-2 rounded-xl text-xs font-bold border transition-all"
+                  style="background:#6d28d9;color:#fff;border-color:#6d28d9;">🇧🇷 PT</button>
+          <button onclick="setLang('es')" id="ns-lbtn-es"
+                  class="flex-1 py-2 rounded-xl text-xs font-bold border transition-all"
+                  style="background:var(--surf2);color:var(--txt2);border-color:var(--bdr);">🌎 ES</button>
+          <button onclick="setLang('en')" id="ns-lbtn-en"
+                  class="flex-1 py-2 rounded-xl text-xs font-bold border transition-all"
+                  style="background:var(--surf2);color:var(--txt2);border-color:var(--bdr);">🇺🇸 EN</button>
+        </div>
+      </div>
 
       <!-- Install -->
-      <button class="mais-row" onclick="openInstallModal();closeMaisSheet()" style="background:none;border:none;cursor:pointer;width:100%;text-align:left;">
-        <div class="mais-icon" style="background:#ede9fe;">📲</div>
-        <div class="mais-info">
-          <div class="mais-row-title" id="mais-install-t" style="color:var(--txt);">Instalar no Telemóvel</div>
-          <div class="mais-row-sub" id="mais-install-s" style="color:var(--txt3);">Adicionar à tela inicial como app nativa</div>
+      <button class="ns-row" onclick="openInstallModal();closeNavSheet()" style="background:none;border:none;cursor:pointer;width:100%;text-align:left;">
+        <div class="ns-icon" style="background:#ede9fe;">📲</div>
+        <div class="ns-info">
+          <div class="ns-row-title" id="ns-install-t" style="color:var(--txt);">Instalar no Telemóvel</div>
+          <div class="ns-row-sub" id="ns-install-s" style="color:var(--txt3);">Adicionar à tela inicial como app nativa</div>
         </div>
-        <span style="color:var(--txt3);font-size:14px;">›</span>
+        <span style="color:var(--txt3);font-size:16px;">›</span>
       </button>
 
     </div>
-
-    <!-- bottom safe area spacer -->
-    <div style="height:calc(env(safe-area-inset-bottom, 0px) + 16px);"></div>
+    <div style="height:calc(env(safe-area-inset-bottom,0px) + 16px);"></div>
   </div>
 </div>
 
 <style>
-/* ── Mais sheet styles ── */
-#maisSheet{animation:slideUp .28s cubic-bezier(.32,.72,0,1)}
-.mais-row{
+/* ── Nav sheet styles ── */
+#navSheet{animation:slideUp .28s cubic-bezier(.32,.72,0,1)}
+.ns-row{
   display:flex;align-items:center;gap:12px;
   padding:12px 14px;border-radius:16px;
   background:var(--surf2);border:1px solid var(--bdr);
-  transition:all .15s;
+  transition:all .15s;text-decoration:none;
 }
-.mais-row:hover,.mais-row:active{border-color:#6d28d9;background:#ede9fe;}
-.mais-icon{
+.ns-row:hover,.ns-row:active{border-color:#6d28d9;background:#ede9fe}
+.ns-icon{
   width:40px;height:40px;border-radius:12px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;font-size:20px;
 }
-.mais-info{flex:1;min-width:0}
-.mais-row-title{font-size:13px;font-weight:700;margin-bottom:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mais-row-sub{font-size:11px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mais-tag{
-  font-size:10px;font-weight:800;padding:3px 8px;border-radius:100px;
-  flex-shrink:0;white-space:nowrap;
-}
+.ns-info{flex:1;min-width:0}
+.ns-row-title{font-size:13px;font-weight:700;margin-bottom:1px}
+.ns-row-sub{font-size:11px;color:var(--txt3);line-height:1.4}
 </style>
 
 </body>
