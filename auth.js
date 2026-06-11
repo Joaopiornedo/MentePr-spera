@@ -175,6 +175,15 @@ onAuthStateChanged(auth, async (user) => {
 
     // Migra dados locais → Firestore (só se necessário)
     await migrateLocalToFirestore(user.uid);
+    // Update last login timestamp in public profile
+    try {
+      await setDoc(doc(db, 'users_public', user.uid), {
+        uid:         user.uid,
+        email:       user.email || '',
+        displayName: user.displayName || '',
+        lastLoginAt: serverTimestamp(),
+      }, { merge: true }); // merge: true keeps existing fields like registeredAt
+    } catch(e) { console.warn('[Profile] update failed:', e.message); }
 
     // Inicia sincronização em tempo real
     startRealtimeSync(user.uid);
@@ -211,6 +220,14 @@ window.authRegister = async function () {
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
     if (name) await updateProfile(cred.user, { displayName: name });
+    // Save public profile (name + email) to Firestore — readable by admin
+    await setDoc(doc(db, 'users_public', cred.user.uid), {
+      uid:          cred.user.uid,
+      email:        email,
+      displayName:  name || '',
+      registeredAt: serverTimestamp(),
+      lastLoginAt:  serverTimestamp(),
+    });
   } catch (err) {
     showAuthError(firebaseErrMsg(err.code));
   } finally {

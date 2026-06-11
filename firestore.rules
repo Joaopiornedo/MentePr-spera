@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Dados financeiros — cada utilizador só lê/escreve os seus próprios dados
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Perfis públicos (nome + email) — utilizador escreve o seu próprio perfil
+    // Admin (TEU_EMAIL_AQUI) pode ler todos
+    match /users_public/{userId} {
+      allow write: if request.auth != null && request.auth.uid == userId;
+      allow read:  if request.auth != null && (
+                     request.auth.uid == userId ||
+                     request.auth.token.email == 'TEU_EMAIL_AQUI@gmail.com'
+                   );
+    }
+
+  }
+}
