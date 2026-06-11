@@ -39,6 +39,8 @@
 <meta name="twitter:description" content="Gestão financeira inteligente — controla salário, despesas, investimentos e sonhos num só lugar.">
 <meta name="twitter:image"       content="icons/icon-512.png">
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- Firebase config -->
+<script src="firebase-config.js"></script>
 <script>
   tailwind.config = {
     darkMode: ['selector', '[data-theme="dark"]'],
@@ -147,6 +149,31 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 .eb-body{display:none}.ebook-chapter.open .eb-body{display:block}
 .eb-arrow{transition:transform .2s}.ebook-chapter.open .eb-arrow{transform:rotate(90deg)}
 
+/* == AUTH SCREEN == */
+#auth-screen{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#0d0a1a 0%,#1a0f3a 50%,#0d1a35 100%);padding:20px;}
+.auth-card{width:100%;max-width:400px;background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:28px;padding:36px 28px 32px;box-shadow:0 32px 80px rgba(0,0,0,.5);}
+.auth-logo{width:56px;height:56px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;}
+.auth-logo img{width:100%;height:100%;object-fit:cover;border-radius:16px}
+.auth-title{font-size:22px;font-weight:900;color:#fff;text-align:center;margin-bottom:4px}
+.auth-subtitle{font-size:13px;color:rgba(255,255,255,.45);text-align:center;margin-bottom:24px}
+.auth-field{margin-bottom:14px}
+.auth-field label{display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase}
+.auth-field input{width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 14px;font-size:15px;color:#fff;outline:none;transition:border-color .15s;font-family:inherit;}
+.auth-field input::placeholder{color:rgba(255,255,255,.25)}
+.auth-field input:focus{border-color:#8b5cf6;background:rgba(255,255,255,.1)}
+.auth-btn{width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;font-size:15px;font-weight:800;font-family:inherit;margin-top:6px;box-shadow:0 8px 32px rgba(109,40,217,.4);transition:all .2s;}
+.auth-btn:hover{transform:translateY(-1px)}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.auth-error{display:none;border-radius:10px;padding:10px 14px;font-size:12px;font-weight:600;margin-bottom:12px;border:1px solid;}
+.auth-link{text-align:center;font-size:12px;color:rgba(255,255,255,.4);margin-top:16px}
+.auth-reset{text-align:center;font-size:12px;margin-top:8px}
+.auth-reset span{color:rgba(255,255,255,.35);cursor:pointer;transition:color .15s}
+.auth-reset span:hover{color:#8b5cf6}
+.auth-divider{height:1px;background:rgba(255,255,255,.08);margin:18px 0}
+#user-bar{display:none;align-items:center;gap:8px;padding:6px 12px;border-radius:10px;cursor:pointer;background:var(--surf2);border:1px solid var(--bdr);max-width:160px;}
+#user-bar:hover{background:#ede9fe}
+#user-bar-avatar{width:26px;height:26px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;}
+#user-bar-name{font-size:12px;font-weight:700;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px}
 /* ── safe area ── */
 /* Preenche a área atrás da Dynamic Island / notch com a cor do topbar */
 body{
@@ -165,6 +192,43 @@ body{
 </style>
 </head>
 <body style="background:#f1f5f9;min-height:100vh;">
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen" style="display:flex;">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="icons/icon-192.png" alt="" onerror="this.parentElement.innerHTML='&#x1F4B0;'">
+    </div>
+    <div class="auth-title" id="auth-title">Entrar</div>
+    <div class="auth-subtitle" id="auth-subtitle">A tua conta Calculadora da Virada</div>
+    <div class="auth-error" id="auth-error"></div>
+    <div class="auth-field" id="auth-name-row" style="display:none;">
+      <label>Nome</label>
+      <input type="text" id="auth-name" placeholder="Como te chamas?">
+    </div>
+    <div class="auth-field">
+      <label>Email</label>
+      <input type="email" id="auth-email" placeholder="email@exemplo.com" autocomplete="email">
+    </div>
+    <div class="auth-field">
+      <label>Senha</label>
+      <input type="password" id="auth-pass" placeholder="Minimo 6 caracteres" autocomplete="current-password">
+    </div>
+    <div class="auth-field" id="auth-pass2-row" style="display:none;">
+      <label>Confirmar senha</label>
+      <input type="password" id="auth-pass2" placeholder="Repete a senha" autocomplete="new-password">
+    </div>
+    <button class="auth-btn" id="auth-submit-btn" data-label="Entrar" onclick="authLogin()">Entrar</button>
+    <div class="auth-reset" id="auth-reset-row">
+      <span onclick="authResetPassword()">Esqueci a senha</span>
+    </div>
+    <div class="auth-divider"></div>
+    <div class="auth-link" id="auth-link-row">
+      Nao tens conta?
+      <span onclick="authSwitchMode('register')" style="color:#8b5cf6;font-weight:700;cursor:pointer;">Criar agora</span>
+    </div>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════════
      TOPBAR
@@ -186,6 +250,11 @@ body{
   </div>
   <!-- actions -->
   <div class="flex items-center gap-2">
+    <!-- user bar -->
+    <div id="user-bar" onclick="authLogout()" title="Clica para sair">
+      <div id="user-bar-avatar">&#x1F464;</div>
+      <div id="user-bar-name">...</div>
+    </div>
     <!-- install -->
     <button onclick="openInstallModal()" id="btnInstall"
             class="w-9 h-9 rounded-xl flex items-center justify-center text-lg text-white"
@@ -2152,7 +2221,8 @@ function defaultItems(){
   }
 }
 
-window.onload=()=>{
+// auth.js calls _appInit() after login
+window._appInit = function(){
   // theme
   const savedTheme=localStorage.getItem('cvTheme')||'light';
   applyTheme(savedTheme);
@@ -2208,6 +2278,17 @@ window.onload=()=>{
   if(savedPage && savedPage !== 'ebook' && $('page-'+savedPage)){
     switchPage(savedPage);
   }
+}; // end _appInit
+
+// Fallback: if Firebase config not filled in, run directly
+window.onload = () => {
+  if(typeof FIREBASE_CONFIG === 'undefined' ||
+     FIREBASE_CONFIG.apiKey === 'SUBSTITUI_AQUI') {
+    console.warn('[Auth] Firebase nao configurado - modo local.');
+    document.getElementById('auth-screen').style.display = 'none';
+    window._appInit();
+  }
+  // else: auth.js onAuthStateChanged takes over after login
 };
 
 // ─────────────────────────────────────────
@@ -2573,5 +2654,7 @@ function renderPlano(){
 .ns-row-sub{font-size:11px;color:var(--txt3);line-height:1.4}
 </style>
 
+
+<script type="module" src="auth.js"></script>
 </body>
 </html>
