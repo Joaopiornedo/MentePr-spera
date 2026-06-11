@@ -1,27 +1,12 @@
 // ═══════════════════════════════════════════════════════════════
-//  FIREBASE CONFIG — Calculadora da Virada
-//  ↓ SUBSTITUI estes valores pelos do teu projecto Firebase ↓
-//  Console: https://console.firebase.google.com
-//  Projecto → Configurações → Apps Web → firebaseConfig
+//  FIREBASE CONFIG — Mente Próspera / Controle Financeiro
+//  Projecto: mente-prospera
 // ═══════════════════════════════════════════════════════════════
 const FIREBASE_CONFIG = {
-  apiKey:            "SUBSTITUI_AQUI",
-  authDomain:        "SUBSTITUI_AQUI.firebaseapp.com",
-  projectId:         "SUBSTITUI_AQUI",
-  storageBucket:     "SUBSTITUI_AQUI.appspot.com",
-  messagingSenderId: "SUBSTITUI_AQUI",
-  appId:             "SUBSTITUI_AQUI"
+  apiKey:            "AIzaSyA5p9IZBrYIxBP7kH4S48DZFy4L8FQWFTU",
+  authDomain:        "mente-prospera.firebaseapp.com",
+  projectId:         "mente-prospera",
+  storageBucket:     "mente-prospera.firebasestorage.app",
+  messagingSenderId: "380325764613",
+  appId:             "1:380325764613:web:36d8b49de68623f96f466c"
 };
-
-// Regras Firestore recomendadas (cola no console Firebase → Firestore → Regras):
-/*
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    // Cada utilizador só lê/escreve os seus próprios dados
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}
-*/
