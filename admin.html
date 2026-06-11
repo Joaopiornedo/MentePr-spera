@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Mente Próspera</title>
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="firebase-config.js"></script>
+
+<style>
+/* ── tokens ── */
+:root{
+  --ink:#0f172a;--ink2:#475569;--ink3:#94a3b8;
+  --bg:#f1f5f9;--surf:#fff;--surf2:#f8fafc;--bdr:#e2e8f0;
+  --v:#6d28d9;--vl:#ede9fe;
+  --g:#059669;--gl:#d1fae5;
+  --r:#dc2626;--rl:#fee2e2;
+  --a:#d97706;--al:#fef3c7;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+input,button,select{font-family:inherit}
+
+/* ── auth gate ── */
+#auth-gate{
+  position:fixed;inset:0;z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#0d0a1a,#1a0f3a,#0d1a35);
+  padding:20px;
+}
+.auth-card{
+  width:100%;max-width:380px;
+  background:rgba(255,255,255,.06);backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.12);border-radius:24px;
+  padding:32px 24px;box-shadow:0 32px 80px rgba(0,0,0,.5);
+}
+.auth-logo{width:52px;height:52px;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px}
+.auth-logo img{width:100%;height:100%;object-fit:cover;border-radius:14px}
+.auth-title{font-size:20px;font-weight:900;color:#fff;text-align:center;margin-bottom:4px}
+.auth-sub{font-size:12px;color:rgba(255,255,255,.4);text-align:center;margin-bottom:24px}
+.auth-field{margin-bottom:12px}
+.auth-field label{display:block;font-size:10px;font-weight:700;color:rgba(255,255,255,.4);margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase}
+.auth-field input{width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:10px;padding:11px 14px;font-size:14px;color:#fff;outline:none;font-family:inherit}
+.auth-field input:focus{border-color:#8b5cf6}
+.auth-field input::placeholder{color:rgba(255,255,255,.2)}
+.auth-btn{width:100%;padding:13px;border-radius:12px;border:none;cursor:pointer;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;font-size:14px;font-weight:800;font-family:inherit;margin-top:4px;transition:opacity .15s}
+.auth-btn:hover{opacity:.9}
+.auth-btn:disabled{opacity:.4;cursor:not-allowed}
+.auth-err{display:none;background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:9px 12px;font-size:12px;font-weight:600;color:#dc2626;margin-bottom:12px}
+
+/* ── layout ── */
+#admin-panel{display:none}
+.topbar{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:56px;
+  background:var(--surf);border-bottom:1px solid var(--bdr);
+}
+.topbar-brand{display:flex;align-items:center;gap:10px}
+.topbar-logo{width:32px;height:32px;border-radius:9px;overflow:hidden;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:16px}
+.topbar-logo img{width:100%;height:100%;object-fit:cover;border-radius:9px}
+.topbar-title{font-size:14px;font-weight:800;color:var(--ink)}
+.topbar-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;background:var(--rl);color:var(--r)}
+.topbar-user{font-size:12px;color:var(--ink3)}
+.logout-btn{font-size:12px;font-weight:700;color:var(--r);background:var(--rl);border:none;border-radius:8px;padding:6px 12px;cursor:pointer}
+
+.wrap{max-width:1200px;margin:0 auto;padding:28px 24px 60px}
+
+/* ── stat cards ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-card{background:var(--surf);border:1px solid var(--bdr);border-radius:16px;padding:20px}
+.stat-label{font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.stat-value{font-size:32px;font-weight:900;line-height:1}
+.stat-sub{font-size:11px;color:var(--ink3);margin-top:4px}
+
+/* ── users table ── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-size:16px;font-weight:800;color:var(--ink)}
+.search-row{display:flex;gap:10px;align-items:center}
+.search-input{
+  background:var(--surf);border:1.5px solid var(--bdr);border-radius:10px;
+  padding:8px 14px;font-size:13px;color:var(--ink);outline:none;width:260px;
+  transition:border-color .15s;
+}
+.search-input:focus{border-color:var(--v)}
+.refresh-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;
+  background:var(--vl);color:var(--v);border:none;cursor:pointer;transition:all .15s;
+}
+.refresh-btn:hover{background:var(--v);color:#fff}
+.refresh-btn:disabled{opacity:.5;cursor:not-allowed}
+
+.table-wrap{background:var(--surf);border:1px solid var(--bdr);border-radius:16px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--surf2)}
+th{padding:11px 16px;font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;text-align:left;border-bottom:1px solid var(--bdr)}
+td{padding:13px 16px;font-size:13px;color:var(--ink);border-bottom:1px solid var(--bdr)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surf2)}
+.td-email{font-weight:600}
+.td-date{color:var(--ink3);font-size:12px}
+.badge{display:inline-block;padding:2px 8px;border-radius:100px;font-size:10px;font-weight:700}
+.badge-active{background:var(--gl);color:var(--g)}
+.badge-new{background:var(--vl);color:var(--v)}
+.badge-old{background:var(--surf2);color:var(--ink3)}
+
+/* ── empty / loading ── */
+.table-empty{padding:48px;text-align:center;color:var(--ink3)}
+.table-empty .icon{font-size:36px;margin-bottom:10px}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--bdr);border-top-color:var(--v);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── error banner ── */
+.error-banner{background:var(--rl);border:1px solid #fca5a5;border-radius:12px;padding:14px 18px;font-size:13px;color:var(--r);font-weight:600;margin-bottom:20px;display:none}
+
+/* ── setup guide ── */
+.setup-card{background:var(--surf);border:1.5px solid var(--a);border-radius:16px;padding:24px;margin-bottom:24px;display:none}
+.setup-title{font-size:15px;font-weight:800;color:var(--a);margin-bottom:12px}
+.setup-step{display:flex;gap:12px;margin-bottom:12px;font-size:13px;color:var(--ink2);line-height:1.6}
+.setup-num{width:24px;height:24px;border-radius:50%;background:var(--a);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.setup-code{background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;padding:10px 14px;font-family:monospace;font-size:12px;color:var(--ink);margin-top:8px;overflow-x:auto;white-space:pre}
+
+/* ── pagination ── */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--bdr);font-size:12px;color:var(--ink3)}
+.pag-btns{display:flex;gap:6px}
+.pag-btn{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--bdr);background:var(--surf);color:var(--ink2);cursor:pointer;transition:all .15s}
+.pag-btn:hover:not(:disabled){border-color:var(--v);color:var(--v)}
+.pag-btn:disabled{opacity:.4;cursor:not-allowed}
+
+@media(max-width:768px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .search-input{width:100%}
+  .section-header{flex-direction:column;align-items:flex-start;gap:10px}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .wrap{padding:16px 12px 40px}
+  th:nth-child(3),td:nth-child(3),
+  th:nth-child(4),td:nth-child(4){display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH GATE -->
+<div id="auth-gate">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="icons/icon-192.png" alt="" onerror="this.parentElement.innerHTML='🔐'">
+    </div>
+    <div class="auth-title">Painel de Admin</div>
+    <div class="auth-sub">Mente Próspera · Acesso restrito</div>
+    <div class="auth-err" id="auth-err"></div>
+    <div class="auth-field">
+      <label>Email de admin</label>
+      <input type="email" id="admin-email" placeholder="teu@email.com" autocomplete="email">
+    </div>
+    <div class="auth-field">
+      <label>Senha</label>
+      <input type="password" id="admin-pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="auth-btn" id="login-btn" onclick="adminLogin()">Entrar no painel</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="topbar-logo">
+        <img src="icons/icon-192.png" alt="" onerror="this.parentElement.innerHTML='💰'">
+      </div>
+      <div class="topbar-title">Mente Próspera</div>
+      <span class="topbar-badge">ADMIN</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="topbar-user" id="admin-email-display"></span>
+      <button class="logout-btn" onclick="adminLogout()">Sair</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- Setup guide (shown when Cloud Function not configured) -->
+    <div class="setup-card" id="setup-guide">
+      <div class="setup-title">⚙️ Configuração necessária — Cloud Function</div>
+      <p style="font-size:13px;color:var(--ink2);margin-bottom:16px;line-height:1.6">
+        Para listar utilizadores do Firebase Auth é necessária uma <b>Cloud Function</b> (o Firestore não dá acesso directo à lista de Auth por segurança). Segue os passos abaixo uma única vez:
+      </p>
+      <div class="setup-step">
+        <div class="setup-num">1</div>
+        <div>
+          Instala o Firebase CLI e inicializa as functions no teu projecto:<br>
+          <div class="setup-code">npm install -g firebase-tools
+firebase login
+firebase init functions   # escolhe JavaScript, sem ESLint</div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">2</div>
+        <div>
+          Substitui o conteúdo de <b>functions/index.js</b> por:<br>
+          <div class="setup-code">const {onRequest} = require("firebase-functions/v2/https");
+const admin = require("firebase-admin");
+admin.initializeApp();
+
+// ← SUBSTITUI pelo teu email de admin
+const ADMIN_EMAIL = "TEU_EMAIL_AQUI@gmail.com";
+
+exports.adminGetUsers = onRequest({cors: true}, async (req, res) => {
+  // Verify caller is the admin (via ID token)
+  const auth = req.headers.authorization?.split("Bearer ")[1];
+  if (!auth) return res.status(401).json({error:"Sem token"});
+  try {
+    const decoded = await admin.auth().verifyIdToken(auth);
+    if (decoded.email !== ADMIN_EMAIL)
+      return res.status(403).json({error:"Acesso negado"});
+
+    const result = await admin.auth().listUsers(1000);
+    const users = result.users.map(u => ({
+      uid:          u.uid,
+      email:        u.email || "—",
+      displayName:  u.displayName || "",
+      createdAt:    u.metadata.creationTime,
+      lastLogin:    u.metadata.lastSignInTime,
+      disabled:     u.disabled,
+    }));
+    res.json({users, total: users.length});
+  } catch(e) {
+    res.status(500).json({error: e.message});
+  }
+});</div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">3</div>
+        <div>
+          Faz deploy da função e copia o URL:<br>
+          <div class="setup-code">firebase deploy --only functions
+# URL gerado: https://admingetusers-XXXXX-uc.a.run.app</div>
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">4</div>
+        <div>
+          Cola o URL no campo <b>CLOUD_FUNCTION_URL</b> no topo deste ficheiro <code>admin.html</code> (linha ~10 do script).
+        </div>
+      </div>
+    </div>
+
+    <!-- Error banner -->
+    <div class="error-banner" id="error-banner"></div>
+
+    <!-- Stats grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total de utilizadores</div>
+        <div class="stat-value" id="stat-total" style="color:var(--v)">—</div>
+        <div class="stat-sub">registados</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Novos esta semana</div>
+        <div class="stat-value" id="stat-week" style="color:var(--g)">—</div>
+        <div class="stat-sub">últimos 7 dias</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Activos hoje</div>
+        <div class="stat-value" id="stat-today" style="color:var(--a)">—</div>
+        <div class="stat-sub">último login hoje</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Activos este mês</div>
+        <div class="stat-value" id="stat-month" style="color:var(--ink)">—</div>
+        <div class="stat-sub">último login &lt;30 dias</div>
+      </div>
+    </div>
+
+    <!-- Users table -->
+    <div class="section-header">
+      <div class="section-title">👥 Lista de Utilizadores</div>
+      <div class="search-row">
+        <input type="text" class="search-input" id="search-input"
+               placeholder="Pesquisar por email ou nome..."
+               oninput="filterUsers(this.value)">
+        <button class="refresh-btn" id="refresh-btn" onclick="loadUsers()">
+          <span id="refresh-icon">🔄</span> Actualizar
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Utilizador</th>
+            <th>Email</th>
+            <th>Registado em</th>
+            <th>Último login</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody">
+          <tr><td colspan="5" class="table-empty">
+            <div class="icon">👥</div>
+            <div>A carregar utilizadores...</div>
+          </td></tr>
+        </tbody>
+      </table>
+      <div class="pagination" id="pagination" style="display:none">
+        <span id="pag-info"></span>
+        <div class="pag-btns">
+          <button class="pag-btn" id="pag-prev" onclick="pagGo(-1)">← Anterior</button>
+          <button class="pag-btn" id="pag-next" onclick="pagGo(1)">Seguinte →</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }                     from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword,
+         signOut, onAuthStateChanged }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+// ══════════════════════════════════════════════════
+//  ↓↓ CONFIGURA AQUI ↓↓
+// ══════════════════════════════════════════════════
+
+// 1. O teu email de admin (deve ser igual ao ADMIN_EMAIL na Cloud Function)
+const ADMIN_EMAIL = 'TEU_EMAIL_AQUI@gmail.com';
+
+// 2. URL da Cloud Function (após firebase deploy --only functions)
+//    Exemplo: 'https://admingetusers-abc123-uc.a.run.app'
+const CLOUD_FUNCTION_URL = '';
+
+// ══════════════════════════════════════════════════
+
+const app  = initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(app);
+
+// ── state ──
+let allUsers   = [];
+let filtered   = [];
+let page       = 0;
+const PER_PAGE = 25;
+
+// ── auth gate ──────────────────────────────────────
+onAuthStateChanged(auth, user => {
+  if (user && user.email === ADMIN_EMAIL) {
+    document.getElementById('auth-gate').style.display  = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    document.getElementById('admin-email-display').textContent = user.email;
+    loadUsers();
+  } else if (user && user.email !== ADMIN_EMAIL) {
+    showAuthErr('Este email não tem permissão de admin.');
+    signOut(auth);
+  } else {
+    document.getElementById('auth-gate').style.display  = 'flex';
+    document.getElementById('admin-panel').style.display = 'none';
+  }
+});
+
+window.adminLogin = async () => {
+  const email = document.getElementById('admin-email').value.trim();
+  const pass  = document.getElementById('admin-pass').value;
+  clearAuthErr();
+  if (!email || !pass) return showAuthErr('Preenche email e senha.');
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true; btn.textContent = '...';
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    showAuthErr(fbErr(e.code));
+    btn.disabled = false; btn.textContent = 'Entrar no painel';
+  }
+};
+
+window.adminLogout = () => signOut(auth);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('auth-gate').style.display !== 'none')
+    document.getElementById('login-btn').click();
+});
+
+// ── load users ─────────────────────────────────────
+window.loadUsers = async () => {
+  const btn  = document.getElementById('refresh-btn');
+  const icon = document.getElementById('refresh-icon');
+  btn.disabled = true; icon.textContent = '⏳';
+  hideBanner();
+
+  if (!CLOUD_FUNCTION_URL) {
+    document.getElementById('setup-guide').style.display = 'block';
+    setTableMsg('⚙️', 'Configura a Cloud Function primeiro (ver guia acima).');
+    btn.disabled = false; icon.textContent = '🔄';
+    return;
+  }
+
+  try {
+    const token = await auth.currentUser.getIdToken();
+    const resp  = await fetch(CLOUD_FUNCTION_URL, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({error: resp.statusText}));
+      throw new Error(err.error || resp.statusText);
+    }
+    const data = await resp.json();
+    allUsers = data.users || [];
+    filtered = [...allUsers];
+    page = 0;
+    computeStats(allUsers);
+    renderTable();
+  } catch(e) {
+    showBanner(`Erro ao carregar utilizadores: ${e.message}`);
+    setTableMsg('❌', 'Não foi possível carregar. Verifica a Cloud Function e tenta novamente.');
+  } finally {
+    btn.disabled = false; icon.textContent = '🔄';
+  }
+};
+
+// ── stats ───────────────────────────────────────────
+function computeStats(users) {
+  const now    = Date.now();
+  const day    = 86400000;
+  const week   = day * 7;
+  const month  = day * 30;
+  const total  = users.length;
+  const newW   = users.filter(u => now - new Date(u.createdAt) < week).length;
+  const today  = users.filter(u => u.lastLogin && now - new Date(u.lastLogin) < day).length;
+  const active = users.filter(u => u.lastLogin && now - new Date(u.lastLogin) < month).length;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-week').textContent  = newW;
+  document.getElementById('stat-today').textContent = today;
+  document.getElementById('stat-month').textContent = active;
+}
+
+// ── table ───────────────────────────────────────────
+function renderTable() {
+  const tbody = document.getElementById('users-tbody');
+  const start = page * PER_PAGE;
+  const slice = filtered.slice(start, start + PER_PAGE);
+
+  if (!filtered.length) {
+    setTableMsg('🔍', 'Nenhum utilizador encontrado.');
+    document.getElementById('pagination').style.display = 'none';
+    return;
+  }
+
+  const now = Date.now();
+  const day = 86400000;
+
+  tbody.innerHTML = slice.map(u => {
+    const created   = u.createdAt ? fmtDate(new Date(u.createdAt)) : '—';
+    const lastLogin = u.lastLogin  ? fmtDate(new Date(u.lastLogin)) : 'Nunca';
+    const msSince   = u.lastLogin  ? now - new Date(u.lastLogin) : Infinity;
+    const isNew     = now - new Date(u.createdAt) < day * 7;
+    const isActive  = msSince < day * 30;
+    const badgeCls  = isNew ? 'badge-new' : (isActive ? 'badge-active' : 'badge-old');
+    const badgeTxt  = isNew ? 'Novo' : (isActive ? 'Activo' : 'Inactivo');
+    const avatar    = (u.displayName || u.email || '?')[0].toUpperCase();
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0">${esc(avatar)}</div>
+          <span style="font-weight:600;color:var(--ink)">${esc(u.displayName || '—')}</span>
+        </div>
+      </td>
+      <td class="td-email">${esc(u.email)}</td>
+      <td class="td-date">${created}</td>
+      <td class="td-date">${lastLogin}</td>
+      <td><span class="badge ${badgeCls}">${badgeTxt}</span></td>
+    </tr>`;
+  }).join('');
+
+  // pagination
+  const total = filtered.length;
+  const pages = Math.ceil(total / PER_PAGE);
+  const pag   = document.getElementById('pagination');
+  pag.style.display = pages > 1 ? 'flex' : 'none';
+  document.getElementById('pag-info').textContent =
+    `${start+1}–${Math.min(start+PER_PAGE, total)} de ${total}`;
+  document.getElementById('pag-prev').disabled = page === 0;
+  document.getElementById('pag-next').disabled = page >= pages - 1;
+}
+
+window.pagGo = dir => { page += dir; renderTable(); };
+
+// ── search / filter ─────────────────────────────────
+window.filterUsers = q => {
+  const lq = q.toLowerCase().trim();
+  filtered  = lq ? allUsers.filter(u =>
+    (u.email || '').toLowerCase().includes(lq) ||
+    (u.displayName || '').toLowerCase().includes(lq)
+  ) : [...allUsers];
+  page = 0;
+  renderTable();
+};
+
+// ── helpers ─────────────────────────────────────────
+function fmtDate(d) {
+  return d.toLocaleDateString('pt', {day:'2-digit',month:'short',year:'numeric'}) +
+    ' ' + d.toLocaleTimeString('pt', {hour:'2-digit',minute:'2-digit'});
+}
+function esc(s) {
+  return String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+}
+function setTableMsg(icon, msg) {
+  document.getElementById('users-tbody').innerHTML =
+    `<tr><td colspan="5" class="table-empty"><div class="icon">${icon}</div><div>${msg}</div></td></tr>`;
+}
+function showBanner(msg) {
+  const b = document.getElementById('error-banner');
+  b.textContent = msg; b.style.display = 'block';
+}
+function hideBanner() {
+  document.getElementById('error-banner').style.display = 'none';
+}
+function showAuthErr(msg) {
+  const e = document.getElementById('auth-err');
+  e.textContent = msg; e.style.display = 'block';
+}
+function clearAuthErr() {
+  document.getElementById('auth-err').style.display = 'none';
+}
+function fbErr(code) {
+  const m = {
+    'auth/invalid-credential':   'Email ou senha incorrectos.',
+    'auth/user-not-found':       'Utilizador não encontrado.',
+    'auth/wrong-password':       'Senha incorrecta.',
+    'auth/too-many-requests':    'Muitas tentativas. Tenta mais tarde.',
+    'auth/network-request-failed':'Sem ligação à internet.',
+  };
+  return m[code] || `Erro: ${code}`;
+}
+</script>
+</body>
+</html>
