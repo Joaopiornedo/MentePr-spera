@@ -532,16 +532,14 @@ button{font-family:var(--sans)}
 
 </style>
 <style id="eb-nav-css">
-/* ════ SHARED NAV (ebook) ════ */
-.eb-topbar{position:sticky;top:0;z-index:300;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;background:var(--topbar,rgba(255,255,255,.92));backdrop-filter:blur(12px);border-bottom:1px solid var(--border,#e2e8f0);padding-top:env(safe-area-inset-top,0);}
+.eb-topbar{position:sticky;top:0;z-index:300;display:flex;align-items:center;justify-content:space-between;padding:0 16px;height:52px;background:var(--topbar,rgba(255,255,255,.92));backdrop-filter:blur(12px);border-bottom:1px solid var(--border,#e2e8f0);}
 .eb-brand{display:flex;align-items:center;gap:8px}
 .eb-logo{width:32px;height:32px;border-radius:9px;overflow:hidden;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
 .eb-logo img{width:100%;height:100%;object-fit:cover;border-radius:9px}
 .eb-brand-title{font-size:14px;font-weight:800;color:var(--text,#0f172a)}
 .eb-brand-sub{font-size:10px;color:var(--text3,#94a3b8)}
-.eb-menu-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;height:36px;border-radius:10px;background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0);color:var(--text,#0f172a);cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all .15s;}
-.eb-menu-btn:hover{background:var(--surface,#fff)}
-.eb-bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:300;display:grid;grid-template-columns:repeat(6,1fr);background:var(--surface,#fff);border-top:1px solid var(--border,#e2e8f0);padding-bottom:env(safe-area-inset-bottom,0);}
+.eb-menu-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;height:36px;border-radius:10px;background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0);color:var(--text,#0f172a);cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;}
+.eb-bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:300;background:var(--surface,#fff);border-top:1px solid var(--border,#e2e8f0);padding-bottom:env(safe-area-inset-bottom,0);}
 .eb-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:7px 2px 6px;font-size:9px;font-weight:700;font-family:inherit;color:var(--text3,#94a3b8);border:none;background:none;cursor:pointer;transition:color .15s;text-decoration:none;line-height:1;}
 .eb-nav-item:hover,.eb-nav-item.active{color:#6d28d9}
 .eb-nav-icon{font-size:18px;line-height:1;margin-bottom:1px}
@@ -557,20 +555,17 @@ button{font-family:var(--sans)}
 .eb-ns-body{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
 .eb-ns-section{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3,#94a3b8);padding:8px 0 2px}
 .eb-ns-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0);text-decoration:none;color:inherit;transition:all .15s;cursor:pointer;font-family:inherit;width:100%;text-align:left;}
-.eb-ns-row:hover,.eb-ns-row:active{border-color:#6d28d9;background:#ede9fe}
+.eb-ns-row:hover{border-color:#6d28d9;background:#ede9fe}
 .eb-ns-icon{width:38px;height:38px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px}
 .eb-ns-info{flex:1;min-width:0}
 .eb-ns-row-title{font-size:13px;font-weight:700;color:var(--text,#0f172a);margin-bottom:1px}
 .eb-ns-row-sub{font-size:11px;color:var(--text3,#94a3b8);line-height:1.4}
 .eb-ns-arrow{color:var(--text3,#94a3b8);font-size:15px;flex-shrink:0}
-.eb-ns-toggle{flex-shrink:0;width:40px;height:24px;border-radius:100px;position:relative;transition:background .2s}
-.eb-ns-toggle-ball{position:absolute;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:left .2s}
 .eb-lang-btns{display:flex;gap:8px;padding-top:4px}
 .eb-lang-btn{flex:1;padding:8px 0;border-radius:10px;font-size:11px;font-weight:700;border:1px solid var(--border,#e2e8f0);background:var(--surface2,#f8fafc);color:var(--text2,#475569);cursor:pointer;font-family:inherit;transition:all .15s}
 .eb-lang-btn.active{background:#6d28d9;color:#fff;border-color:#6d28d9}
 body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important}
 </style>
-<style>@keyframes ebSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}</style>
 </head>
 <body>
 
@@ -583,7 +578,7 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important}
     <div class="eb-logo"><img src="icons/icon-192.png" alt="Logo" onerror="this.parentElement.innerHTML='💰'"></div>
     <div>
       <div class="eb-brand-title">Mente Próspera</div>
-      <div class="eb-brand-sub">15 Cartões · Ebook</div>
+      <div class="eb-brand-sub" id="eb-topbar-sub">15 Cartões · Ebook</div>
     </div>
   </div>
   <button class="eb-menu-btn" onclick="ebOpenMenu()">
@@ -1494,53 +1489,134 @@ function loadLang(){
       <button class="eb-ns-close" onclick="ebCloseMenu()">✕</button>
     </div>
     <div class="eb-ns-body">
-      <div class="eb-ns-section">APRENDER</div>
-      <a href="tutorial.html" class="eb-ns-row"><div class="eb-ns-icon" style="background:#ede9fe">🎓</div><div class="eb-ns-info"><div class="eb-ns-row-title">Tutorial Completo</div><div class="eb-ns-row-sub">Aprende a usar todas as ferramentas</div></div><span class="eb-ns-arrow">›</span></a>
-      <div class="eb-ns-section">NAVEGAR</div>
-      <button class="eb-ns-row" onclick="ebNavGo('orcamento')"><div class="eb-ns-icon" style="background:#ede9fe">💰</div><div class="eb-ns-info"><div class="eb-ns-row-title">Orçamento</div><div class="eb-ns-row-sub">Gerir salário, despesas e contas</div></div><span class="eb-ns-arrow">›</span></button>
-      <button class="eb-ns-row" onclick="ebNavGo('historico')"><div class="eb-ns-icon" style="background:#dbeafe">📅</div><div class="eb-ns-info"><div class="eb-ns-row-title">Histórico</div><div class="eb-ns-row-sub">Ver evolução e meses arquivados</div></div><span class="eb-ns-arrow">›</span></button>
-      <button class="eb-ns-row" onclick="ebNavGo('plano')"><div class="eb-ns-icon" style="background:#d1fae5">📈</div><div class="eb-ns-info"><div class="eb-ns-row-title">Plano</div><div class="eb-ns-row-sub">Simulador de investimento</div></div><span class="eb-ns-arrow">›</span></button>
-      <a href="calculadora-liberdade-financeira.html" class="eb-ns-row"><div class="eb-ns-icon" style="background:#cffafe">🏆</div><div class="eb-ns-info"><div class="eb-ns-row-title">Liberdade Financeira</div><div class="eb-ns-row-sub">Quantos anos para a liberdade financeira</div></div><span class="eb-ns-arrow">›</span></a>
-      <div class="eb-ns-section">CONFIGURAÇÕES</div>
-      <button class="eb-ns-row" onclick="ebToggleTheme()"><div class="eb-ns-icon" style="background:var(--surface2,#f8fafc)" id="eb-ns-theme-icon">🌙</div><div class="eb-ns-info"><div class="eb-ns-row-title" id="eb-ns-theme-t">Modo Escuro</div><div class="eb-ns-row-sub">Alternar entre tema claro e escuro</div></div><div class="eb-ns-toggle" id="eb-ns-toggle" style="background:#6d28d9"><div class="eb-ns-toggle-ball" id="eb-ns-ball" style="left:19px"></div></div></button>
-      <div class="eb-ns-row" style="cursor:default;flex-direction:column;align-items:stretch;gap:8px"><div style="display:flex;align-items:center;gap:12px"><div class="eb-ns-icon" style="background:var(--surface2,#f8fafc)">🌍</div><div class="eb-ns-info"><div class="eb-ns-row-title">Idioma</div><div class="eb-ns-row-sub">PT · ES · EN</div></div></div><div class="eb-lang-btns"><button class="eb-lang-btn active" id="eb-lbtn-pt" onclick="ebSetLang('pt')">🇧🇷 PT</button><button class="eb-lang-btn" id="eb-lbtn-es" onclick="ebSetLang('es')">🌎 ES</button><button class="eb-lang-btn" id="eb-lbtn-en" onclick="ebSetLang('en')">🇺🇸 EN</button></div></div>
-      <button class="eb-ns-row" onclick="ebOpenInstall()"><div class="eb-ns-icon" style="background:#ede9fe">📲</div><div class="eb-ns-info"><div class="eb-ns-row-title">Instalar no Telemóvel</div><div class="eb-ns-row-sub">Adicionar à tela inicial como app nativa</div></div><span class="eb-ns-arrow">›</span></button>
+      <div class="eb-ns-section" id="eb-sec-learn">APRENDER</div>
+      <a href="tutorial.html" class="eb-ns-row"><div class="eb-ns-icon" style="background:#ede9fe">🎓</div><div class="eb-ns-info"><div class="eb-ns-row-title" id="eb-tut-t">Tutorial Completo</div><div class="eb-ns-row-sub" id="eb-tut-s">Aprende a usar todas as ferramentas</div></div><span class="eb-ns-arrow">›</span></a>
+      <div class="eb-ns-section" id="eb-sec-nav">NAVEGAR</div>
+      <button class="eb-ns-row" onclick="ebNavGo('orcamento')"><div class="eb-ns-icon" style="background:#ede9fe">💰</div><div class="eb-ns-info"><div class="eb-ns-row-title" id="eb-orc-t">Orçamento</div><div class="eb-ns-row-sub" id="eb-orc-s">Gerir salário, despesas e contas</div></div><span class="eb-ns-arrow">›</span></button>
+      <button class="eb-ns-row" onclick="ebNavGo('historico')"><div class="eb-ns-icon" style="background:#dbeafe">📅</div><div class="eb-ns-info"><div class="eb-ns-row-title" id="eb-hist-t">Histórico</div><div class="eb-ns-row-sub" id="eb-hist-s">Ver evolução e meses arquivados</div></div><span class="eb-ns-arrow">›</span></button>
+      <button class="eb-ns-row" onclick="ebNavGo('plano')"><div class="eb-ns-icon" style="background:#d1fae5">📈</div><div class="eb-ns-info"><div class="eb-ns-row-title" id="eb-plano-t">Plano</div><div class="eb-ns-row-sub" id="eb-plano-s">Simulador de investimento</div></div><span class="eb-ns-arrow">›</span></button>
+      <a href="calculadora-liberdade-financeira.html" class="eb-ns-row"><div class="eb-ns-icon" style="background:#cffafe">🏆</div><div class="eb-ns-info"><div class="eb-ns-row-title" id="eb-lib-t">Liberdade Financeira</div><div class="eb-ns-row-sub" id="eb-lib-s">Quantos anos para a liberdade financeira</div></div><span class="eb-ns-arrow">›</span></a>
+      <div class="eb-ns-section" id="eb-sec-config">CONFIGURAÇÕES</div>
+      <button class="eb-ns-row" onclick="ebOpenInstall()"><div class="eb-ns-icon" style="background:#ede9fe">📲</div><div class="eb-ns-info"><div class="eb-ns-row-title" id="eb-inst-t">Instalar no Telemóvel</div><div class="eb-ns-row-sub" id="eb-inst-s">Adicionar à tela inicial como app nativa</div></div><span class="eb-ns-arrow">›</span></button>
+      <div class="eb-ns-row" style="cursor:default;flex-direction:column;align-items:stretch;gap:8px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="eb-ns-icon" style="background:var(--surface2,#f8fafc)">🌍</div>
+          <div class="eb-ns-info"><div class="eb-ns-row-title" id="eb-lang-t">Idioma</div><div class="eb-ns-row-sub">PT · ES · EN</div></div>
+        </div>
+        <div class="eb-lang-btns">
+          <button class="eb-lang-btn active" id="eb-lbtn-pt" onclick="ebSetLang('pt')">🇧🇷 PT</button>
+          <button class="eb-lang-btn" id="eb-lbtn-es" onclick="ebSetLang('es')">🌎 ES</button>
+          <button class="eb-lang-btn" id="eb-lbtn-en" onclick="ebSetLang('en')">🇺🇸 EN</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-<nav class="eb-bottom-nav">
-  <button class="eb-nav-item" onclick="ebNavGo('orcamento')"><span class="eb-nav-icon">💰</span><span>Orçamento</span></button>
-  <button class="eb-nav-item active" ><span class="eb-nav-icon">📚</span><span>Ebook</span></button>
-  <button class="eb-nav-item" onclick="ebNavGo('historico')"><span class="eb-nav-icon">📅</span><span>Histórico</span></button>
-  <button class="eb-nav-item" onclick="ebNavGo('plano')"><span class="eb-nav-icon">📈</span><span>Plano</span></button>
-  <button class="eb-nav-item" onclick="window.location.href='calculadora-liberdade-financeira.html'"><span class="eb-nav-icon">🏆</span><span>Liberdade</span></button>
-  <button class="eb-nav-item" onclick="ebOpenInstall()"><span class="eb-nav-icon">📲</span><span>Instalar</span></button>
+<nav class="eb-bottom-nav" style="grid-template-columns:repeat(5,1fr)">
+  <button class="eb-nav-item" onclick="ebNavGo('orcamento')"><span class="eb-nav-icon">💰</span><span id="eb-nav-orcamento">Orçamento</span></button>
+  <button class="eb-nav-item active" ><span class="eb-nav-icon">📚</span><span id="eb-nav-ebook">Ebook</span></button>
+  <button class="eb-nav-item" onclick="ebNavGo('historico')"><span class="eb-nav-icon">📅</span><span id="eb-nav-historico">Histórico</span></button>
+  <button class="eb-nav-item" onclick="ebNavGo('plano')"><span class="eb-nav-icon">📈</span><span id="eb-nav-plano">Plano</span></button>
+  <button class="eb-nav-item" onclick="window.location.href='calculadora-liberdade-financeira.html'"><span class="eb-nav-icon">🏆</span><span id="eb-nav-liberdade">Liberdade</span></button>
 </nav>
-<div id="ebookInstallOverlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)document.getElementById('ebookInstallOverlay').style.display='none'">
-  <div style="width:100%;max-width:500px;background:var(--surface,#fff);border-radius:24px 24px 0 0;padding:24px 20px 40px;animation:ebSlideUp .28s ease;" onclick="event.stopPropagation()">
+<div id="ebookInstallOverlay" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="width:100%;max-width:500px;background:var(--surface,#fff);border-radius:24px 24px 0 0;padding:24px 20px 40px;" onclick="event.stopPropagation()">
     <div style="width:40px;height:4px;background:#ccc;border-radius:2px;margin:0 auto 20px"></div>
     <div style="font-size:36px;text-align:center;margin-bottom:12px">📲</div>
-    <div style="font-size:20px;font-weight:900;text-align:center;margin-bottom:6px;color:var(--text,#0f172a)">Instalar App</div>
+    <div style="font-size:20px;font-weight:900;text-align:center;margin-bottom:20px;color:var(--text,#0f172a)">Instalar App</div>
     <div id="ebookPwaBtnWrap" style="display:none;margin-bottom:14px"><button onclick="if(_ebDeferredInstall){_ebDeferredInstall.prompt()}" style="width:100%;padding:14px;border-radius:16px;font-size:15px;font-weight:800;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;border:none;cursor:pointer">📲 Instalar Agora</button></div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
-      <div style="display:flex;gap:12px;padding:12px;border-radius:12px;background:var(--surface2,#f5f2eb);border:1px solid var(--border,#ddd)"><div style="width:26px;height:26px;border-radius:50%;background:#6d28d9;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0">1</div><div style="font-size:12px;color:var(--text2,#57534e)"><b style="color:var(--text,#1c1917)">📱 iPhone — Safari</b><br>Compartilhar ↑ → Adicionar à Tela de Início</div></div>
-      <div style="display:flex;gap:12px;padding:12px;border-radius:12px;background:var(--surface2,#f5f2eb);border:1px solid var(--border,#ddd)"><div style="width:26px;height:26px;border-radius:50%;background:#6d28d9;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0">2</div><div style="font-size:12px;color:var(--text2,#57534e)"><b style="color:var(--text,#1c1917)">🤖 Android — Chrome</b><br>Menu ⋮ → Adicionar à tela inicial</div></div>
-      <div style="display:flex;gap:12px;padding:12px;border-radius:12px;background:var(--surface2,#f5f2eb);border:1px solid var(--border,#ddd)"><div style="width:26px;height:26px;border-radius:50%;background:#6d28d9;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0">3</div><div style="font-size:12px;color:var(--text2,#57534e)"><b style="color:var(--text,#1c1917)">💻 PC — Chrome/Edge</b><br>Ícone ⊕ na barra de endereço → Instalar</div></div>
+      <div style="display:flex;gap:12px;padding:12px;border-radius:12px;background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0)"><div style="width:26px;height:26px;border-radius:50%;background:#6d28d9;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0">1</div><div style="font-size:12px;color:var(--text2,#475569)"><b>📱 iPhone — Safari</b><br>Compartilhar ↑ → Adicionar à Tela de Início</div></div>
+      <div style="display:flex;gap:12px;padding:12px;border-radius:12px;background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0)"><div style="width:26px;height:26px;border-radius:50%;background:#6d28d9;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0">2</div><div style="font-size:12px;color:var(--text2,#475569)"><b>🤖 Android — Chrome</b><br>Menu ⋮ → Adicionar à tela inicial</div></div>
+      <div style="display:flex;gap:12px;padding:12px;border-radius:12px;background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0)"><div style="width:26px;height:26px;border-radius:50%;background:#6d28d9;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0">3</div><div style="font-size:12px;color:var(--text2,#475569)"><b>💻 PC — Chrome/Edge</b><br>Ícone ⊕ na barra de endereço → Instalar</div></div>
     </div>
-    <button onclick="document.getElementById('ebookInstallOverlay').style.display='none'" style="width:100%;padding:12px;background:none;border:none;font-size:14px;color:var(--text3,#a8a29e);cursor:pointer">Fechar</button>
+    <button onclick="document.getElementById('ebookInstallOverlay').style.display='none'" style="width:100%;padding:12px;background:none;border:none;font-size:14px;color:var(--text3,#94a3b8);cursor:pointer">Fechar</button>
   </div>
 </div>
 <script>
 var _ebDeferredInstall=null;
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();_ebDeferredInstall=e;var w=document.getElementById('ebookPwaBtnWrap');if(w)w.style.display='block';});
-function ebOpenMenu(){document.getElementById('ebNavOverlay').classList.add('open');ebSyncTheme();}
+function ebOpenMenu(){document.getElementById('ebNavOverlay').classList.add('open');}
 function ebCloseMenu(){document.getElementById('ebNavOverlay').classList.remove('open');}
 function ebNavGo(p){localStorage.setItem('cvPage',p);window.location.href='index.html';}
 function ebOpenInstall(){ebCloseMenu();var ov=document.getElementById('ebookInstallOverlay');if(ov){ov.style.display='flex';}else if(_ebDeferredInstall){_ebDeferredInstall.prompt();}}
-function ebToggleTheme(){var d=document.documentElement.getAttribute('data-theme')==='dark';var n=d?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('cvTheme',n);ebSyncTheme();}
-function ebSyncTheme(){var d=document.documentElement.getAttribute('data-theme')==='dark';var icon=document.getElementById('eb-ns-theme-icon');var tog=document.getElementById('eb-ns-toggle');var ball=document.getElementById('eb-ns-ball');var lbl=document.getElementById('eb-ns-theme-t');if(icon)icon.textContent=d?'☀️':'🌙';if(tog)tog.style.background=d?'#6d28d9':'#cbd5e1';if(ball)ball.style.left=d?'19px':'3px';if(lbl)lbl.textContent=d?'Modo Claro':'Modo Escuro';}
-function ebSetLang(l){var map={pt:'ebook-cardss-pt.html',es:'ebook-cardss-es.html',en:'ebook-cardss-en.html'};localStorage.setItem('cvLang',l);if(map[l]&&window.location.pathname.indexOf(map[l])===-1){window.location.href=map[l];}else{['pt','es','en'].forEach(function(k){var b=document.getElementById('eb-lbtn-'+k);if(b)b.className='eb-lang-btn'+(k===l?' active':'');});ebCloseMenu();}}
-(function(){var s=localStorage.getItem('cvTheme')||'dark';document.documentElement.setAttribute('data-theme',s);setTimeout(ebSyncTheme,0);})();
+function ebSetLang(l){
+  var map={pt:'ebook-cardss-pt.html',es:'ebook-cardss-es.html',en:'ebook-cardss-en.html'};
+  localStorage.setItem('cvLang',l);
+  var currentFile=window.location.pathname.split('/').pop();
+  if(map[l] && currentFile!==map[l]){
+    window.location.href=map[l];  // go to correct language file
+  } else {
+    // Already on correct file — just update the UI text
+    ebApplyLang(l);
+    ebCloseMenu();
+  }
+}
+
+var EB_TRANS = {
+  pt:{sub:'15 Cartões · Ebook',secLearn:'APRENDER',secNav:'NAVEGAR',secConfig:'CONFIGURAÇÕES',
+      tutT:'Tutorial Completo',tutS:'Aprende a usar todas as ferramentas',
+      orcT:'Orçamento',orcS:'Gerir salário, despesas e contas',
+      histT:'Histórico',histS:'Ver evolução e meses arquivados',
+      planoT:'Plano',planoS:'Simulador de investimento',
+      libT:'Liberdade Financeira',libS:'Quantos anos para a liberdade financeira',
+      instT:'Instalar no Telemóvel',instS:'Adicionar à tela inicial como app nativa',
+      langT:'Idioma',
+      nav:['Orçamento','Ebook','Histórico','Plano','Liberdade']},
+  es:{sub:'15 Tarjetas · Ebook',secLearn:'APRENDER',secNav:'NAVEGAR',secConfig:'CONFIGURACIONES',
+      tutT:'Tutorial Completo',tutS:'Aprende a usar todas las herramientas',
+      orcT:'Presupuesto',orcS:'Gestionar salario, gastos y cuentas',
+      histT:'Historial',histS:'Ver evolución y meses archivados',
+      planoT:'Plan',planoS:'Simulador de inversión',
+      libT:'Libertad Financiera',libS:'Cuántos años para la libertad financiera',
+      instT:'Instalar en el Celular',instS:'Agregar a la pantalla de inicio',
+      langT:'Idioma',
+      nav:['Presupuesto','Ebook','Historial','Plan','Libertad']},
+  en:{sub:'15 Cards · Ebook',secLearn:'LEARN',secNav:'NAVIGATE',secConfig:'SETTINGS',
+      tutT:'Full Tutorial',tutS:'Learn to use every tool step by step',
+      orcT:'Budget',orcS:'Manage salary, expenses and accounts',
+      histT:'History',histS:'View history and archived months',
+      planoT:'Plan',planoS:'Investment simulator',
+      libT:'Financial Freedom',libS:'How many years to financial freedom',
+      instT:'Install on Phone',instS:'Add to home screen as native app',
+      langT:'Language',
+      nav:['Budget','Ebook','History','Plan','Freedom']}
+};
+
+function ebApplyLang(l){
+  var T=EB_TRANS[l]; if(!T) return;
+  var s=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
+  s('eb-topbar-sub', T.sub);
+  s('eb-sec-learn',  T.secLearn); s('eb-sec-nav', T.secNav); s('eb-sec-config', T.secConfig);
+  s('eb-tut-t',  T.tutT);   s('eb-tut-s',   T.tutS);
+  s('eb-orc-t',  T.orcT);   s('eb-orc-s',   T.orcS);
+  s('eb-hist-t', T.histT);  s('eb-hist-s',  T.histS);
+  s('eb-plano-t',T.planoT); s('eb-plano-s', T.planoS);
+  s('eb-lib-t',  T.libT);   s('eb-lib-s',   T.libS);
+  s('eb-inst-t', T.instT);  s('eb-inst-s',  T.instS);
+  s('eb-lang-t', T.langT);
+  // bottom nav labels
+  var pages=['orcamento','ebook','historico','plano','liberdade'];
+  pages.forEach(function(p,i){s('eb-nav-'+p, T.nav[i]);});
+  // lang buttons active state
+  ['pt','es','en'].forEach(function(k){
+    var b=document.getElementById('eb-lbtn-'+k);
+    if(b) b.className='eb-lang-btn'+(k===l?' active':'');
+  });
+}
+
+// On load: apply saved lang if on correct file, else redirect
+(function(){
+  var saved=localStorage.getItem('cvLang')||'pt';
+  var map={pt:'ebook-cardss-pt.html',es:'ebook-cardss-es.html',en:'ebook-cardss-en.html'};
+  var currentFile=window.location.pathname.split('/').pop()||'ebook-cardss-pt.html';
+  if(map[saved] && currentFile!==map[saved]){
+    window.location.href=map[saved];
+  }
+  // Apply theme from localStorage
+  var theme=localStorage.getItem('cvTheme')||'dark';
+  document.documentElement.setAttribute('data-theme',theme);
+})();
 </script>
 </body>
 </html>
