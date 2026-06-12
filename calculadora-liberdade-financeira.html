@@ -136,11 +136,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 
 <div class="header">
   <a href="index.html" class="header-back">← App</a>
-  <div class="lang-wrap">
-    <button class="lang-btn active" onclick="setLang('pt')">PT</button>
-    <button class="lang-btn" onclick="setLang('es')">ES</button>
-    <button class="lang-btn" onclick="setLang('en')">EN</button>
-  </div>
+  
   <div style="position:relative">
     <div class="header-badge"><span>🏆</span><span id="h-badge">Bónus Exclusivo</span></div>
     <h1 id="h-title">Calculadora de<br>Liberdade Financeira</h1>
@@ -648,7 +644,14 @@ function renderStrategies(){
 // ── Init ──────────────────────────────────────────────────────
 syncSlider('taxa','taxaVal');
 syncSlider('inflacao','inflacaoVal');
-applyTranslations();
+// Apply saved lang and theme from localStorage
+(function(){
+  var t = localStorage.getItem('cvTheme') || 'dark';
+  document.documentElement && document.documentElement.setAttribute && document.documentElement.setAttribute('data-theme', t);
+  var l = localStorage.getItem('cvLang') || 'pt';
+  if(typeof setLang === 'function') setLang(l);
+  else { if(typeof lang !== 'undefined') lang = l; applyTranslations(); }
+})();
 calc();
 </script>
 </body>

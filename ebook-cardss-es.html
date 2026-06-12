@@ -532,7 +532,6 @@ button{font-family:var(--sans)}
 
 </style>
 <style id="eb-nav-css">
-/* ── Topbar ── */
 .eb-topbar{position:sticky;top:0;z-index:300;display:flex;align-items:center;
   justify-content:space-between;padding:0 16px;height:52px;
   background:var(--topbar,rgba(13,13,18,.96));backdrop-filter:blur(12px);
@@ -542,13 +541,11 @@ button{font-family:var(--sans)}
   background:linear-gradient(135deg,#6d28d9,#8b5cf6);
   display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
 .eb-logo img{width:100%;height:100%;object-fit:cover;border-radius:9px}
-.eb-brand-title{font-size:14px;font-weight:800;color:var(--text,#f1f5f9);line-height:1.2}
-.eb-brand-sub{font-size:10px;color:var(--text3,#94a3b8);line-height:1}
+.eb-brand-title{font-size:14px;font-weight:800;color:var(--text,#f1f5f9)}
+.eb-brand-sub{font-size:10px;color:var(--text3,#94a3b8)}
 .eb-menu-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;height:36px;
-  border-radius:10px;background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.2);color:#fff;
-  cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;flex-shrink:0;}
-/* ── Bottom nav ── */
+  border-radius:10px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  color:#fff;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;}
 .eb-bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:300;
   display:grid;grid-template-columns:repeat(5,1fr);
   background:var(--surface,#fff);border-top:1px solid var(--border,#e2e8f0);
@@ -558,20 +555,13 @@ button{font-family:var(--sans)}
   color:var(--text3,#94a3b8);border:none;background:none;cursor:pointer;line-height:1;}
 .eb-nav-item.active,.eb-nav-item:hover{color:#6d28d9}
 .eb-nav-icon{font-size:18px;line-height:1}
-/* ── Nav sheet overlay ── */
-.eb-ns-ov{
-  display:none;position:fixed;inset:0;z-index:9000;
+.eb-ns-ov{display:none;position:fixed;inset:0;z-index:9000;
   background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
-  align-items:flex-end;justify-content:center;
-}
-.eb-ns-sheet{
-  width:100%;max-width:540px;
-  background:var(--surface,#fff);
-  border-radius:24px 24px 0 0;
-  max-height:88vh;overflow-y:auto;
-  padding-bottom:calc(env(safe-area-inset-bottom,0px) + 16px);
-  animation:ebUp .28s cubic-bezier(.32,.72,0,1);
-}
+  align-items:flex-end;justify-content:center;}
+.eb-ns-sheet{width:100%;max-width:540px;background:var(--surface,#fff);
+  border-radius:24px 24px 0 0;max-height:88vh;overflow-y:auto;
+  padding-bottom:calc(env(safe-area-inset-bottom,0px)+16px);
+  animation:ebUp .28s cubic-bezier(.32,.72,0,1);}
 @keyframes ebUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .eb-handle{width:40px;height:4px;background:#cbd5e1;border-radius:2px;margin:14px auto 0}
 .eb-ns-header{display:flex;align-items:center;justify-content:space-between;
@@ -588,8 +578,7 @@ button{font-family:var(--sans)}
 .eb-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;
   background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0);
   text-decoration:none;cursor:pointer;font-family:inherit;
-  width:100%;text-align:left;transition:all .15s;color:var(--text,#0f172a);
-  box-sizing:border-box;}
+  width:100%;text-align:left;transition:all .15s;color:var(--text,#0f172a);box-sizing:border-box;}
 .eb-row:hover,.eb-row:active{border-color:#6d28d9;background:#ede9fe}
 .eb-row-icon{width:38px;height:38px;border-radius:11px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;font-size:18px}
@@ -597,18 +586,16 @@ button{font-family:var(--sans)}
 .eb-row-title{font-size:13px;font-weight:700;color:var(--text,#0f172a);margin-bottom:2px}
 .eb-row-sub{font-size:11px;color:var(--text3,#94a3b8);line-height:1.4}
 .eb-row-arr{color:var(--text3,#94a3b8);font-size:16px;flex-shrink:0}
-/* theme toggle switch */
 .eb-toggle{flex-shrink:0;width:40px;height:24px;border-radius:100px;
   position:relative;transition:background .2s;background:#6d28d9}
 .eb-toggle-ball{position:absolute;top:3px;right:3px;
   width:18px;height:18px;border-radius:50%;background:#fff;
   box-shadow:0 1px 4px rgba(0,0,0,.25);transition:all .2s}
-/* lang buttons */
 .eb-lang-row{display:flex;gap:8px;padding-top:4px}
 .eb-lang-btn{flex:1;padding:9px 0;border-radius:10px;font-size:11px;font-weight:700;
   border:1px solid var(--border,#e2e8f0);background:var(--surface2,#f8fafc);
   color:var(--text2,#475569);cursor:pointer;font-family:inherit;transition:all .15s}
-.eb-lang-btn.eb-active{background:#6d28d9;color:#fff;border-color:#6d28d9}
+.eb-lang-btn.eb-on{background:#6d28d9;color:#fff;border-color:#6d28d9}
 body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important}
 </style>
 </head>
@@ -626,7 +613,7 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important}
       <div class="eb-brand-sub">15 Tarjetas · Ebook</div>
     </div>
   </div>
-  <button class="eb-menu-btn" onclick="ebOpenMenu()">
+  <button class="eb-menu-btn" onclick="ebMenu()">
     <svg width="14" height="12" viewBox="0 0 14 12" fill="none">
       <rect y="0" width="14" height="2" rx="1" fill="currentColor"/>
       <rect y="5" width="10" height="2" rx="1" fill="currentColor"/>
@@ -1524,37 +1511,32 @@ function loadLang(){
 </script>
 
 
-<div class="eb-ns-ov" id="ebNsOv" onclick="if(event.target===this)ebCloseMenu()">
+<div class="eb-ns-ov" id="ebNsOv" onclick="if(event.target===this)ebMenuClose()">
   <div class="eb-ns-sheet" onclick="event.stopPropagation()">
     <div class="eb-handle"></div>
     <div class="eb-ns-header">
-      <div>
-        <div class="eb-ns-title">Menu</div>
-        <div class="eb-ns-sub">Mente Próspera</div>
-      </div>
-      <button class="eb-ns-close" onclick="ebCloseMenu()">✕</button>
+      <div><div class="eb-ns-title">Menu</div><div class="eb-ns-sub">Mente Próspera</div></div>
+      <button class="eb-ns-close" onclick="ebMenuClose()">✕</button>
     </div>
     <div class="eb-ns-body">
-
       <div class="eb-sec">APRENDER</div>
       <a href="tutorial.html" class="eb-row">
         <div class="eb-row-icon" style="background:#ede9fe">🎓</div>
-        <div class="eb-row-info"><div class="eb-row-title">Tutorial Completo</div><div class="eb-row-sub">Cómo usar todas las herramientas</div></div>
+        <div class="eb-row-info"><div class="eb-row-title">Tutorial</div><div class="eb-row-sub">Cómo usar todas las herramientas</div></div>
         <span class="eb-row-arr">›</span>
       </a>
-
       <div class="eb-sec">NAVEGAR</div>
-      <button class="eb-row" onclick="ebNavGo('orcamento')">
+      <button class="eb-row" onclick="ebGo('orcamento')">
         <div class="eb-row-icon" style="background:#ede9fe">💰</div>
         <div class="eb-row-info"><div class="eb-row-title">Presupuesto</div><div class="eb-row-sub">Salario y gastos</div></div>
         <span class="eb-row-arr">›</span>
       </button>
-      <button class="eb-row" onclick="ebNavGo('historico')">
+      <button class="eb-row" onclick="ebGo('historico')">
         <div class="eb-row-icon" style="background:#dbeafe">📅</div>
         <div class="eb-row-info"><div class="eb-row-title">Historial</div><div class="eb-row-sub">Meses archivados</div></div>
         <span class="eb-row-arr">›</span>
       </button>
-      <button class="eb-row" onclick="ebNavGo('plano')">
+      <button class="eb-row" onclick="ebGo('plano')">
         <div class="eb-row-icon" style="background:#d1fae5">📈</div>
         <div class="eb-row-info"><div class="eb-row-title">Plan</div><div class="eb-row-sub">Simulador de inversión</div></div>
         <span class="eb-row-arr">›</span>
@@ -1564,120 +1546,124 @@ function loadLang(){
         <div class="eb-row-info"><div class="eb-row-title">Libertad Financiera</div><div class="eb-row-sub">Años para la independencia financiera</div></div>
         <span class="eb-row-arr">›</span>
       </a>
-
       <div class="eb-sec">CONFIGURACIONES</div>
-      <button class="eb-row" onclick="ebToggleTheme()">
-        <div class="eb-row-icon" style="background:var(--surface2,#f8fafc)" id="eb-theme-icon">🌙</div>
+      <button class="eb-row" onclick="ebTheme()">
+        <div class="eb-row-icon" style="background:var(--surface2,#f8fafc)" id="eb-th-ic">🌙</div>
         <div class="eb-row-info">
-          <div class="eb-row-title" id="eb-theme-lbl">Modo Oscuro</div>
-          <div class="eb-row-sub">Alternar entre tema claro e escuro</div>
+          <div class="eb-row-title" id="eb-th-lb">Modo Oscuro</div>
+          <div class="eb-row-sub">Alternar tema claro / escuro</div>
         </div>
-        <div class="eb-toggle" id="eb-toggle"><div class="eb-toggle-ball" id="eb-ball"></div></div>
+        <div class="eb-toggle" id="eb-tog"><div class="eb-toggle-ball" id="eb-ball"></div></div>
       </button>
-
       <div class="eb-row" style="cursor:default;flex-direction:column;align-items:stretch;gap:10px">
         <div style="display:flex;align-items:center;gap:12px">
           <div class="eb-row-icon" style="background:var(--surface2,#f8fafc)">🌍</div>
           <div class="eb-row-info"><div class="eb-row-title">Idioma</div><div class="eb-row-sub">PT · ES · EN</div></div>
         </div>
         <div class="eb-lang-row">
-          <button class="eb-lang-btn" id="eb-lbtn-pt" onclick="ebSetLang('pt')">🇧🇷 PT</button>
-          <button class="eb-lang-btn eb-active" id="eb-lbtn-es" onclick="ebSetLang('es')">🌎 ES</button>
-          <button class="eb-lang-btn" id="eb-lbtn-en" onclick="ebSetLang('en')">🇺🇸 EN</button>
+          <button class="eb-lang-btn" id="eb-lb-pt" onclick="ebLang('pt')">🇧🇷 PT</button>
+          <button class="eb-lang-btn" id="eb-lb-es" onclick="ebLang('es')">🌎 ES</button>
+          <button class="eb-lang-btn" id="eb-lb-en" onclick="ebLang('en')">🇺🇸 EN</button>
         </div>
       </div>
-
-      <button class="eb-row" onclick="ebOpenInstall()">
+      <button class="eb-row" onclick="ebInstall()">
         <div class="eb-row-icon" style="background:#ede9fe">📲</div>
         <div class="eb-row-info"><div class="eb-row-title">Instalar App</div><div class="eb-row-sub">Agregar a la pantalla de inicio</div></div>
         <span class="eb-row-arr">›</span>
       </button>
-
     </div>
   </div>
 </div>
 <nav class="eb-bottom-nav">
-  <button class="eb-nav-item" onclick="ebNavGo('orcamento')"><span class="eb-nav-icon">💰</span><span>Presupuesto</span></button>
+  <button class="eb-nav-item" onclick="ebGo('orcamento')"><span class="eb-nav-icon">💰</span><span>Presupuesto</span></button>
   <button class="eb-nav-item active" ><span class="eb-nav-icon">📚</span><span>Ebook</span></button>
-  <button class="eb-nav-item" onclick="ebNavGo('historico')"><span class="eb-nav-icon">📅</span><span>Historial</span></button>
-  <button class="eb-nav-item" onclick="ebNavGo('plano')"><span class="eb-nav-icon">📈</span><span>Plan</span></button>
+  <button class="eb-nav-item" onclick="ebGo('historico')"><span class="eb-nav-icon">📅</span><span>Historial</span></button>
+  <button class="eb-nav-item" onclick="ebGo('plano')"><span class="eb-nav-icon">📈</span><span>Plan</span></button>
   <button class="eb-nav-item" onclick="location.href='calculadora-liberdade-financeira.html'"><span class="eb-nav-icon">🏆</span><span>Libertad</span></button>
 </nav>
-<div id="ebInstallOv" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+<div id="ebInstOv" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
   <div style="width:100%;max-width:500px;background:var(--surface,#fff);border-radius:24px 24px 0 0;padding:24px 20px 40px;" onclick="event.stopPropagation()">
     <div style="width:40px;height:4px;background:#cbd5e1;border-radius:2px;margin:0 auto 20px"></div>
     <div style="font-size:32px;text-align:center;margin-bottom:10px">📲</div>
     <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:16px;color:var(--text,#0f172a)">Instalar App</div>
-    <div id="ebPwaBtn" style="display:none;margin-bottom:12px"><button onclick="if(_ebInstall)_ebInstall.prompt()" style="width:100%;padding:13px;border-radius:14px;font-size:14px;font-weight:800;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;border:none;cursor:pointer">📲 Instalar Agora</button></div>
+    <div id="ebPwaBtn" style="display:none;margin-bottom:12px"><button onclick="if(_ebPwa)_ebPwa.prompt()" style="width:100%;padding:13px;border-radius:14px;font-size:14px;font-weight:800;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;border:none;cursor:pointer">📲 Instalar Agora</button></div>
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
       <div style="padding:10px;border-radius:10px;background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0);font-size:12px"><b>📱 iPhone</b> — Safari → Compartilhar ↑ → Adicionar à Tela de Início</div>
       <div style="padding:10px;border-radius:10px;background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0);font-size:12px"><b>🤖 Android</b> — Chrome → Menu ⋮ → Adicionar à tela inicial</div>
       <div style="padding:10px;border-radius:10px;background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0);font-size:12px"><b>💻 PC</b> — Chrome/Edge → ícone ⊕ → Instalar</div>
     </div>
-    <button onclick="document.getElementById('ebInstallOv').style.display='none'" style="width:100%;padding:10px;background:none;border:none;font-size:13px;color:var(--text3,#94a3b8);cursor:pointer">Fechar</button>
+    <button onclick="document.getElementById('ebInstOv').style.display='none'" style="width:100%;padding:10px;background:none;border:none;font-size:13px;color:#94a3b8;cursor:pointer">Fechar</button>
   </div>
 </div>
 <script>
-var _ebInstall = null;
+// ── Ebook shared settings ─────────────────────────────
+var _ebPwa = null;
+var _ebLang = 'es';  // this file's language
+var _ebDarkLabel  = 'Modo Oscuro';
+var _ebLightLabel = 'Modo Claro';
+
 window.addEventListener('beforeinstallprompt', function(e){
-  e.preventDefault(); _ebInstall = e;
+  e.preventDefault(); _ebPwa = e;
   var b = document.getElementById('ebPwaBtn');
   if(b) b.style.display = 'block';
 });
 
-function ebOpenMenu(){
-  var ov = document.getElementById('ebNsOv');
-  ov.style.display = 'flex';
-  ebSyncMenu();
-}
-function ebCloseMenu(){
-  document.getElementById('ebNsOv').style.display = 'none';
-}
-function ebNavGo(p){
-  localStorage.setItem('cvPage', p);
-  location.href = 'index.html';
-}
-function ebSetLang(l){
+function ebMenu(){ var o=document.getElementById('ebNsOv'); o.style.display='flex'; ebSync(); }
+function ebMenuClose(){ document.getElementById('ebNsOv').style.display='none'; }
+function ebGo(p){ localStorage.setItem('cvPage',p); location.href='index.html'; }
+function ebInstall(){ ebMenuClose(); var o=document.getElementById('ebInstOv'); if(o) o.style.display='flex'; else if(_ebPwa) _ebPwa.prompt(); }
+
+function ebLang(l){
   localStorage.setItem('cvLang', l);
   var map = {pt:'ebook-cardss-pt.html', es:'ebook-cardss-es.html', en:'ebook-cardss-en.html'};
-  location.href = map[l];
+  location.href = map[l];  // reload correct language file
 }
-function ebOpenInstall(){
-  ebCloseMenu();
-  var ov = document.getElementById('ebInstallOv');
-  if(ov){ ov.style.display = 'flex'; }
-  else if(_ebInstall){ _ebInstall.prompt(); }
-}
-function ebToggleTheme(){
-  var dark = (localStorage.getItem('cvTheme') || 'dark') === 'dark';
+
+function ebTheme(){
+  var dark = (localStorage.getItem('cvTheme')||'dark') === 'dark';
   var next = dark ? 'light' : 'dark';
   localStorage.setItem('cvTheme', next);
   document.documentElement.setAttribute('data-theme', next);
-  ebSyncMenu();
+  ebSync();
 }
-function ebSyncMenu(){
-  var dark = (localStorage.getItem('cvTheme') || 'dark') === 'dark';
-  var icon = document.getElementById('eb-theme-icon');
-  var lbl  = document.getElementById('eb-theme-lbl');
-  var tog  = document.getElementById('eb-toggle');
-  var ball = document.getElementById('eb-ball');
-  if(icon) icon.textContent = dark ? '☀️' : '🌙';
-  if(lbl)  lbl.textContent  = dark ? 'Modo Claro' : 'Modo Escuro';
-  if(tog)  tog.style.background = dark ? '#6d28d9' : '#cbd5e1';
-  if(ball){ ball.style.right = dark ? '3px' : 'auto';
-            ball.style.left  = dark ? 'auto' : '3px'; }
+
+function ebSync(){
+  var dark = (localStorage.getItem('cvTheme')||'dark') === 'dark';
+  // theme icon + label + toggle
+  var ic = document.getElementById('eb-th-ic');
+  var lb = document.getElementById('eb-th-lb');
+  var tg = document.getElementById('eb-tog');
+  var bl = document.getElementById('eb-ball');
+  if(ic) ic.textContent = dark ? '☀️' : '🌙';
+  if(lb) lb.textContent = dark ? _ebLightLabel : _ebDarkLabel;
+  if(tg) tg.style.background = dark ? '#6d28d9' : '#cbd5e1';
+  if(bl){ bl.style.right = dark ? '3px' : 'auto'; bl.style.left = dark ? 'auto' : '3px'; }
   // lang buttons
   var saved = localStorage.getItem('cvLang') || 'pt';
   ['pt','es','en'].forEach(function(k){
-    var b = document.getElementById('eb-lbtn-' + k);
-    if(b) b.className = 'eb-lang-btn' + (k === saved ? ' eb-active' : '');
+    var b = document.getElementById('eb-lb-'+k);
+    if(b) b.className = 'eb-lang-btn' + (k===saved ? ' eb-on' : '');
   });
 }
-// Apply theme immediately on load
+
+// On load: check saved lang — redirect if different from this file
 (function(){
-  var t = localStorage.getItem('cvTheme') || 'dark';
-  document.documentElement.setAttribute('data-theme', t);
-  setTimeout(ebSyncMenu, 0);
+  var savedLang  = localStorage.getItem('cvLang') || 'pt';
+  var savedTheme = localStorage.getItem('cvTheme') || 'dark';
+  var map = {pt:'ebook-cardss-pt.html', es:'ebook-cardss-es.html', en:'ebook-cardss-en.html'};
+  var thisFile = (location.pathname.split('/').pop()) || ('ebook-cardss-' + _ebLang + '.html');
+
+  // Apply theme immediately
+  document.documentElement.setAttribute('data-theme', savedTheme);
+
+  // If saved lang doesn't match this file → redirect
+  if(map[savedLang] && thisFile !== map[savedLang] && thisFile.indexOf('ebook-cardss') !== -1){
+    location.href = map[savedLang];
+    return;
+  }
+
+  // Sync menu visuals after DOM ready
+  setTimeout(ebSync, 0);
 })();
 </script>
 </body>

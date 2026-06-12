@@ -902,6 +902,7 @@ function applyTheme(t){
   localStorage.setItem('cvTheme',t);
   syncNavSheetTheme();
   syncNavSheetLang();
+  syncNavSheetLang();
 }
 
 // ─────────────────────────────────────────
@@ -1798,16 +1799,17 @@ function syncNavSheetLang(){
 // keep theme toggle in sheet in sync
 function syncNavSheetTheme(){
   const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const T    = TR && TR[lang || 'pt'];
   const icon = $('ns-theme-icon');
   const lbl  = $('ns-theme-t');
   const tog  = $('ns-theme-toggle');
   const ball = $('ns-toggle-ball');
-  if(icon) icon.textContent = dark ? '☀️' : '🌙';
-  if(lbl)  lbl.textContent  = dark ? (TR&&TR[lang||'pt']&&TR[lang||'pt'].lightMode)||'Modo Claro'
-                                     : (TR&&TR[lang||'pt']&&TR[lang||'pt'].darkMode)||'Modo Escuro';
-  if(tog)  tog.style.background = dark ? '#6d28d9' : '#cbd5e1';
-  if(ball) { ball.style.right = dark ? '0.125rem' : 'auto';
-             ball.style.left  = dark ? 'auto' : '0.125rem'; }
+  if(icon) icon.textContent      = dark ? '☀️' : '🌙';
+  if(lbl && T) lbl.textContent   = dark ? (T.lightMode||'Modo Claro') : (T.darkMode||'Modo Escuro');
+  if(tog)  tog.style.background  = dark ? '#6d28d9' : '#cbd5e1';
+  if(ball){ ball.style.right = dark ? '0.125rem' : 'auto';
+            ball.style.left  = dark ? 'auto' : '0.125rem'; }
+}
 }
 
 // ── Service Worker — registo e detecção de actualização ─────────
