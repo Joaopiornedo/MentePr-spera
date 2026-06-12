@@ -192,6 +192,23 @@ body{
 </style>
 </head>
 <body style="background:#f1f5f9;min-height:100vh;">
+<script>
+// Instantly hide login screen if Firebase already has a session cached
+// (avoids the ~400ms flash before onAuthStateChanged fires)
+(function(){
+  try {
+    // Firebase stores its auth state under keys starting with "firebase:authUser:"
+    var hasSession = Object.keys(localStorage).some(function(k){
+      return k.indexOf('firebase:authUser:') === 0;
+    });
+    if(hasSession){
+      // hide immediately — auth.js will verify and show app, or re-show login if expired
+      var s = document.getElementById('auth-screen');
+      if(s) s.style.display = 'none';
+    }
+  } catch(e){}
+})();
+</script>
 
 <!-- AUTH SCREEN -->
 <div id="auth-screen" style="display:flex;">
