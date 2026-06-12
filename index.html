@@ -42,6 +42,17 @@
 <!-- Firebase config -->
 <script src="firebase-config.js"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof window.FIREBASE_CONFIG === 'undefined' ||
+      !window.FIREBASE_CONFIG.apiKey ||
+      window.FIREBASE_CONFIG.apiKey === 'SUBSTITUI_AQUI') {
+    var s = document.getElementById('auth-screen');
+    if (s) s.style.display = 'none';
+    if (typeof window._appInit === 'function') window._appInit();
+  }
+});
+</script>
+<script>
   tailwind.config = {
     darkMode: ['selector', '[data-theme="dark"]'],
     theme: { extend: {} }
@@ -192,29 +203,6 @@ body{
 </style>
 </head>
 <body style="background:#f1f5f9;min-height:100vh;">
-<script>
-// Auth screen management — runs before everything else
-(function(){
-  try {
-    var screen = document.getElementById('auth-screen');
-    if(!screen) return;
-    // If Firebase config not filled → run without auth
-    if(typeof FIREBASE_CONFIG === 'undefined' ||
-       !FIREBASE_CONFIG.apiKey ||
-       FIREBASE_CONFIG.apiKey === 'SUBSTITUI_AQUI'){
-      screen.style.display = 'none'; // no auth needed
-      return;
-    }
-    // Firebase IS configured — check for cached session
-    var hasSession = Object.keys(localStorage).some(function(k){
-      return k.indexOf('firebase:authUser:') === 0;
-    });
-    // If session cached, hide immediately (auth.js will verify)
-    // If no session, show auth screen
-    screen.style.display = hasSession ? 'none' : 'flex';
-  } catch(e){}
-})();
-</script>
 
 <!-- AUTH SCREEN -->
 <div id="auth-screen" style="display:none;">
@@ -2303,20 +2291,6 @@ window._appInit = function(){
   }
 }; // end _appInit
 
-// Fallback: if Firebase config not filled in, run directly
-window.onload = () => {
-  // If Firebase config not filled → run directly without auth
-  if(typeof FIREBASE_CONFIG === 'undefined' ||
-     !FIREBASE_CONFIG.apiKey ||
-     FIREBASE_CONFIG.apiKey === 'SUBSTITUI_AQUI') {
-    var s = document.getElementById('auth-screen');
-    if(s) s.style.display = 'none';
-    window._appInit();
-    return;
-  }
-  // Firebase IS configured — auth.js module handles everything via onAuthStateChanged
-  // auth-screen is already hidden by default, will show if no session
-};
 
 // ─────────────────────────────────────────
 //  PLANO DE INVESTIMENTO
@@ -2667,6 +2641,6 @@ function renderPlano(){
 </style>
 
 
-<script type="module" src="auth.js"></script>
+<script src="auth.js"></script>
 </body>
 </html>
