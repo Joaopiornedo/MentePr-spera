@@ -150,7 +150,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 .eb-arrow{transition:transform .2s}.ebook-chapter.open .eb-arrow{transform:rotate(90deg)}
 
 /* == AUTH SCREEN == */
-#auth-screen{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#0d0a1a 0%,#1a0f3a 50%,#0d1a35 100%);padding:20px;}
+#auth-screen{position:fixed;inset:0;z-index:1000;align-items:center;justify-content:center;background:linear-gradient(160deg,#0d0a1a 0%,#1a0f3a 50%,#0d1a35 100%);padding:20px;}
 .auth-card{width:100%;max-width:400px;background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:28px;padding:36px 28px 32px;box-shadow:0 32px 80px rgba(0,0,0,.5);}
 .auth-logo{width:56px;height:56px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;}
 .auth-logo img{width:100%;height:100%;object-fit:cover;border-radius:16px}
@@ -2305,13 +2305,17 @@ window._appInit = function(){
 
 // Fallback: if Firebase config not filled in, run directly
 window.onload = () => {
+  // If Firebase config not filled → run directly without auth
   if(typeof FIREBASE_CONFIG === 'undefined' ||
+     !FIREBASE_CONFIG.apiKey ||
      FIREBASE_CONFIG.apiKey === 'SUBSTITUI_AQUI') {
-    console.warn('[Auth] Firebase nao configurado - modo local.');
-    document.getElementById('auth-screen').style.display = 'none';
+    var s = document.getElementById('auth-screen');
+    if(s) s.style.display = 'none';
     window._appInit();
+    return;
   }
-  // else: auth.js onAuthStateChanged takes over after login
+  // Firebase IS configured — auth.js module handles everything via onAuthStateChanged
+  // auth-screen is already hidden by default, will show if no session
 };
 
 // ─────────────────────────────────────────
