@@ -45,7 +45,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="auth.js"></script>
 <script>
   tailwind.config = {
     darkMode: ['selector', '[data-theme="dark"]'],
@@ -176,6 +175,20 @@ body{
 </style>
 </head>
 <body style="background:#f1f5f9;min-height:100vh;">
+<script>
+(function(){
+  // Skip if Firebase not configured
+  if(typeof window.FIREBASE_CONFIG==='undefined'||
+     !window.FIREBASE_CONFIG.apiKey||
+     window.FIREBASE_CONFIG.apiKey==='SUBSTITUI_AQUI') return;
+  // Check for cached Firebase session (synchronous, instant)
+  var has = Object.keys(localStorage||{}).some(function(k){
+    return k.indexOf('firebase:authUser:')===0;
+  });
+  if(!has) window.location.replace('login.html');
+})();
+</script>
+
 
 
 <!-- ══════════════════════════════════════
@@ -2598,5 +2611,6 @@ function renderPlano(){
 
 
 
+<script src="auth.js"></script>
 </body>
 </html>
