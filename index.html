@@ -2,49 +2,14 @@
 <html lang="pt" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Controle Financeiro | Mente Próspera</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Calculadora da Virada</title>
 <link rel="manifest" href="manifest.json">
-
-<!-- Favicon — usa o ícone do app (fallback emoji SVG se o PNG não existir) -->
-<link rel="icon" type="image/png" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-
-<!-- PWA / browser chrome -->
 <meta name="theme-color" content="#6d28d9">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Controle Financeiro">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="application-name" content="Controle Financeiro">
-
-<!-- Prevent browser UI chrome on Android -->
-<meta name="msapplication-navbutton-color" content="#6d28d9">
-<meta name="msapplication-starturl" content="index.html">
-<meta name="msapplication-TileColor" content="#6d28d9">
-<meta name="msapplication-TileImage" content="icons/icon-192.png">
-
-<!-- Open Graph — prévia ao partilhar o link (WhatsApp, Telegram, etc.) -->
-<meta property="og:type"        content="website">
-<meta property="og:title"       content="Controle Financeiro">
-<meta property="og:description" content="Gestão financeira inteligente — controla salário, despesas, investimentos e sonhos num só lugar.">
-<meta property="og:image"       content="icons/icon-512.png">
-<meta property="og:image:width"  content="512">
-<meta property="og:image:height" content="512">
-<meta property="og:image:alt"   content="Controle Financeiro">
-
-<!-- Twitter Card -->
-<meta name="twitter:card"        content="summary">
-<meta name="twitter:title"       content="Controle Financeiro">
-<meta name="twitter:description" content="Gestão financeira inteligente — controla salário, despesas, investimentos e sonhos num só lugar.">
-<meta name="twitter:image"       content="icons/icon-512.png">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Calculadora da Virada">
 <script src="https://cdn.tailwindcss.com"></script>
-<!-- Firebase config -->
-<script src="firebase-config.js"></script>
-<!-- Firebase compat SDKs (work as normal scripts, no modules needed) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
   tailwind.config = {
     darkMode: ['selector', '[data-theme="dark"]'],
@@ -113,7 +78,6 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 .tab-pill.t-lazer.active{background:#d97706}
 .tab-pill.t-invest.active{background:#059669}
 .tab-pill.t-sonhos.active{background:#8b5cf6}
-.tab-pill.t-parcelado.active{background:#0891b2}
 
 /* ── dashed add btn ── */
 .add-dashed{border:1.5px dashed var(--bdr2);background:transparent;color:var(--txt3);
@@ -153,79 +117,66 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 .eb-body{display:none}.ebook-chapter.open .eb-body{display:block}
 .eb-arrow{transition:transform .2s}.ebook-chapter.open .eb-arrow{transform:rotate(90deg)}
 
-/* == AUTH SCREEN == */
-
-
-
-/* ── safe area ── */
-/* Preenche a área atrás da Dynamic Island / notch com a cor do topbar */
-body{
-  /* garante que não há espaço branco no topo em modo PWA */
-  padding-top: env(safe-area-inset-top, 0px);
-}
-/* O topbar já adiciona o env() no seu próprio padding-top,
-   por isso compensamos aqui para não duplicar */
-#topbar{
-  /* sticky top:0 — fica colado ao topo do viewport incluindo safe-area */
-  top: 0;
-  /* A cor de fundo estende-se para trás da Dynamic Island via padding no body */
-  margin-top: calc(-1 * env(safe-area-inset-top, 0px));
-}
+/* safe area bottom nav */
 .bottom-nav{padding-bottom:env(safe-area-inset-bottom,0)}
 </style>
 </head>
 <body style="background:#f1f5f9;min-height:100vh;">
-<script>
-(function(){
-  // Skip if Firebase not configured
-  if(typeof window.FIREBASE_CONFIG==='undefined'||
-     !window.FIREBASE_CONFIG.apiKey||
-     window.FIREBASE_CONFIG.apiKey==='SUBSTITUI_AQUI') return;
-  // Check for cached Firebase session (synchronous, instant)
-  var has = Object.keys(localStorage||{}).some(function(k){
-    return k.indexOf('firebase:authUser:')===0;
-  });
-  if(!has) window.location.replace('login.html');
-})();
-</script>
-
-
 
 <!-- ══════════════════════════════════════
      TOPBAR
 ══════════════════════════════════════ -->
-<header id="topbar" class="sticky top-0 z-50 flex items-center justify-between px-4"
-        style="background:var(--surf);border-bottom:1px solid var(--bdr);backdrop-filter:blur(8px);
-               padding-top:calc(env(safe-area-inset-top, 0px) + 12px);
-               padding-bottom:12px;">
+<header id="topbar" class="sticky top-0 z-50 flex items-center justify-between px-4 py-3"
+        style="background:var(--surf);border-bottom:1px solid var(--bdr);backdrop-filter:blur(8px);">
   <div class="flex items-center gap-2.5">
     <div class="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
          style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);">
       <img src="icons/icon-192.png" alt="" class="w-full h-full object-cover rounded-xl"
            onerror="this.style.display='none';this.parentElement.innerHTML='💰'">
     </div>
+    <div>
+      <div class="text-sm font-bold leading-tight" style="color:var(--txt);" id="t-appName">Calculadora da Virada</div>
+      <div class="text-xs leading-tight" style="color:var(--txt3);" id="t-appSub">Gestão financeira inteligente</div>
+    </div>
   </div>
   <!-- actions -->
   <div class="flex items-center gap-2">
-    <div id="user-bar-name">...</div>
+    <!-- install -->
+    <button onclick="openInstallModal()" id="btnInstall"
+            class="w-9 h-9 rounded-xl flex items-center justify-center text-lg text-white"
+            style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);border:none;">📲</button>
+    <!-- settings gear -->
+    <div class="relative" id="settingsWrap">
+      <button onclick="toggleSettings()"
+              class="w-9 h-9 rounded-xl flex items-center justify-center text-xl transition-all"
+              style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);">⚙️</button>
+      <div id="settingsMenu" class="s">
+        <!-- theme row -->
+        <div class="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all hover:bg-violet-50"
+             onclick="toggleTheme()" style="color:var(--txt);">
+          <span class="text-sm font-semibold" id="t-themeLabel">Modo Escuro</span>
+          <span id="themeIcon" class="text-base">🌙</span>
+        </div>
+        <!-- divider -->
+        <div style="height:1px;background:var(--bdr);margin:4px 0;"></div>
+        <!-- language options -->
+        <div class="px-2 pb-1">
+          <div class="text-xs font-bold uppercase tracking-wider mb-1.5 px-1" style="color:var(--txt3);">Idioma</div>
+          <div id="langPt" onclick="setLang('pt')" class="lang-opt flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all" style="color:var(--txt);">
+            <span>🇧🇷</span><span class="text-sm font-semibold">Português</span>
+            <span class="ml-auto text-sm font-black" style="color:#6d28d9;" id="lchk-pt">✓</span>
+          </div>
+          <div id="langEs" onclick="setLang('es')" class="lang-opt flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all" style="color:var(--txt);">
+            <span>🌎</span><span class="text-sm font-semibold">Español</span>
+            <span class="ml-auto text-sm font-black hidden" style="color:#6d28d9;" id="lchk-es">✓</span>
+          </div>
+          <div id="langEn" onclick="setLang('en')" class="lang-opt flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all" style="color:var(--txt);">
+            <span>🇺🇸</span><span class="text-sm font-semibold">English</span>
+            <span class="ml-auto text-sm font-black hidden" style="color:#6d28d9;" id="lchk-en">✓</span>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <!-- user bar (shown when logged in) -->
-    <div id="user-bar" style="display:none;align-items:center;gap:8px;padding:5px 10px;border-radius:10px;cursor:pointer;background:var(--surf2);border:1px solid var(--bdr);max-width:160px;" onclick="authLogout && authLogout()">
-      <div id="user-bar-avatar" style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">👤</div>
-      <div id="user-bar-name" style="font-size:12px;font-weight:700;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px;">...</div>
-    </div>
-    <!-- nav menu button (replaces settings gear) -->
-    <button onclick="openNavSheet()"
-            class="flex items-center gap-1.5 px-3 h-9 rounded-xl transition-all"
-            style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);">
-      <svg width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect y="0"  width="16" height="2" rx="1" fill="currentColor"/>
-        <rect y="6"  width="12" height="2" rx="1" fill="currentColor"/>
-        <rect y="12" width="8"  height="2" rx="1" fill="currentColor"/>
-      </svg>
-      <span class="text-xs font-bold" id="t-navMenuBtn">Menu</span>
-    </button>
   </div>
 </header>
 
@@ -242,17 +193,17 @@ body{
 
     <!-- Total saldo -->
     <div class="px-5 pt-5 pb-2">
-      <div class="text-xs font-bold uppercase tracking-widest text-white/60 mb-1" id="t-walletTitle">SALDO DAS CONTAS</div>
+      <div class="text-xs font-bold uppercase tracking-widest text-white/60 mb-1" id="t-walletTitle">SALDO TOTAL</div>
       <div class="flex items-end gap-2 mb-1">
         <span class="text-3xl font-black text-white/50">$</span>
         <span class="text-5xl font-black text-white leading-none tracking-tight" id="walletGrand">0.00</span>
       </div>
-      <!-- salário restante (sal − gastos com check) -->
-      <div class="inline-flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-full text-sm font-bold text-white"
+      <!-- saldo livre pill -->
+      <div class="inline-flex items-center gap-2 mt-2 px-3 py-1.5 rounded-full text-sm font-bold text-white"
            style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);">
-        <span>💼</span>
-        <span id="t-salRest">Salário restante:</span>
-        <span id="salarioRestante" class="font-black">$0.00</span>
+        <span>🔓</span>
+        <span id="t-walletFree">Saldo livre:</span>
+        <span id="walletFree" class="font-black">$0.00</span>
       </div>
     </div>
 
@@ -264,7 +215,15 @@ body{
         <span class="text-white/50 font-bold text-lg">$</span>
         <input type="number" id="salario" value="2000" min="0" step="0.01" placeholder="0.00"
                class="flex-1 bg-transparent border-none outline-none text-white text-2xl font-black placeholder-white/30"
-               oninput="calcularTudo();saveItems()">
+               oninput="calcularTudo()">
+        <!-- mode toggle -->
+        <div class="flex rounded-lg overflow-hidden flex-shrink-0" style="background:rgba(255,255,255,.15);">
+          <button id="mBtn-pct" onclick="setMode('pct')"
+                  class="px-2.5 py-1 text-xs font-bold text-white rounded-md transition-all"
+                  style="background:rgba(255,255,255,.3);">%</button>
+          <button id="mBtn-val" onclick="setMode('val')"
+                  class="px-2.5 py-1 text-xs font-bold text-white/50 rounded-md transition-all">$</button>
+        </div>
       </div>
     </div>
 
@@ -288,30 +247,13 @@ body{
 
   <!-- ── DISTRIBUTION BAR + BUDGET CARDS ── -->
   <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);box-shadow:var(--shadow);">
-    <div class="flex items-center justify-between mb-3">
-      <div class="text-xs font-bold uppercase tracking-widest" style="color:var(--txt3);" id="t-distLabel">Distribuição do orçamento</div>
-      <!-- mode toggle moved here -->
-      <div class="flex rounded-lg overflow-hidden flex-shrink-0"
-           style="background:var(--bdr);min-width:0;">
-        <button id="mBtn-pct" onclick="setMode('pct')"
-                class="transition-all rounded-md"
-                style="background:#6d28d9;color:#fff;border:none;cursor:pointer;
-                       font-size:11px;font-weight:700;padding:6px 10px;white-space:nowrap;"
-                id="t-mBtnPct">% Perc.</button>
-        <button id="mBtn-val" onclick="setMode('val')"
-                class="transition-all rounded-md"
-                style="background:transparent;color:var(--txt3);border:none;cursor:pointer;
-                       font-size:11px;font-weight:700;padding:6px 10px;white-space:nowrap;"
-                id="t-mBtnVal">$ Valor</button>
-      </div>
-    </div>
+    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);" id="t-distLabel">Distribuição do orçamento</div>
     <!-- bar -->
     <div class="h-2.5 rounded-full overflow-hidden flex mb-4" style="background:var(--bdr);">
-      <div class="dseg" id="bar-fixo"       style="background:#6d28d9;"></div>
-      <div class="dseg" id="bar-parcelado"  style="background:#0891b2;"></div>
-      <div class="dseg" id="bar-lazer"      style="background:#d97706;"></div>
-      <div class="dseg" id="bar-invest"     style="background:#059669;"></div>
-      <div class="dseg" id="bar-sonhos"     style="background:#8b5cf6;"></div>
+      <div class="dseg" id="bar-fixo"   style="background:#6d28d9;"></div>
+      <div class="dseg" id="bar-lazer"  style="background:#d97706;"></div>
+      <div class="dseg" id="bar-invest" style="background:#059669;"></div>
+      <div class="dseg" id="bar-sonhos" style="background:#8b5cf6;"></div>
     </div>
     <!-- 3 pct cards -->
     <div class="grid grid-cols-3 gap-2.5">
@@ -322,7 +264,7 @@ body{
           <input type="number" id="pctFixo" value="50" min="0" max="100"
                  class="inp flex-1 min-w-0 text-center text-base font-bold outline-none rounded-md py-1 px-1.5"
                  style="background:#fff;border:1px solid var(--bdr);color:var(--txt);"
-                 oninput="calcularTudo();saveItems()">
+                 oninput="calcularTudo()">
           <span class="text-xs" style="color:var(--txt3);" id="symFixo">%</span>
         </div>
         <div class="text-xs mt-1" style="color:var(--txt3);" id="valFixo">$1,000.00</div>
@@ -345,7 +287,7 @@ body{
           <input type="number" id="pctInvest" value="20" min="0" max="100"
                  class="inp flex-1 min-w-0 text-center text-base font-bold outline-none rounded-md py-1 px-1.5"
                  style="background:#fff;border:1px solid var(--bdr);color:var(--txt);"
-                 oninput="calcularTudo();saveItems()">
+                 oninput="calcularTudo()">
           <span class="text-xs" style="color:var(--txt3);" id="symInvest">%</span>
         </div>
         <div class="text-xs mt-1" style="color:var(--txt3);" id="valInvest">$400.00</div>
@@ -353,8 +295,6 @@ body{
     </div>
     <!-- sonhos dynamic grid -->
     <div id="sonhosPctGrid" class="mt-2.5" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
-    <!-- parcelados dynamic grid -->
-    <div id="parceladoPctGrid" class="mt-2" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
     <!-- global alert -->
     <div id="globalAlert" class="hidden mt-3 rounded-xl px-4 py-3 text-xs font-semibold leading-relaxed"></div>
   </div>
@@ -364,7 +304,6 @@ body{
   <div class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--txt3);" id="t-catLabel">Categorias</div>
   <div class="flex gap-2 overflow-x-auto pb-1 mb-3" style="scrollbar-width:none;">
     <button class="tab-pill t-fixo active" onclick="switchTab('fixo')" id="tab-fixo">🏠 <span id="t-tabFixo">Gastos Fixos</span></button>
-    <button class="tab-pill t-parcelado" onclick="switchTab('parcelado')" id="tab-parcelado">💳 <span id="t-tabParcelado">Parcelados</span></button>
     <button class="tab-pill t-lazer" onclick="switchTab('lazer')" id="tab-lazer">☕ <span id="t-tabLazer">Lazer</span></button>
     <button class="tab-pill t-invest" onclick="switchTab('invest')" id="tab-invest">🛡️ <span id="t-tabInvest">Investimentos</span></button>
     <button class="tab-pill t-sonhos" onclick="switchTab('sonhos')" id="tab-sonhos">🚀 <span id="t-tabSonhos">Sonhos</span></button>
@@ -402,36 +341,6 @@ body{
   </div>
 
 
-  <!-- ══ SUB-PANEL PARCELADOS ══ -->
-  <div class="sub-panel" id="sub-parcelado">
-    <div class="rounded-2xl overflow-hidden s" style="background:var(--surf);border:1px solid var(--bdr);box-shadow:var(--shadow);">
-      <div class="flex items-center justify-between px-4 py-3" style="border-bottom:1px solid var(--bdr);">
-        <div class="flex items-center gap-2">
-          <span class="font-bold" style="color:#0891b2;" id="t-parceladoTitle">💳 Compras Parceladas</span>
-        </div>
-        <div class="text-right">
-          <div class="text-xs" style="color:var(--txt3);" id="t-parceladoTotal">Total em parcelas</div>
-          <div class="font-bold text-sm" style="color:#0891b2;" id="total-parcelado">$0.00</div>
-        </div>
-      </div>
-      <!-- col headers -->
-      <div class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider" style="color:var(--txt3);border-bottom:1px solid var(--bdr);">
-        <span style="flex:1 1 0;" id="t-colDescP">Descrição</span>
-        <span style="width:64px;flex-shrink:0;text-align:center;" id="t-colParcN">Parcela</span>
-        <span style="width:72px;flex-shrink:0;text-align:right;" id="t-colValP">Valor/mês</span>
-        <span style="width:28px;flex-shrink:0;"></span>
-      </div>
-      <div id="list-parcelado" class="divide-y" style="border-color:var(--bdr);"></div>
-      <button class="add-dashed" onclick="addParcelado()" id="t-addParcelado">💳 Adicionar compra parcelada</button>
-      <div class="flex items-center justify-between px-4 py-3" style="background:var(--surf2);border-top:1px solid var(--bdr);">
-        <span class="text-xs font-bold" style="color:var(--txt3);" id="t-parceladoFooter">Debitado do salário ao dar ✓</span>
-        <span class="text-base font-black" style="color:#0891b2;" id="total-parcelado-foot">$0.00</span>
-      </div>
-      <div id="alert-parcelado" class="hidden px-4 py-2.5 text-xs font-bold rounded-b-2xl"></div>
-    </div>
-  </div>
-
-
   <!-- ══ SUB-PANEL LAZER ══ -->
   <div class="sub-panel" id="sub-lazer">
     <div class="rounded-2xl overflow-hidden s" style="background:var(--surf);border:1px solid var(--bdr);box-shadow:var(--shadow);">
@@ -458,16 +367,14 @@ body{
         </div>
         <div id="fracLazerRows" class="flex flex-col gap-1.5"></div>
       </div>
-      <!-- manual area — hidden when auto-frac is active -->
-      <div id="manualAreaLazer">
-        <div class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider" style="color:var(--txt3);border-bottom:1px solid var(--bdr);">
-          <span style="flex:1 1 0;" id="t-colDescL">Descrição</span>
-          <span style="width:72px;flex-shrink:0;text-align:right;" id="t-colValL">Valor</span>
-          <span style="width:28px;flex-shrink:0;"></span>
-        </div>
-        <div id="list-lazer" class="divide-y" style="border-color:var(--bdr);"></div>
-        <button class="add-dashed" onclick="addItem('lazer')" id="t-addLazer">➕ Adicionar item de lazer</button>
+      <!-- col headers (no date col for lazer/invest) -->
+      <div class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider" style="color:var(--txt3);border-bottom:1px solid var(--bdr);">
+        <span style="flex:1 1 0;" id="t-colDescL">Descrição</span>
+        <span style="width:72px;flex-shrink:0;text-align:right;" id="t-colValL">Valor</span>
+        <span style="width:28px;flex-shrink:0;"></span>
       </div>
+      <div id="list-lazer" class="divide-y" style="border-color:var(--bdr);"></div>
+      <button class="add-dashed" onclick="addItem('lazer')" id="t-addLazer">➕ Adicionar item de lazer</button>
       <div class="flex items-center justify-between px-4 py-3" style="background:var(--surf2);border-top:1px solid var(--bdr);">
         <span class="text-xs font-bold" style="color:var(--txt3);" id="t-totalLazer">Total lazer</span>
         <span class="text-base font-black" style="color:#d97706;" id="total-lazer">$0.00</span>
@@ -503,16 +410,13 @@ body{
         </div>
         <div id="fracInvestRows" class="flex flex-col gap-1.5"></div>
       </div>
-      <!-- manual area — hidden when auto-frac is active -->
-      <div id="manualAreaInvest">
-        <div class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider" style="color:var(--txt3);border-bottom:1px solid var(--bdr);">
-          <span style="flex:1 1 0;">Descrição</span>
-          <span style="width:72px;flex-shrink:0;text-align:right;">Valor</span>
-          <span style="width:28px;flex-shrink:0;"></span>
-        </div>
-        <div id="list-invest" class="divide-y" style="border-color:var(--bdr);"></div>
-        <button class="add-dashed" onclick="addItem('invest')" id="t-addInvest">➕ Adicionar investimento</button>
+      <div class="flex items-center gap-2 px-4 py-1.5 text-xs font-bold uppercase tracking-wider" style="color:var(--txt3);border-bottom:1px solid var(--bdr);">
+        <span style="flex:1 1 0;">Descrição</span>
+        <span style="width:72px;flex-shrink:0;text-align:right;">Valor</span>
+        <span style="width:28px;flex-shrink:0;"></span>
       </div>
+      <div id="list-invest" class="divide-y" style="border-color:var(--bdr);"></div>
+      <button class="add-dashed" onclick="addItem('invest')" id="t-addInvest">➕ Adicionar investimento</button>
       <div class="flex items-center justify-between px-4 py-3" style="background:var(--surf2);border-top:1px solid var(--bdr);">
         <span class="text-xs font-bold" style="color:var(--txt3);" id="t-totalInvest">Total investido</span>
         <span class="text-base font-black" style="color:#059669;" id="total-invest">$0.00</span>
@@ -595,143 +499,26 @@ body{
 </div>
 
 
-
-<!-- ══════════════════════════════════════
-     PAGE 4 — PLANO
-══════════════════════════════════════ -->
-<div class="page" id="page-plano">
-<div class="max-w-2xl mx-auto px-4 pb-28 pt-5">
-
-  <!-- header -->
-  <div class="flex items-center justify-between mb-4">
-    <div>
-      <div class="text-xl font-black" style="color:var(--txt);">📈 <span id="t-planoTitle">Plano de Investimento</span></div>
-      <div class="text-xs mt-0.5" style="color:var(--txt3);"><span id="t-planoSub">Personalizado com base no seu orçamento</span></div>
-    </div>
-  </div>
-
-  <!-- perfil de risco -->
-  <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
-    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);" id="t-planoProfile">Perfil de Investidor</div>
-    <div class="grid grid-cols-3 gap-2" id="riskButtons">
-      <button onclick="setRisk('conservador')" id="risk-conservador"
-              class="risk-btn py-3 rounded-xl text-xs font-bold border transition-all"
-              style="border-color:var(--bdr);color:var(--txt2);background:var(--surf2);">
-        🛡️<br><span id="t-riskC">Conservador</span>
-      </button>
-      <button onclick="setRisk('moderado')" id="risk-moderado"
-              class="risk-btn py-3 rounded-xl text-xs font-bold border transition-all active-risk"
-              style="border-color:#6d28d9;color:#fff;background:#6d28d9;">
-        ⚖️<br><span id="t-riskM">Moderado</span>
-      </button>
-      <button onclick="setRisk('arrojado')" id="risk-arrojado"
-              class="risk-btn py-3 rounded-xl text-xs font-bold border transition-all"
-              style="border-color:var(--bdr);color:var(--txt2);background:var(--surf2);">
-        🚀<br><span id="t-riskA">Arrojado</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- calculadora de juros compostos -->
-  <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
-    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);" id="t-planoSim">Simulador de Crescimento</div>
-    <div class="grid grid-cols-2 gap-3 mb-3">
-      <div>
-        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);" id="t-lInicial">Aporte inicial ($)</label>
-        <input type="number" id="plano-inicial" value="0" min="0" step="0.01"
-               class="inp w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none"
-               style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
-               oninput="calcPlano()">
-      </div>
-      <div>
-        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);" id="t-lMensal">Aporte mensal ($)</label>
-        <input type="number" id="plano-mensal" value="0" min="0" step="0.01"
-               class="inp w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none"
-               style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
-               oninput="calcPlano()">
-      </div>
-      <div>
-        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);" id="t-lTaxa">Taxa anual (%)</label>
-        <input type="number" id="plano-taxa" value="10" min="0" max="100" step="0.1"
-               class="inp w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none"
-               style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
-               oninput="calcPlano()">
-      </div>
-      <div>
-        <label class="text-xs font-bold mb-1 block" style="color:var(--txt3);" id="t-lAnos">Período (anos)</label>
-        <input type="number" id="plano-anos" value="10" min="1" max="50"
-               class="inp w-full rounded-xl px-3 py-2.5 text-sm font-bold outline-none"
-               style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
-               oninput="calcPlano()">
-      </div>
-    </div>
-    <!-- result cards -->
-    <div class="grid grid-cols-3 gap-2 mb-3" id="plano-results">
-      <div class="rounded-xl p-3 text-center" style="background:#ede9fe;">
-        <div class="text-xs font-bold mb-1" style="color:#6d28d9;" id="t-rInvestido">Total investido</div>
-        <div class="text-sm font-black" style="color:#6d28d9;" id="plano-r-investido">$0</div>
-      </div>
-      <div class="rounded-xl p-3 text-center" style="background:#d1fae5;">
-        <div class="text-xs font-bold mb-1" style="color:#059669;" id="t-rRendimento">Rendimento</div>
-        <div class="text-sm font-black" style="color:#059669;" id="plano-r-rendimento">$0</div>
-      </div>
-      <div class="rounded-xl p-3 text-center" style="background:linear-gradient(135deg,#4c1d95,#6d28d9);">
-        <div class="text-xs font-bold mb-1 text-white/70" id="t-rFinal">Patrimônio final</div>
-        <div class="text-sm font-black text-white" id="plano-r-final">$0</div>
-      </div>
-    </div>
-    <!-- mini progress bar: invested vs returns -->
-    <div class="h-2 rounded-full overflow-hidden flex" style="background:var(--bdr);">
-      <div id="plano-bar-inv" class="h-full transition-all" style="background:#6d28d9;width:50%;"></div>
-      <div id="plano-bar-rend" class="h-full transition-all" style="background:#059669;width:50%;"></div>
-    </div>
-    <div class="flex justify-between text-xs mt-1" style="color:var(--txt3);">
-      <span id="t-barCapital">🟣 Capital aportado</span><span id="t-barJuros">🟢 Juros compostos</span>
-    </div>
-  </div>
-
-  <!-- alocação recomendada por perfil -->
-  <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
-    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);" id="t-planoAlloc">Alocação Recomendada</div>
-    <div id="plano-alloc" class="flex flex-col gap-2"></div>
-  </div>
-
-  <!-- milestones -->
-  <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
-    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);" id="t-planoMilestones">Marcos ao Longo do Tempo</div>
-    <div id="plano-milestones" class="flex flex-col gap-2"></div>
-  </div>
-
-  <!-- dicas por perfil -->
-  <div class="rounded-2xl p-4 mb-4" id="plano-tips" style="background:#ede9fe;border:1.5px solid #6d28d9;"></div>
-
-</div>
-</div>
-
 <!-- ══════════════════════════════════════
      BOTTOM NAV
 ══════════════════════════════════════ -->
-<nav class="bottom-nav fixed bottom-0 left-0 right-0 z-50 grid"
-     style="background:var(--surf);border-top:1px solid var(--bdr);grid-template-columns:repeat(5,1fr);">
-  <button class="nav-item active flex flex-col items-center justify-center gap-0.5 py-2 text-xs font-bold"
+<nav class="bottom-nav fixed bottom-0 left-0 right-0 z-50 grid grid-cols-4"
+     style="background:var(--surf);border-top:1px solid var(--bdr);">
+  <button class="nav-item active flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
           id="nav-orcamento" onclick="switchPage('orcamento')">
     <span class="text-xl">💰</span><span id="t-navOrc">Orçamento</span>
   </button>
-  <button class="nav-item flex flex-col items-center justify-center gap-0.5 py-2 text-xs font-bold"
+  <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
           id="nav-ebook" onclick="switchPage('ebook')">
     <span class="text-xl">📚</span><span id="t-navEbook">Ebook</span>
   </button>
-  <button class="nav-item flex flex-col items-center justify-center gap-0.5 py-2 text-xs font-bold"
+  <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
           id="nav-historico" onclick="switchPage('historico')">
     <span class="text-xl">📅</span><span id="t-navHist">Histórico</span>
   </button>
-  <button class="nav-item flex flex-col items-center justify-center gap-0.5 py-2 text-xs font-bold"
-          id="nav-plano" onclick="switchPage('plano')">
+  <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
+          id="nav-plano">
     <span class="text-xl">📈</span><span id="t-navPlan">Plano</span>
-  </button>
-  <button class="nav-item flex flex-col items-center justify-center gap-0.5 py-2 text-xs font-bold"
-          id="nav-liberdade" onclick="window.location.href='calculadora-liberdade-financeira.html'">
-    <span class="text-xl">🏆</span><span id="t-navLib">Liberdade</span>
   </button>
 </nav>
 
@@ -846,9 +633,6 @@ function applyTheme(t){
   $('themeIcon').textContent=t==='dark'?'☀️':'🌙';
   $('t-themeLabel').textContent=t==='dark'?TR[lang].lightMode:TR[lang].darkMode;
   localStorage.setItem('cvTheme',t);
-  syncNavSheetTheme();
-  syncNavSheetLang();
-  syncNavSheetLang();
 }
 
 // ─────────────────────────────────────────
@@ -865,24 +649,13 @@ document.addEventListener('click',e=>{ if(!$('settingsWrap').contains(e.target))
 //  NAVIGATION
 // ─────────────────────────────────────────
 function switchPage(p){
-  // ebook redirects externally — never save as active page
-  if(p==='ebook'){ goToEbook(); return; }
   currentPage=p;
-  localStorage.setItem('cvPage',p);
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
   $('page-'+p).classList.add('active');
   const n=$('nav-'+p); if(n) n.classList.add('active');
   if(p==='historico') renderHistory();
-  if(p==='plano') renderPlano();
-  // Update browser tab title to reflect current page
-  const T=TR[lang]||TR.pt;
-  const pageLabels={
-    orcamento:'💰 '+(T.navOrc||'Orçamento'),
-    historico:'📅 '+(T.navHist||'Histórico'),
-    plano:    '📈 '+(T.navPlan||'Plano'),
-  };
-  document.title=(pageLabels[p]||'Controle Financeiro')+' | Mente Próspera';
+  if(p==='ebook'){ goToEbook(); return; }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -917,10 +690,10 @@ function setMode(m){
     $('pctInvest').value=sal>0?fmt(safe($('pctInvest').value)/sal*100,1):'0';
   }
   mode=m;
-  // buttons now live inside the light distribution card
-  const pBtn=$('mBtn-pct'), vBtn=$('mBtn-val');
-  if(pBtn){ pBtn.style.background=m==='pct'?'#6d28d9':'transparent'; pBtn.style.color=m==='pct'?'#fff':'var(--txt3)'; }
-  if(vBtn){ vBtn.style.background=m==='val'?'#6d28d9':'transparent'; vBtn.style.color=m==='val'?'#fff':'var(--txt3)'; }
+  $('mBtn-pct').style.background=m==='pct'?'rgba(255,255,255,.3)':'transparent';
+  $('mBtn-pct').style.color=m==='pct'?'#fff':'rgba(255,255,255,.4)';
+  $('mBtn-val').style.background=m==='val'?'rgba(255,255,255,.3)':'transparent';
+  $('mBtn-val').style.color=m==='val'?'#fff':'rgba(255,255,255,.4)';
   ['symFixo','symLazer','symInvest'].forEach(id=>{ if($(id)) $(id).textContent=m==='pct'?'%':'$'; });
   calcularTudo();
   const d=getData(); d.cfg.mode=m; save(d);
@@ -976,14 +749,10 @@ function applyFrac(cat){
   const d=getData();
   d.fracs[cat].n=n;
   if(n>0){
+    // preserve existing names up to n
     while(d.fracs[cat].names.length<n) d.fracs[cat].names.push('');
   }
-  save(d);
-  // show/hide manual area: visible only when mode is manual (n===0)
-  const manualArea=$('manualArea'+cap(cat));
-  if(manualArea) manualArea.style.display=n>0?'none':'block';
-  calcularTudo();
-  renderFracRows(cat);
+  save(d); calcularTudo(); renderFracRows(cat);
 }
 function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
@@ -993,6 +762,7 @@ function renderFracRows(cat){
   container.innerHTML='';
   if(!fc||fc.n<=0) return;
 
+  // get current meta value
   const sal=safe($('salario').value);
   let pct;
   if(cat==='lazer'){
@@ -1000,29 +770,24 @@ function renderFracRows(cat){
     const pI=mode==='pct'?safe($('pctInvest').value):sal>0?safe($('pctInvest').value)/sal*100:0;
     const d2=getData(); let pS=0;
     d2.sonhos.forEach(s=>{ pS+=sal>0?(s.valor/s.meses/sal*100):0; });
-    let pP2=0; (d2.parcelados||[]).forEach(p=>{ pP2+=sal>0?safe(p.valor)/sal*100:0; });
-    pct=Math.max(0,100-pF-pI-pS-pP2);
+    pct=Math.max(0,100-pF-pI-pS);
   } else {
     pct=mode==='pct'?safe($('pctInvest').value):sal>0?safe($('pctInvest').value)/sal*100:0;
   }
   const total=sal*pct/100;
   const part=total/fc.n;
-  const color=cat==='lazer'?'#d97706':'#059669';
 
   for(let i=0;i<fc.n;i++){
-    const isChecked=!!(fc.checks&&fc.checks[i]);
+    const isChecked=fc.checks&&fc.checks[i];
     const row=document.createElement('div');
-    row.className='flex items-center gap-2 py-1.5 px-1 rounded-lg transition-all'+(isChecked?' opacity-60':'');
+    row.className='flex items-center gap-2 py-1';
     row.innerHTML=`
-      <button class="chk${isChecked?' on':''}"
-              style="border-color:${isChecked?'#059669':'var(--bdr2)'};background:${isChecked?'#059669':'transparent'};color:${isChecked?'#fff':'transparent'};"
-              onclick="toggleFracCheck('${cat}',${i},this)">✓</button>
+      <button class="chk${isChecked?' on':''}" onclick="toggleFracCheck('${cat}',${i},this)" title="Marcar como feito">✓</button>
       <input type="text" value="${esc(fc.names[i]||'')}" placeholder="Parte ${i+1}"
              class="inp flex-1 min-w-0 rounded-lg px-2.5 py-1.5 text-xs font-semibold outline-none"
-             style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);${isChecked?'text-decoration:line-through;opacity:.5':''}"
+             style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
              oninput="saveFracName('${cat}',${i},this.value)">
-      <span class="text-xs font-black flex-shrink-0 px-2 py-1 rounded-lg"
-            style="color:${color};background:${cat==='lazer'?'#fef3c7':'#d1fae5'};">${fmtM(part)}</span>`;
+      <span class="text-xs font-black flex-shrink-0" style="color:${cat==='lazer'?'#d97706':'#059669'};">${fmtM(part)}</span>`;
     container.appendChild(row);
   }
 }
@@ -1224,13 +989,7 @@ function deleteDream(id){
 }
 function toggleDreamDone(id){
   const d=getData(); const s=d.sonhos.find(x=>x.id===id);
-  if(!s) return;
-  const wasDone = s.done;
-  s.done = !wasDone;
-  // parcelasPagas = contador acumulado permanente (nunca vai abaixo de 0)
-  if(s.done)  s.parcelasPagas = (s.parcelasPagas||0) + 1;
-  else        s.parcelasPagas = Math.max(0, (s.parcelasPagas||1) - 1);
-  save(d); renderDreams(); calcularTudo();
+  if(s){ s.done=!s.done; save(d); renderDreams(); }
 }
 function renderDreams(){
   const d=getData(); const sal=safe($('salario').value);
@@ -1239,155 +998,25 @@ function renderDreams(){
   if(!d.sonhos.length){ e.style.display='block'; return; }
   e.style.display='none';
   d.sonhos.forEach(s=>{
-    const parcMensal = s.valor/s.meses;
-    const pct = sal>0 ? (parcMensal/sal*100) : 0;
-    const pagas = s.parcelasPagas||0;
-    const acumulado = Math.min(pagas*parcMensal, s.valor);
-    const progPct = s.valor>0 ? Math.min(100, acumulado/s.valor*100) : 0;
-    const concluido = pagas >= s.meses;
+    const p=s.valor/s.meses;
+    const pct=sal>0?(p/sal*100):0;
     const div=document.createElement('div');
-    div.className='rounded-2xl p-4 s fade-in';
+    div.className='rounded-2xl p-4 s fade-in'+(s.done?' opacity-60':'');
     div.style='background:var(--surf);border:1px solid var(--bdr);';
     div.innerHTML=`
-      <div class="flex items-start gap-3 mb-2">
+      <div class="flex items-start gap-3 mb-3">
         <button class="chk${s.done?' on':''}" onclick="toggleDreamDone(${s.id})"
-                title="Marcar parcela do mês como paga"
                 style="border-color:${s.done?'#059669':'var(--bdr2)'};background:${s.done?'#059669':'transparent'};color:${s.done?'#fff':'transparent'};">✓</button>
-        <div class="flex-1 min-w-0">
-          <div class="font-bold text-sm${concluido?' line-through':''}" style="color:var(--txt);">🎯 ${esc(s.nome)}</div>
-          <div class="text-xs mt-0.5" style="color:var(--txt3);">Meta: ${fmtM(s.valor)} · ${s.meses} meses</div>
+        <div class="flex-1">
+          <div class="font-bold text-sm${s.done?' line-through':''}" style="color:var(--txt);">🎯 ${esc(s.nome)}</div>
+          <div class="text-xs mt-0.5" style="color:var(--txt3);">Meta: ${fmtM(s.valor)} em ${s.meses} meses</div>
         </div>
-        <button onclick="deleteDream(${s.id})" class="text-xs px-2 py-1 rounded-lg flex-shrink-0" style="background:none;border:none;color:var(--txt3);">✕</button>
+        <button onclick="deleteDream(${s.id})" class="text-xs px-2 py-1 rounded-lg" style="background:none;border:none;color:var(--txt3);">✕</button>
       </div>
-      <!-- monthly pill -->
       <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-2"
-           style="background:#ede9fe;color:#6d28d9;">
-        💸 ${fmtM(parcMensal)}/mês &nbsp;·&nbsp; ${fmt(pct,1)}% do salário
-        &nbsp;·&nbsp; <span style="color:${pagas>=s.meses?'#059669':'#6d28d9'};">${pagas}/${s.meses} pagas</span>
-      </div>
-      <!-- progress bar -->
-      <div class="h-2 rounded-full overflow-hidden mb-1" style="background:var(--bdr);">
-        <div class="h-full rounded-full transition-all" style="width:${progPct.toFixed(1)}%;background:linear-gradient(90deg,#6d28d9,#8b5cf6);"></div>
-      </div>
-      <div class="flex justify-between text-xs" style="color:var(--txt3);">
-        <span>Acumulado: ${fmtM(acumulado)}</span>
-        <span>Falta: ${fmtM(Math.max(0,s.valor-acumulado))}</span>
-      </div>`;
+           style="background:#ede9fe;color:#6d28d9;">💸 ${fmtM(p)}/mês &nbsp;·&nbsp; ${fmt(pct,1)}% do salário</div>`;
     c.appendChild(div);
   });
-}
-
-
-// ─────────────────────────────────────────
-//  COMPRAS PARCELADAS
-// ─────────────────────────────────────────
-function addParcelado(nome='', parcAtual=1, parcTotal=1, valor='', done=false){
-  const list = $('list-parcelado');
-  const row = document.createElement('div');
-  row.className = 'item-row fade-in flex items-center gap-2 px-4 py-2.5' + (done?' done':'');
-  row.dataset.cat = 'parcelado';
-  row.dataset.done = done ? '1' : '0';
-  row.innerHTML = `
-    <button class="chk${done?' on':''}"
-            style="border-color:${done?'#059669':'var(--bdr2)'};background:${done?'#059669':'transparent'};color:${done?'#fff':'transparent'};"
-            onclick="handleParceladoCheck(this)" title="Marcar parcela como paga">✓</button>
-    <input type="text" class="iname inp flex-1 min-w-0 rounded-lg px-2.5 py-1.5 text-sm outline-none"
-           style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
-           placeholder="Descrição..." value="${esc(nome)}"
-           oninput="calcParcelado();saveParcelados();">
-    <!-- parcela X de Y -->
-    <div class="flex items-center gap-1 flex-shrink-0" style="width:64px;">
-      <input type="number" class="parc-atual inp w-7 rounded-md px-1 py-1.5 text-xs font-bold text-center outline-none"
-             style="background:var(--surf2);border:1px solid var(--bdr);color:#0891b2;"
-             min="1" value="${parcAtual}" oninput="calcParcelado();saveParcelados();">
-      <span class="text-xs" style="color:var(--txt3);">/</span>
-      <input type="number" class="parc-total inp w-7 rounded-md px-1 py-1.5 text-xs font-bold text-center outline-none"
-             style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt3);"
-             min="1" value="${parcTotal}" oninput="calcParcelado();saveParcelados();">
-    </div>
-    <input type="number" class="ival inp flex-shrink-0 rounded-lg px-2 py-1.5 text-sm font-bold text-right outline-none"
-           style="width:72px;background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);"
-           placeholder="0.00" min="0" step="0.01" value="${esc(valor)}"
-           oninput="calcParcelado();saveParcelados();">
-    <button onclick="removeParcelado(this)"
-            class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-sm transition-all"
-            style="background:none;border:none;color:var(--txt3);"
-            onmouseover="this.style.background='#fee2e2';this.style.color='#dc2626';"
-            onmouseout="this.style.background='none';this.style.color='var(--txt3)';">🗑</button>`;
-  list.appendChild(row);
-  calcParcelado(); saveParcelados();
-}
-
-function handleParceladoCheck(btn){
-  const row = btn.closest('.item-row');
-  const nowDone = row.dataset.done !== '1';
-  row.dataset.done = nowDone ? '1' : '0';
-  row.classList.toggle('done', nowDone);
-  btn.classList.toggle('on', nowDone);
-  btn.style.background = nowDone ? '#059669' : 'transparent';
-  btn.style.borderColor = nowDone ? '#059669' : 'var(--bdr2)';
-  btn.style.color = nowDone ? '#fff' : 'transparent';
-  calcParcelado(); calcularTudo(); saveParcelados();
-}
-
-function removeParcelado(btn){ btn.closest('.item-row').remove(); calcParcelado(); calcularTudo(); saveParcelados(); }
-
-function sumAllParcelados(){
-  let t = 0;
-  document.querySelectorAll('#list-parcelado .ival').forEach(el => t += safe(el.value));
-  return t;
-}
-function sumDoneParcelados(){
-  let t = 0;
-  document.querySelectorAll('#list-parcelado .item-row').forEach(row => {
-    if(row.dataset.done === '1') t += safe(row.querySelector('.ival').value);
-  });
-  return t;
-}
-
-function calcParcelado(){
-  const total = sumAllParcelados();
-  const footEl = $('total-parcelado-foot');
-  const headEl = $('total-parcelado');
-  if(footEl) footEl.textContent = fmtM(total);
-  if(headEl) headEl.textContent = fmtM(total);
-  // progress badge on each row
-  document.querySelectorAll('#list-parcelado .item-row').forEach(row => {
-    const pa = safe(row.querySelector('.parc-atual')?.value||1);
-    const pt = safe(row.querySelector('.parc-total')?.value||1);
-    const pct = pt > 0 ? Math.round(pa/pt*100) : 0;
-    let badge = row.querySelector('.parc-badge');
-    if(!badge){
-      badge = document.createElement('div');
-      badge.className = 'parc-badge text-xs rounded-full px-1.5 py-0.5 font-bold flex-shrink-0 hidden';
-      badge.style.cssText = 'background:#cffafe;color:#0891b2;white-space:nowrap;';
-    }
-    // show remaining parcelas count
-    const restam = Math.max(0, pt - pa + 1);
-    badge.textContent = `${restam} restante${restam!==1?'s':''}`;
-    badge.classList.toggle('hidden', pt <= 1);
-    if(!row.querySelector('.parc-badge')) row.insertBefore(badge, row.querySelector('.ival'));
-  });
-}
-
-function saveParcelados(){
-  const d = getData();
-  d.parcelados = [];
-  document.querySelectorAll('#list-parcelado .item-row').forEach(row => {
-    d.parcelados.push({
-      nome:  row.querySelector('.iname').value,
-      parcAtual: safe(row.querySelector('.parc-atual')?.value||1),
-      parcTotal: safe(row.querySelector('.parc-total')?.value||1),
-      valor: row.querySelector('.ival').value,
-      done:  row.dataset.done === '1',
-    });
-  });
-  save(d);
-}
-
-function loadParcelados(){
-  const d = getData();
-  (d.parcelados||[]).forEach(p => addParcelado(p.nome, p.parcAtual||1, p.parcTotal||1, p.valor, p.done||false));
 }
 
 // ─────────────────────────────────────────
@@ -1410,11 +1039,7 @@ function calcularTudo(){
   let pS=0; const sPcts=[];
   d.sonhos.forEach(s=>{ const p=s.valor/s.meses; const pc=sal>0?p/sal*100:0; sPcts.push({nome:s.nome,pct:pc,p}); pS+=pc; });
 
-  // parcelados — each instalment has a monthly value that occupies % of salary
-  let pParc=0; const parcPcts=[];
-  (d.parcelados||[]).forEach(p=>{ const v=safe(p.valor); const pc=sal>0?v/sal*100:0; if(v>0){ parcPcts.push({nome:p.nome,pct:pc,v,parcAtual:p.parcAtual,parcTotal:p.parcTotal}); pParc+=pc; } });
-
-  const pL=Math.max(0,100-pF-pI-pS-pParc);
+  const pL=Math.max(0,100-pF-pI-pS);
   const mF=sal*pF/100, mL=sal*pL/100, mI=sal*pI/100;
 
   // UI budget cards
@@ -1438,7 +1063,6 @@ function calcularTudo(){
 
   // dist bar
   $('bar-fixo').style.width=fmt(pF,2)+'%';
-  $('bar-parcelado').style.width=fmt(pParc,2)+'%';
   $('bar-lazer').style.width=fmt(pL,2)+'%';
   $('bar-invest').style.width=fmt(pI,2)+'%';
   $('bar-sonhos').style.width=fmt(pS,2)+'%';
@@ -1454,39 +1078,15 @@ function calcularTudo(){
     sg.appendChild(d2);
   });
 
-  // parcelados pct grid
-  const pg=$('parceladoPctGrid'); pg.innerHTML='';
-  parcPcts.forEach(pp=>{
-    const restam=Math.max(0, pp.parcTotal - pp.parcAtual + 1);
-    const d3=document.createElement('div');
-    d3.className='rounded-xl p-3'; d3.style='background:#ecfeff;border:1.5px dashed #0891b2;cursor:pointer;';
-    d3.onclick=()=>switchTab('parcelado');
-    d3.innerHTML=`
-      <div class="text-xs font-bold uppercase tracking-wider mb-1 truncate" style="color:#0891b2;">💳 ${esc(pp.nome)}</div>
-      <div class="text-base font-black" style="color:#0891b2;">${fmt(pp.pct,1)}%</div>
-      <div class="text-xs mt-0.5" style="color:#0891b2;">${fmtM(pp.v)}/mês</div>
-      ${restam>0?`<div class="text-xs mt-0.5 font-semibold" style="color:#0e7490;">${restam} parcela${restam!==1?'s':''} restante${restam!==1?'s':''}</div>`:'<div class="text-xs mt-0.5 font-bold" style="color:#059669;">✅ Quitada</div>'}`;
-    pg.appendChild(d3);
-  });
-  if(parcPcts.length===0) pg.innerHTML='';
-
-  // global alert (overflow)
+  // global alert (dreams overflow)
   const ga=$('globalAlert');
-  const totalComprometido=pF+pI+pS+pParc;
-  if(totalComprometido>=100&&pL<=0){
+  if(pS>0&&pL<=0){
     ga.className='block mt-3 rounded-xl px-4 py-3 text-xs font-semibold leading-relaxed';
-    ga.style='background:#fee2e2;color:#dc2626;';
-    const causas=[];
-    if(pS>0) causas.push(`Sonhos ${fmt(pS,1)}%`);
-    if(pParc>0) causas.push(`Parcelados ${fmt(pParc,1)}%`);
-    ga.innerHTML=`🚨 <b>Orçamento extrapolado!</b> ${causas.join(' + ')} eliminaram o Lazer.`;
-  } else if((pS>0||pParc>0)&&pL>0){
+    ga.style='background:#fee2e2;color:#dc2626;'; ga.innerHTML='🚨 <b>Sonhos a extrapolar o orçamento!</b>';
+  } else if(pS>0){
     ga.className='block mt-3 rounded-xl px-4 py-3 text-xs font-semibold leading-relaxed';
     ga.style='background:#d1fae5;color:#059669;';
-    const partes=[];
-    if(pS>0) partes.push(`Sonhos`);
-    if(pParc>0) partes.push(`Parcelados`);
-    ga.innerHTML=`✅ Lazer ajustado para ${fmt(pL,1)}% para acomodar ${partes.join(' e ')}.`;
+    ga.innerHTML=`✅ Lazer ajustado para ${fmt(pL,1)}% para acomodar os sonhos.`;
   } else { ga.className='hidden'; }
 
   // re-render fractions (meta values may have changed)
@@ -1501,46 +1101,29 @@ function calcularTudo(){
   const dFracI=fracCheckedTotal('invest',mI);
   const dFracL=fracCheckedTotal('lazer',mL);
 
-  // ── totals displayed (all items regardless of check) ──
+  // displayed totals (all items regardless of check)
   const totalF=sumAllItems('fixo');
-  // For lazer total: when auto-frac active use meta value so display shows the goal, not 0
-  const fracLazerActive=getData().fracs.lazer.n>0;
-  const fracInvestActive=getData().fracs.invest.n>0;
-  const totalL=fracLazerActive ? mL : sumAllItems('lazer');
-  const totalI=fracInvestActive ? mI : sumAllItems('invest');
+  const totalL=sumAllItems('lazer');
+  const totalI=sumAllItems('invest');
   $('total-fixo').textContent=fmtM(totalF);
   $('total-lazer').textContent=fmtM(totalL);
   $('total-invest').textContent=fmtM(totalI);
 
-  // ── alert strips (planned vs limit) ──
-  // fixo: compare real items vs limit
-  setAlert('alert-fixo', totalF, mF, 'fixo', false);
-  // lazer: when frac active compare checked fracs vs meta; else real items
-  const lazerCheckedAmt = fracLazerActive ? dFracL : doneL;
-  setAlert('alert-lazer', fracLazerActive ? dFracL : totalL, mL, 'lazer', false);
-  // invest
-  setAlert('alert-invest', fracInvestActive ? dFracI : (totalI+dFracI), mI, 'invest', true);
+  // alerts (based on planned vs limit)
+  setAlert('alert-fixo',totalF,mF,'fixo',false);
+  setAlert('alert-lazer',totalL,mL,'lazer',false);
+  setAlert('alert-invest',totalI+dFracI,mI,'invest',true);
 
   // ── Wallet panel ──
-  // Saldo Total = apenas soma das contas (salário NÃO entra)
   const wTotal=walletTotal();
-  $('walletGrand').textContent=fmtM(wTotal).replace('$','');
+  // Saldo total = wallet accounts + salary (salary auto-adds to total)
+  const grandTotal=wTotal+sal;
+  $('walletGrand').textContent=fmtM(grandTotal).replace('$','');
 
-  // Salário restante = salário − gastos com ✓ (fixo + lazer + invest)
-  // Lazer conta como custo: usar checked fracs OU done itens manuais
-  const gastosPagos = doneF + (fracLazerActive ? dFracL : doneL);
-  const investPagos = fracInvestActive ? dFracI : doneI;
-  // parcelados: sum done rows
-  const parceladosPagos = sumDoneParcelados();
-  // sonhos: each ✓ click deducts one monthly parcela from salary
-  const sonhosPagos = (() => {
-    const dd=getData(); const s=safe($('salario').value);
-    return dd.sonhos.reduce((acc,so)=>{ const pp=so.parcelasPagas||0; return acc+(pp>0?(so.valor/so.meses):0); },0);
-  })();
-  const salRestante = sal - gastosPagos - investPagos - parceladosPagos - sonhosPagos;
-  $('salarioRestante').textContent = fmtM(Math.max(0, salRestante));
-  const srEl=$('salarioRestante');
-  if(srEl) srEl.style.color = salRestante < 0 ? '#fca5a5' : '#fff';
+  // Saldo livre = grandTotal - paid expenses
+  const gastosPagos=doneF+doneL+dFracL;
+  const livreSaldo=grandTotal-gastosPagos;
+  $('walletFree').textContent=fmtM(livreSaldo);
 }
 
 function fracCheckedTotal(cat,metaTotal){
@@ -1571,57 +1154,16 @@ function arquivarMes(){
   const hoje=new Date().toISOString().slice(0,7);
   const mes=$('mesRef')?($('mesRef').value||hoje):hoje;
   const d=getData();
-  const sal=safe($('salario').value);
-
-  // resolve limits (same logic as calcularTudo)
-  let pF,pI;
-  if(mode==='pct'){
-    pF=Math.max(0,Math.min(100,safe($('pctFixo').value)));
-    pI=Math.max(0,Math.min(100,safe($('pctInvest').value)));
-  } else {
-    pF=sal>0?safe($('pctFixo').value)/sal*100:0;
-    pI=sal>0?safe($('pctInvest').value)/sal*100:0;
-  }
-  let pS=0; d.sonhos.forEach(s=>{ pS+=sal>0?(s.valor/s.meses/sal*100):0; });
-  let pParcArch=0; (d.parcelados||[]).forEach(p=>{ pParcArch+=sal>0?safe(p.valor)/sal*100:0; });
-  const pL=Math.max(0,100-pF-pI-pS-pParcArch);
-  const mF=sal*pF/100, mL=sal*pL/100, mI=sal*pI/100;
-
-  // real spending
-  const fracLazerActive=d.fracs.lazer.n>0;
-  const fracInvestActive=d.fracs.invest.n>0;
-  const gastoF=sumAllItems('fixo');
-  const gastoL=fracLazerActive ? fracCheckedTotal('lazer',mL) : sumAllItems('lazer');
-  const gastoI=fracInvestActive ? fracCheckedTotal('invest',mI) : sumAllItems('invest');
-
-  // parcelados paid this month
-  const gastoParcelados = sumDoneParcelados();
-  // sonhos: sum of monthly parcelas actually checked this month
-  const gastoSonhos = d.sonhos.reduce((acc,s)=>{
-    const pp = s.parcelasPagas||0;
-    return acc + (pp>0 ? (s.valor/s.meses) : 0);
-  },0);
-  // sobra = economia em fixo + economia em lazer + (salário - total gastos - invest)
-  const sobraF = Math.max(0, mF - gastoF);
-  const sobraL = Math.max(0, mL - gastoL);
-  // each sonho contributes its monthly parcela toward sobra (it's being saved, not spent)
-  const sobraSonhos = gastoSonhos; // money set aside for dreams = positive outcome
-  const sobra = sobraF + sobraL + sobraSonhos;
-
   const reg={
-    id:Date.now(), mes, salario:sal,
-    totalFixo:gastoF, limiteFixo:mF,
-    totalLazer:gastoL, limiteLazer:mL,
-    totalInvest:gastoI, limiteInvest:mI,
-    totalParcelados:gastoParcelados,
-    totalSonhos:gastoSonhos,
-    sobra
+    id:Date.now(), mes,
+    salario:safe($('salario').value),
+    totalFixo:sumAllItems('fixo'),
+    totalLazer:sumAllItems('lazer'),
+    totalInvest:sumAllItems('invest'),
+    sobra:safe($('salario').value)-sumAllItems('fixo')-sumAllItems('lazer')-sumAllItems('invest')
   };
   d.hist=d.hist.filter(h=>h.mes!==mes);
-  d.hist.push(reg);
-  // reset dream monthly check so next month starts unchecked
-  d.sonhos.forEach(s=>{ s.done=false; });
-  save(d);
+  d.hist.push(reg); save(d);
   renderHistory(); toast(`🔒 Mês ${mes} arquivado!`);
   if(currentPage!=='historico') switchPage('historico');
 }
@@ -1638,67 +1180,23 @@ function renderHistory(){
   const sorted=[...d.hist].sort((a,b)=>b.mes.localeCompare(a.mes));
   c.innerHTML='';
   sorted.forEach(h=>{
-    // backward compat: old records may not have limit fields
-    const lF=h.limiteFixo||h.salario||0;
-    const lL=h.limiteLazer||0;
-    const sobraF=Math.max(0,lF-h.totalFixo);
-    const sobraL=Math.max(0,lL-h.totalLazer);
-    const sobra=h.sobra!==undefined ? h.sobra : sobraF+sobraL;
-
     const card=document.createElement('div');
     card.className='rounded-2xl p-4 mb-3 s transition-all';
     card.style='background:var(--surf);border:1px solid var(--bdr);';
     card.innerHTML=`
       <div class="flex items-center justify-between mb-3">
-        <div>
-          <div class="font-bold" style="color:var(--txt);">📅 ${h.mes}</div>
-          <div class="text-xs" style="color:var(--txt3);">Salário: ${fmtM(h.salario)}</div>
-        </div>
+        <div><div class="font-bold" style="color:var(--txt);">📅 ${h.mes}</div>
+             <div class="text-xs" style="color:var(--txt3);">Salário: ${fmtM(h.salario)}</div></div>
         <button onclick="deleteHistory(${h.id})" class="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
-                style="background:none;border:none;color:var(--txt3);"
-                onmouseover="this.style.background='#fee2e2';this.style.color='#dc2626';"
-                onmouseout="this.style.background='none';this.style.color='var(--txt3)';">🗑</button>
+                style="background:none;border:none;color:var(--txt3);" onmouseover="this.style.background='#fee2e2';this.style.color='#dc2626';" onmouseout="this.style.background='none';this.style.color='var(--txt3)';">🗑</button>
       </div>
-      <!-- grid -->
-      <div class="grid grid-cols-2 gap-2 mb-2" style="grid-template-columns:repeat(2,1fr);">
+      <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        ${[['🏠 Fixo',h.totalFixo,'#6d28d9'],['☕ Lazer',h.totalLazer,'#d97706'],['🛡️ Invest.',h.totalInvest,'#059669'],['💰 Sobra',h.sobra,safe(h.sobra)>=0?'#059669':'#dc2626']].map(([l,v,c])=>`
         <div class="rounded-xl p-2.5 text-center" style="background:var(--surf2);">
-          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">🏠 Fixo</div>
-          <div class="font-black text-sm" style="color:#6d28d9;">${fmtM(h.totalFixo)}</div>
-          <div class="text-xs mt-0.5" style="color:var(--txt3);">limite ${fmtM(lF)}</div>
-        </div>
-        <div class="rounded-xl p-2.5 text-center" style="background:var(--surf2);">
-          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">☕ Lazer</div>
-          <div class="font-black text-sm" style="color:#d97706;">${fmtM(h.totalLazer)}</div>
-          <div class="text-xs mt-0.5" style="color:var(--txt3);">limite ${fmtM(lL)}</div>
-        </div>
-        <div class="rounded-xl p-2.5 text-center" style="background:var(--surf2);">
-          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">🛡️ Invest.</div>
-          <div class="font-black text-sm" style="color:#059669;">${fmtM(h.totalInvest)}</div>
-        </div>
-        ${h.totalParcelados>0?`
-        <div class="rounded-xl p-2.5 text-center" style="background:#cffafe;">
-          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">💳 Parcelados</div>
-          <div class="font-black text-sm" style="color:#0891b2;">${fmtM(h.totalParcelados)}</div>
-        </div>`:''}
-        ${h.totalSonhos>0?`
-        <div class="rounded-xl p-2.5 text-center" style="background:#ede9fe;">
-          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">🎯 Sonhos</div>
-          <div class="font-black text-sm" style="color:#6d28d9;">${fmtM(h.totalSonhos)}</div>
-          <div class="text-xs mt-0.5" style="color:#8b5cf6;">guardado</div>
-        </div>`:''}
-        <div class="rounded-xl p-2.5 text-center col-span-2" style="background:${sobra>0?'#d1fae5':'var(--surf2)'};">
-          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">💰 Sobra total</div>
-          <div class="font-black text-sm" style="color:${sobra>0?'#059669':'#94a3b8'};">${fmtM(sobra)}</div>
-          ${sobra>0?`<div class="text-xs mt-0.5" style="color:#059669;">economia do mês</div>`:''}
-        </div>
-      </div>
-      <!-- sobra breakdown when available -->
-      ${(sobraF>0||sobraL>0)?`
-      <div class="flex gap-2 flex-wrap">
-        ${sobraF>0?`<span class="text-xs px-2 py-1 rounded-full font-semibold" style="background:#ede9fe;color:#6d28d9;">🏠 poupou ${fmtM(sobraF)} em fixo</span>`:''}
-        ${sobraL>0?`<span class="text-xs px-2 py-1 rounded-full font-semibold" style="background:#fef3c7;color:#d97706;">☕ poupou ${fmtM(sobraL)} em lazer</span>`:''}
-      </div>`:''}
-    `;
+          <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">${l}</div>
+          <div class="font-black text-sm" style="color:${c};">${fmtM(v)}</div>
+        </div>`).join('')}
+      </div>`;
     c.appendChild(card);
   });
 }
@@ -1715,130 +1213,25 @@ async function triggerInstall(){
   if(outcome==='accepted'){ closeModal('installOverlay'); toast('✅ App instalado!'); }
   deferredPWA=null;
 }
-// ── Mais Sheet ────────────────────────────────────────────────────
-function openNavSheet(){
-  var ov = $('navSheetOverlay');
-  if(!ov) return;
-  ov.style.cssText = 'display:flex;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;';
-  syncNavSheetLang();
-  syncNavSheetTheme();
-}
-function closeNavSheet(){
-  var ov = $('navSheetOverlay');
-  if(ov) ov.style.display = 'none';
-}
-// keep lang buttons in sheet in sync
-function syncNavSheetLang(){
-  ['pt','es','en'].forEach(l=>{
-    const btn=$('ns-lbtn-'+l);
-    if(!btn) return;
-    const active=(lang||'pt')===l;
-    btn.style.background=active?'#6d28d9':'var(--surf2)';
-    btn.style.color=active?'#fff':'var(--txt2)';
-    btn.style.borderColor=active?'#6d28d9':'var(--bdr)';
-  });
-}
-// keep theme toggle in sheet in sync
-function syncNavSheetTheme(){
-  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const T    = TR && TR[lang || 'pt'];
-  const icon = $('ns-theme-icon');
-  const lbl  = $('ns-theme-t');
-  const tog  = $('ns-theme-toggle');
-  const ball = $('ns-toggle-ball');
-  if(icon) icon.textContent      = dark ? '☀️' : '🌙';
-  if(lbl && T) lbl.textContent   = dark ? (T.lightMode||'Modo Claro') : (T.darkMode||'Modo Escuro');
-  if(tog)  tog.style.background  = dark ? '#6d28d9' : '#cbd5e1';
-  if(ball){ ball.style.right = dark ? '0.125rem' : 'auto';
-            ball.style.left  = dark ? 'auto' : '0.125rem'; }
-}
-}
-
-// ── Service Worker — registo e detecção de actualização ─────────
-// O SW nunca toca no localStorage. Os dados do utilizador estão seguros.
-if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').then(reg => {
-
-      // Verifica se há update disponível cada vez que a app fica em foco
-      document.addEventListener('visibilitychange', () => {
-        if(document.visibilityState === 'visible') reg.update();
-      });
-
-      // Detecta novo SW instalado em segundo plano
-      reg.addEventListener('updatefound', () => {
-        const incoming = reg.installing;
-        if(!incoming) return;
-        incoming.addEventListener('statechange', () => {
-          // Só mostra banner se já havia um SW activo (não na 1ª instalação)
-          if(incoming.state === 'installed' && navigator.serviceWorker.controller){
-            showUpdateBanner();
-          }
-        });
-      });
-
-    }).catch(() => {});
-
-    // Mensagem enviada pelo SW quando activa com versão nova
-    navigator.serviceWorker.addEventListener('message', ev => {
-      if(ev.data && ev.data.type === 'SW_UPDATED') showUpdateBanner();
-    });
-  });
-}
-
-function showUpdateBanner(){
-  if(document.getElementById('update-banner')) return; // já existe
-  const b = document.createElement('div');
-  b.id = 'update-banner';
-  b.style.cssText = [
-    'position:fixed','bottom:80px','left:50%','transform:translateX(-50%)',
-    'background:#0f172a','color:#fff','padding:11px 16px','border-radius:14px',
-    'font-size:13px','font-weight:700','z-index:9999',
-    'box-shadow:0 4px 24px rgba(0,0,0,.45)',
-    'display:flex','align-items:center','gap:10px',
-    'white-space:nowrap','border:1px solid rgba(255,255,255,.12)',
-    'max-width:calc(100vw - 32px)',
-  ].join(';');
-  b.innerHTML = `
-    <span>🔄 Nova versão disponível</span>
-    <button id="btn-do-update"
-            style="background:#6d28d9;color:#fff;border:none;border-radius:8px;
-                   padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;">
-      Atualizar
-    </button>
-    <button onclick="document.getElementById('update-banner').remove()"
-            style="background:rgba(255,255,255,.12);color:#fff;border:none;border-radius:8px;
-                   padding:6px 9px;font-size:12px;cursor:pointer;flex-shrink:0;">✕</button>`;
-  document.body.appendChild(b);
-
-  document.getElementById('btn-do-update').addEventListener('click', () => {
-    // Garante que o SW toma controlo e depois recarrega
-    if(navigator.serviceWorker.controller){
-      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-    }
-    // Pequeno delay para o SW processar, depois recarrega
-    setTimeout(() => window.location.reload(), 300);
-  });
-}
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 // ─────────────────────────────────────────
 //  I18N
 // ─────────────────────────────────────────
 const TR={
   pt:{
-    appName:'Controle Financeiro', appSub:'Gestão financeira inteligente',
+    appName:'Calculadora da Virada', appSub:'Gestão financeira inteligente',
     darkMode:'Modo Escuro', lightMode:'Modo Claro',
-    walletTitle:'SALDO DAS CONTAS', salRest:'Salário restante:',
+    walletTitle:'SALDO TOTAL', walletFree:'Saldo livre:',
     accounts:'Minhas contas', addAccount:'＋ Adicionar conta',
     salaryLabel:'Salário / Renda mensal',
     distLabel:'Distribuição do orçamento',
     lFixo:'Fixo', lLazer:'Lazer', lInvest:'Invest.',
-    catLabel:'Categorias', tabFixo:'Gastos Fixos', tabParcelado:'Parcelados', tabLazer:'Lazer',
+    catLabel:'Categorias', tabFixo:'Gastos Fixos', tabLazer:'Lazer',
     tabInvest:'Investimentos', tabSonhos:'Sonhos',
     limitLabel:'Limite', lazerLimit:'Limite', investLimit:'Meta mínima',
     colDesc:'Descrição', colDue:'Vencimento', colVal:'Valor',
     addFixo:'➕ Adicionar gasto fixo',
-    addParcelado:'💳 Adicionar compra parcelada', parceladoTitle:'💳 Compras Parceladas', colParcN:'Parcela', parceladoFooter:'Debitado do salário ao dar ✓',
     addLazer:'➕ Adicionar item de lazer',
     addInvest:'➕ Adicionar investimento',
     totalFixo:'Total gastos fixos', totalLazer:'Total lazer', totalInvest:'Total investido',
@@ -1846,23 +1239,7 @@ const TR={
     dreamFormTitle:'✨ Novo Sonho / Meta', addDreamBtn:'🚀 Adicionar Sonho',
     dreamsEmpty:'Nenhum sonho adicionado ainda.',
     archiveBtn:'🔒 Fechar e Arquivar Mês',
-    navOrc:'Orçamento', navEbook:'Ebook', navHist:'Histórico', navPlan:'Plano', navLib:'Liberdade',
-    navMenuBtn:'Menu',
-    nsTitle:'Menu', nsSub:'Mente Próspera',
-    nsLblLearn:'APRENDER', nsLblTools:'FERRAMENTAS', nsLblConfig:'CONFIGURAÇÕES',
-    nsTutT:'Tutorial Completo', nsTutS:'Aprende a usar todas as ferramentas passo a passo',
-    nsLibT:'Calculadora de Liberdade Financeira', nsLibS:'Quantos anos faltam para viveres dos rendimentos',
-    nsThemeT:'Modo Escuro', nsThemeS:'Alternar entre tema claro e escuro',
-    nsLangT:'Idioma',
-    nsInstallT:'Instalar no Telemóvel', nsInstallS:'Adicionar à tela inicial como app nativa',
-    maisTitle:'Bónus & Recursos', maisSub:'Ferramentas incluídas no teu combo',
-    maisLblAprender:'APRENDER', maisLblBonus:'BÓNUS INCLUÍDOS', maisLblApp:'APP',
-    maisTutorialT:'Tutorial Completo', maisTutorialS:'Aprende a usar todas as ferramentas passo a passo',
-    maisDiagT:'Planilha de Diagnóstico', maisDiagS:'Raio-X completo das tuas finanças · Excel / Google Sheets',
-    maisMetasT:'Pack de Templates de Metas', maisMetasS:'7 cartões de objetivos imprimíveis · PDF',
-    maisLibT:'Calculadora de Liberdade Financeira', maisLibS:'Quantos anos faltam para viveres dos rendimentos',
-    maisLandingT:'Partilhar com Amigos', maisLandingS:'Página de apresentação do combo completo',
-    maisInstallT:'Instalar no Telemóvel', maisInstallS:'Adicionar à tela inicial como app nativa',
+    navOrc:'Orçamento', navEbook:'Ebook', navHist:'Histórico', navPlan:'Plano',
     histTitle:'📅 Histórico Mensal',
     histSelectLabel:'Selecione o mês e arquive o registo atual:',
     histArchiveBtn:'🔒 Arquivar', histSection:'Registos arquivados',
@@ -1872,58 +1249,20 @@ const TR={
     splitLabel:'Dividir meta em partes iguais',
     installTitle:'Instalar App', installSub:'Acesso rápido, funciona offline.',
     ebookLoading:'A abrir o Ebook...', ebookSub:'Será redirecionado em instantes.', ebookBtn:'Abrir agora',
-    // ── Plano ──
-    planoTitle:'Plano de Investimento', planoSub:'Personalizado com base no seu orçamento',
-    planoProfile:'Perfil de Investidor',
-    riskC:'Conservador', riskM:'Moderado', riskA:'Arrojado',
-    planoSim:'Simulador de Crescimento',
-    lInicial:'Aporte inicial ($)', lMensal:'Aporte mensal ($)', lTaxa:'Taxa anual (%)', lAnos:'Período (anos)',
-    rInvestido:'Total investido', rRendimento:'Rendimento', rFinal:'Patrimônio final',
-    barCapital:'🟣 Capital aportado', barJuros:'🟢 Juros compostos',
-    planoAlloc:'Alocação Recomendada', planoMilestones:'Marcos ao Longo do Tempo',
-    mBtnPct:'% Perc.', mBtnVal:'$ Valor',
-    tipsTitle:'💡 Dicas para o Perfil',
-    milestonesYr:'a', milestonesInterest:'em juros',
-    allocLabels:{
-      conservador:['Tesouro Direto / Renda Fixa','Fundos de Baixo Risco','Reserva de Emergência (CDB)'],
-      moderado:['Renda Fixa / Tesouro','Fundos Multimercado','Ações / ETFs','FIIs (Fundos Imobiliários)'],
-      arrojado:['Ações Nacionais','Ações Internacionais / BDRs','Criptoativos','Renda Fixa (reserva)','Startups / Venture'],
-    },
-    tips:{
-      conservador:[
-        '🛡️ Mantenha 6 meses de gastos fixos em reserva de emergência antes de investir.',
-        '📊 Priorize CDBs com liquidez diária para a reserva.',
-        '📅 Títulos do Tesouro Selic protegem da inflação com baixo risco.',
-        '🔄 Reinvista os rendimentos mensalmente para acelerar os juros compostos.',
-      ],
-      moderado:[
-        '⚖️ Diversifique entre renda fixa e variável para equilibrar risco e retorno.',
-        '📈 ETFs de índice (ex: BOVA11) permitem exposição ao mercado com baixo custo.',
-        '🏢 FIIs distribuem rendimentos mensais — boa fonte de renda passiva.',
-        '🔁 Rebalanceie a carteira a cada 6 meses para manter as proporções.',
-      ],
-      arrojado:[
-        '🚀 Ativos de alto risco exigem horizonte de pelo menos 5–10 anos.',
-        '₿ Limite criptoativos a no máximo 10–15% da carteira total.',
-        '🌍 Diversificação internacional reduz risco cambial e geopolítico.',
-        '📉 Nunca invista em renda variável dinheiro que pode precisar em menos de 2 anos.',
-      ],
-    },
   },
   es:{
-    appName:'Controle Financeiro', appSub:'Gestión financiera inteligente',
+    appName:'Calculadora del Giro', appSub:'Gestión financiera inteligente',
     darkMode:'Modo Oscuro', lightMode:'Modo Claro',
-    walletTitle:'SALDO DE CUENTAS', salRest:'Salario restante:',
+    walletTitle:'SALDO TOTAL', walletFree:'Saldo libre:',
     accounts:'Mis cuentas', addAccount:'＋ Agregar cuenta',
     salaryLabel:'Salario / Renta mensual',
     distLabel:'Distribución del presupuesto',
     lFixo:'Fijo', lLazer:'Ocio', lInvest:'Inversión',
-    catLabel:'Categorías', tabFixo:'Gastos Fijos', tabParcelado:'Pagos a plazos', tabLazer:'Ocio',
+    catLabel:'Categorías', tabFixo:'Gastos Fijos', tabLazer:'Ocio',
     tabInvest:'Inversiones', tabSonhos:'Sueños',
     limitLabel:'Límite', lazerLimit:'Límite', investLimit:'Meta mínima',
     colDesc:'Descripción', colDue:'Vencimiento', colVal:'Valor',
     addFixo:'➕ Agregar gasto fijo',
-    addParcelado:'💳 Agregar compra a plazos', parceladoTitle:'💳 Compras a Plazos', colParcN:'Cuota', parceladoFooter:'Deducido del salario al marcar ✓',
     addLazer:'➕ Agregar gasto de ocio',
     addInvest:'➕ Agregar inversión',
     totalFixo:'Total gastos fijos', totalLazer:'Total ocio', totalInvest:'Total invertido',
@@ -1931,23 +1270,7 @@ const TR={
     dreamFormTitle:'✨ Nuevo Sueño / Meta', addDreamBtn:'🚀 Agregar Sueño',
     dreamsEmpty:'Ningún sueño agregado aún.',
     archiveBtn:'🔒 Cerrar y Archivar Mes',
-    navOrc:'Presupuesto', navEbook:'Ebook', navHist:'Historial', navPlan:'Plan', navLib:'Libertad',
-    navMenuBtn:'Menú',
-    nsTitle:'Menú', nsSub:'Calculadora del Giro',
-    nsLblLearn:'APRENDER', nsLblTools:'HERRAMIENTAS', nsLblConfig:'CONFIGURACIONES',
-    nsTutT:'Tutorial Completo', nsTutS:'Aprende a usar todas las herramientas paso a paso',
-    nsLibT:'Calculadora de Libertad Financiera', nsLibS:'Cuántos años faltan para vivir de tus rentas',
-    nsThemeT:'Modo Oscuro', nsThemeS:'Cambiar entre tema claro y oscuro',
-    nsLangT:'Idioma',
-    nsInstallT:'Instalar en el Celular', nsInstallS:'Agregar a la pantalla de inicio como app nativa',
-    maisTitle:'Bonos & Recursos', maisSub:'Herramientas incluidas en tu combo',
-    maisLblAprender:'APRENDER', maisLblBonus:'BONOS INCLUIDOS', maisLblApp:'APP',
-    maisTutorialT:'Tutorial Completo', maisTutorialS:'Aprende a usar todas las herramientas paso a paso',
-    maisDiagT:'Planilla de Diagnóstico', maisDiagS:'Radiografía completa de tus finanzas · Excel / Google Sheets',
-    maisMetasT:'Pack de Templates de Metas', maisMetasS:'7 tarjetas de objetivos imprimibles · PDF',
-    maisLibT:'Calculadora de Libertad Financiera', maisLibS:'Cuántos años faltan para vivir de tus rentas',
-    maisLandingT:'Compartir con Amigos', maisLandingS:'Página de presentación del combo completo',
-    maisInstallT:'Instalar en el Celular', maisInstallS:'Agregar a la pantalla de inicio como app nativa',
+    navOrc:'Presupuesto', navEbook:'Ebook', navHist:'Historial', navPlan:'Plan',
     histTitle:'📅 Historial Mensual',
     histSelectLabel:'Selecciona el mes y archiva el registro:',
     histArchiveBtn:'🔒 Archivar', histSection:'Registros archivados',
@@ -1957,58 +1280,20 @@ const TR={
     splitLabel:'Dividir meta en partes iguales',
     installTitle:'Instalar App', installSub:'Acceso rápido, funciona sin internet.',
     ebookLoading:'Abriendo el Ebook...', ebookSub:'Será redirigido en instantes.', ebookBtn:'Abrir ahora',
-    // ── Plano ──
-    planoTitle:'Plan de Inversión', planoSub:'Personalizado según tu presupuesto',
-    planoProfile:'Perfil de Inversor',
-    riskC:'Conservador', riskM:'Moderado', riskA:'Agresivo',
-    planoSim:'Simulador de Crecimiento',
-    lInicial:'Aporte inicial ($)', lMensal:'Aporte mensual ($)', lTaxa:'Tasa anual (%)', lAnos:'Período (años)',
-    rInvestido:'Total invertido', rRendimiento:'Rendimiento', rFinal:'Patrimonio final',
-    barCapital:'🟣 Capital aportado', barJuros:'🟢 Interés compuesto',
-    planoAlloc:'Asignación Recomendada', planoMilestones:'Hitos a lo Largo del Tiempo',
-    mBtnPct:'% Porc.', mBtnVal:'$ Valor',
-    tipsTitle:'💡 Consejos para el Perfil',
-    milestonesYr:'a', milestonesInterest:'en intereses',
-    allocLabels:{
-      conservador:['Bonos del Estado / Renta Fija','Fondos de Bajo Riesgo','Reserva de Emergencia (depósito)'],
-      moderado:['Renta Fija / Bonos','Fondos Mixtos','Acciones / ETFs','REITs (Fondos Inmobiliarios)'],
-      arrojado:['Acciones Nacionales','Acciones Internacionales / ADRs','Criptomonedas','Renta Fija (reserva)','Startups / Capital de Riesgo'],
-    },
-    tips:{
-      conservador:[
-        '🛡️ Mantén 6 meses de gastos fijos en reserva de emergencia antes de invertir.',
-        '📊 Prioriza depósitos a plazo con liquidez diaria para la reserva.',
-        '📅 Los bonos del gobierno protegen del riesgo con retorno estable.',
-        '🔄 Reinvierte los rendimientos mensualmente para acelerar el interés compuesto.',
-      ],
-      moderado:[
-        '⚖️ Diversifica entre renta fija y variable para equilibrar riesgo y retorno.',
-        '📈 Los ETFs de índice permiten exposición al mercado con bajo costo.',
-        '🏢 Los REITs distribuyen rendimientos mensuales — buena fuente de ingreso pasivo.',
-        '🔁 Rebalancea la cartera cada 6 meses para mantener las proporciones.',
-      ],
-      arrojado:[
-        '🚀 Los activos de alto riesgo requieren horizonte de al menos 5–10 años.',
-        '₿ Limita las criptomonedas a un máximo del 10–15% de la cartera total.',
-        '🌍 La diversificación internacional reduce el riesgo cambiario y geopolítico.',
-        '📉 Nunca inviertas en renta variable dinero que puedas necesitar en menos de 2 años.',
-      ],
-    },
   },
   en:{
-    appName:'Controle Financeiro', appSub:'Smart financial management',
+    appName:'Budget Calculator', appSub:'Smart financial management',
     darkMode:'Dark Mode', lightMode:'Light Mode',
-    walletTitle:'ACCOUNT BALANCE', salRest:'Salary left:',
+    walletTitle:'TOTAL BALANCE', walletFree:'Free balance:',
     accounts:'My accounts', addAccount:'＋ Add account',
     salaryLabel:'Monthly income',
     distLabel:'Budget distribution',
     lFixo:'Fixed', lLazer:'Leisure', lInvest:'Invest.',
-    catLabel:'Categories', tabFixo:'Fixed Expenses', tabParcelado:'Instalments', tabLazer:'Leisure',
+    catLabel:'Categories', tabFixo:'Fixed Expenses', tabLazer:'Leisure',
     tabInvest:'Investments', tabSonhos:'Dreams',
     limitLabel:'Limit', lazerLimit:'Limit', investLimit:'Minimum goal',
     colDesc:'Description', colDue:'Due date', colVal:'Amount',
     addFixo:'➕ Add fixed expense',
-    addParcelado:'💳 Add instalment purchase', parceladoTitle:'💳 Instalment Purchases', colParcN:'Instalment', parceladoFooter:'Deducted from salary on ✓',
     addLazer:'➕ Add leisure item',
     addInvest:'➕ Add investment',
     totalFixo:'Total fixed', totalLazer:'Total leisure', totalInvest:'Total invested',
@@ -2016,23 +1301,7 @@ const TR={
     dreamFormTitle:'✨ New Dream / Goal', addDreamBtn:'🚀 Add Dream',
     dreamsEmpty:'No dreams added yet.',
     archiveBtn:'🔒 Close and Archive Month',
-    navOrc:'Budget', navEbook:'Ebook', navHist:'History', navPlan:'Plan', navLib:'Freedom',
-    navMenuBtn:'Menu',
-    nsTitle:'Menu', nsSub:'Mente Próspera',
-    nsLblLearn:'LEARN', nsLblTools:'TOOLS', nsLblConfig:'SETTINGS',
-    nsTutT:'Full Tutorial', nsTutS:'Learn to use every tool step by step',
-    nsLibT:'Financial Freedom Calculator', nsLibS:'How many years until you live off your income',
-    nsThemeT:'Dark Mode', nsThemeS:'Switch between light and dark theme',
-    nsLangT:'Language',
-    nsInstallT:'Install on Phone', nsInstallS:'Add to home screen as a native app',
-    maisTitle:'Bonuses & Resources', maisSub:'Tools included in your bundle',
-    maisLblAprender:'LEARN', maisLblBonus:'INCLUDED BONUSES', maisLblApp:'APP',
-    maisTutorialT:'Full Tutorial', maisTutorialS:'Learn to use every tool step by step',
-    maisDiagT:'Diagnosis Spreadsheet', maisDiagS:'Full financial X-ray · Excel / Google Sheets',
-    maisMetasT:'Goals Templates Pack', maisMetasS:'7 printable goal cards · PDF',
-    maisLibT:'Financial Freedom Calculator', maisLibS:'How many years until you live off your income',
-    maisLandingT:'Share with Friends', maisLandingS:'Presentation page for the full bundle',
-    maisInstallT:'Install on Phone', maisInstallS:'Add to home screen as a native app',
+    navOrc:'Budget', navEbook:'Ebook', navHist:'History', navPlan:'Plan',
     histTitle:'📅 Monthly History',
     histSelectLabel:'Select month and archive current data:',
     histArchiveBtn:'🔒 Archive', histSection:'Archived records',
@@ -2042,43 +1311,6 @@ const TR={
     splitLabel:'Split goal into equal parts',
     installTitle:'Install App', installSub:'Quick access, works offline.',
     ebookLoading:'Opening Ebook...', ebookSub:'You will be redirected shortly.', ebookBtn:'Open now',
-    // ── Plano ──
-    planoTitle:'Investment Plan', planoSub:'Personalised based on your budget',
-    planoProfile:'Investor Profile',
-    riskC:'Conservative', riskM:'Moderate', riskA:'Aggressive',
-    planoSim:'Growth Simulator',
-    lInicial:'Initial deposit ($)', lMensal:'Monthly contribution ($)', lTaxa:'Annual rate (%)', lAnos:'Period (years)',
-    rInvestido:'Total invested', rRendimento:'Returns', rFinal:'Final wealth',
-    barCapital:'🟣 Capital invested', barJuros:'🟢 Compound interest',
-    planoAlloc:'Recommended Allocation', planoMilestones:'Milestones Over Time',
-    mBtnPct:'% Pct.', mBtnVal:'$ Value',
-    tipsTitle:'💡 Tips for the Profile',
-    milestonesYr:'y', milestonesInterest:'in interest',
-    allocLabels:{
-      conservador:['Government Bonds / Fixed Income','Low-Risk Funds','Emergency Fund (savings)'],
-      moderado:['Fixed Income / Bonds','Mixed Funds','Stocks / ETFs','REITs'],
-      arrojado:['Domestic Stocks','International Stocks / ETFs','Crypto','Fixed Income (reserve)','Startups / Venture Capital'],
-    },
-    tips:{
-      conservador:[
-        '🛡️ Keep 6 months of fixed expenses in an emergency fund before investing.',
-        '📊 Prioritise high-liquidity savings accounts for your reserve.',
-        '📅 Government bonds protect against inflation with minimal risk.',
-        '🔄 Reinvest earnings monthly to accelerate compound interest.',
-      ],
-      moderado:[
-        '⚖️ Diversify between fixed income and equities to balance risk and return.',
-        '📈 Index ETFs provide market exposure at low cost.',
-        '🏢 REITs distribute monthly income — a great passive income source.',
-        '🔁 Rebalance your portfolio every 6 months to maintain target allocations.',
-      ],
-      arrojado:[
-        '🚀 High-risk assets require a horizon of at least 5–10 years.',
-        '₿ Limit crypto to a maximum of 10–15% of your total portfolio.',
-        '🌍 International diversification reduces currency and geopolitical risk.',
-        '📉 Never invest money you might need within 2 years in equities.',
-      ],
-    },
   }
 };
 
@@ -2095,8 +1327,6 @@ function setLang(l){
   });
   applyTranslations();
   closeSettings();
-  syncNavSheetLang();
-  syncNavSheetTheme();
 }
 
 function applyTranslations(){
@@ -2105,14 +1335,14 @@ function applyTranslations(){
   document.documentElement.lang=lang;
   set('t-appName',T.appName); set('t-appSub',T.appSub);
   set('t-themeLabel',document.documentElement.getAttribute('data-theme')==='dark'?T.lightMode:T.darkMode);
-  set('t-walletTitle',T.walletTitle); set('t-salRest',T.salRest);
+  set('t-walletTitle',T.walletTitle); set('t-walletFree',T.walletFree);
   set('t-accounts',T.accounts);
   const addAccBtn=$('t-addAccount'); if(addAccBtn) addAccBtn.textContent=T.addAccount;
   set('t-salaryLabel',T.salaryLabel);
   set('t-distLabel',T.distLabel);
   set('t-lFixo',T.lFixo); set('t-lLazer',T.lLazer); set('t-lInvest',T.lInvest);
   set('t-catLabel',T.catLabel);
-  set('t-tabFixo',T.tabFixo); set('t-tabParcelado',T.tabParcelado||'Parcelados'); set('t-tabLazer',T.tabLazer);
+  set('t-tabFixo',T.tabFixo); set('t-tabLazer',T.tabLazer);
   set('t-tabInvest',T.tabInvest); set('t-tabSonhos',T.tabSonhos);
   set('t-limitLabel',T.limitLabel); set('t-lazerLimit',T.lazerLimit); set('t-investLimit',T.investLimit);
   set('t-colDesc',T.colDesc); set('t-colDue',T.colDue); set('t-colVal',T.colVal);
@@ -2120,30 +1350,13 @@ function applyTranslations(){
   const adf=$('t-addFixo'); if(adf) adf.textContent=T.addFixo;
   const adl=$('t-addLazer'); if(adl) adl.textContent=T.addLazer;
   const adi=$('t-addInvest'); if(adi) adi.textContent=T.addInvest;
-  set('t-totalFixo',T.totalFixo);
-  set('t-parceladoTitle',T.parceladoTitle||'💳 Compras Parceladas');
-  set('t-colParcN',T.colParcN||'Parcela');
-  set('t-parceladoFooter',T.parceladoFooter||'Debitado do salário ao dar ✓');
-  const apBtn=$('t-addParcelado'); if(apBtn) apBtn.textContent=T.addParcelado||'💳 Adicionar compra parcelada'; set('t-totalLazer',T.totalLazer); set('t-totalInvest',T.totalInvest);
+  set('t-totalFixo',T.totalFixo); set('t-totalLazer',T.totalLazer); set('t-totalInvest',T.totalInvest);
   set('t-fixoTitle',T.fixoTitle); set('t-lazerTitle',T.lazerTitle); set('t-investTitle',T.investTitle);
   set('t-dreamFormTitle',T.dreamFormTitle);
   const adbtn=$('t-addDreamBtn'); if(adbtn) adbtn.textContent=T.addDreamBtn;
   set('t-dreamsEmpty',T.dreamsEmpty);
   const arch=$('t-archiveBtn'); if(arch) arch.textContent=T.archiveBtn;
-  set('t-navOrc',T.navOrc); set('t-navEbook',T.navEbook); set('t-navHist',T.navHist); set('t-navPlan',T.navPlan); set('t-navLib',T.navLib||'Liberdade');
-  const navInstEl=document.getElementById('t-navInstall'); if(navInstEl) navInstEl.textContent=T.navInstall||'Instalar'; set('t-navMenuBtn',T.navMenuBtn||'Menu');
-  // Nav sheet strings
-  const nsf={
-    'ns-title':T.nsTitle,'ns-sub':T.nsSub,
-    'ns-lbl-learn':T.nsLblLearn,'ns-lbl-tools':T.nsLblTools,'ns-lbl-config':T.nsLblConfig,
-    'ns-tut-t':T.nsTutT,'ns-tut-s':T.nsTutS,
-    'ns-lib-t':T.nsLibT,'ns-lib-s':T.nsLibS,
-    'ns-theme-s':T.nsThemeS,'ns-lang-t':T.nsLangT,
-    'ns-install-t':T.nsInstallT,'ns-install-s':T.nsInstallS,
-  };
-  Object.entries(nsf).forEach(([id,v])=>{ const e=document.getElementById(id); if(e&&v) e.textContent=v; });
-  syncNavSheetTheme(); syncNavSheetLang();
-
+  set('t-navOrc',T.navOrc); set('t-navEbook',T.navEbook); set('t-navHist',T.navHist); set('t-navPlan',T.navPlan);
   set('t-histTitle',T.histTitle); set('t-histSelectLabel',T.histSelectLabel);
   const hab=$('t-histArchiveBtn'); if(hab) hab.textContent=T.histArchiveBtn;
   set('t-histSection',T.histSection);
@@ -2156,19 +1369,6 @@ function applyTranslations(){
   const ebBtn=$('t-ebookBtn'); if(ebBtn) ebBtn.textContent=T.ebookBtn;
   // item placeholders
   document.querySelectorAll('.iname').forEach(el=>el.placeholder=T.colDesc+'...');
-  // ── Plano page static strings ──
-  set('t-planoTitle',T.planoTitle); set('t-planoSub',T.planoSub);
-  set('t-planoProfile',T.planoProfile);
-  set('t-riskC',T.riskC); set('t-riskM',T.riskM); set('t-riskA',T.riskA);
-  set('t-planoSim',T.planoSim);
-  set('t-lInicial',T.lInicial); set('t-lMensal',T.lMensal); set('t-lTaxa',T.lTaxa); set('t-lAnos',T.lAnos);
-  set('t-rInvestido',T.rInvestido); set('t-rRendimento',T.rRendimento||T.rRendimiento); set('t-rFinal',T.rFinal);
-  set('t-barCapital',T.barCapital); set('t-barJuros',T.barJuros);
-  set('t-planoAlloc',T.planoAlloc); set('t-planoMilestones',T.planoMilestones);
-  const mpp=$('t-mBtnPct'); if(mpp) mpp.textContent=T.mBtnPct;
-  const mpv=$('t-mBtnVal'); if(mpv) mpv.textContent=T.mBtnVal;
-  // re-render dynamic plano content if visible
-  if(currentPage==='plano'){ renderPlanoAlloc(); renderPlanoTips(); renderMilestones(safe($('plano-inicial').value),safe($('plano-mensal').value),(Math.pow(1+safe($('plano-taxa').value)/100,1/12)-1),parseInt($('plano-anos').value)||10); }
 }
 
 // ─────────────────────────────────────────
@@ -2184,25 +1384,7 @@ function defaultItems(){
   }
 }
 
-window.onload = function(){
-  // Check Firebase session — redirect to login.html if not authenticated
-  (function(){
-    try {
-      if(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0){
-        var user = firebase.auth().currentUser;
-        if(!user){
-          // Check localStorage for cached session key
-          var hasSession = Object.keys(localStorage).some(function(k){
-            return k.indexOf('firebase:authUser:') === 0;
-          });
-          if(!hasSession){
-            window.location.href = 'login.html';
-            return;
-          }
-        }
-      }
-    } catch(e) {}
-  })();
+window.onload=()=>{
   // theme
   const savedTheme=localStorage.getItem('cvTheme')||'light';
   applyTheme(savedTheme);
@@ -2218,28 +1400,21 @@ window.onload = function(){
   if(d.cfg.pctInvest) $('pctInvest').value=d.cfg.pctInvest;
   mode=d.cfg.mode||localStorage.getItem('cvMode')||'pct';
 
-  // mode buttons (now in the distribution card, light background)
-  const pBtnI=$('mBtn-pct'), vBtnI=$('mBtn-val');
-  if(pBtnI){ pBtnI.style.background=mode==='pct'?'#6d28d9':'transparent'; pBtnI.style.color=mode==='pct'?'#fff':'var(--txt3)'; }
-  if(vBtnI){ vBtnI.style.background=mode==='val'?'#6d28d9':'transparent'; vBtnI.style.color=mode==='val'?'#fff':'var(--txt3)'; }
+  // mode buttons
+  $('mBtn-pct').style.background=mode==='pct'?'rgba(255,255,255,.3)':'transparent';
+  $('mBtn-pct').style.color=mode==='pct'?'#fff':'rgba(255,255,255,.4)';
+  $('mBtn-val').style.background=mode==='val'?'rgba(255,255,255,.3)':'transparent';
+  $('mBtn-val').style.color=mode==='val'?'#fff':'rgba(255,255,255,.4)';
 
-  // fractions select state + hide manual area if auto-frac was saved
-  if(d.fracs.lazer.n>0){
-    $('fracLazer').value=d.fracs.lazer.n;
-    const ma=$('manualAreaLazer'); if(ma) ma.style.display='none';
-  }
-  if(d.fracs.invest.n>0){
-    $('fracInvest').value=d.fracs.invest.n;
-    const ma=$('manualAreaInvest'); if(ma) ma.style.display='none';
-  }
+  // fractions select state
+  if(d.fracs.lazer.n>0)   $('fracLazer').value=d.fracs.lazer.n;
+  if(d.fracs.invest.n>0)  $('fracInvest').value=d.fracs.invest.n;
 
   // wallet
   renderWallet();
 
   // items
   loadItems(); defaultItems();
-  // parcelados
-  loadParcelados();
 
   // sonhos
   renderDreams();
@@ -2252,365 +1427,7 @@ window.onload = function(){
 
   // active tab style
   switchTab('fixo');
-
-  // restore last active page (PWA fix — ebook never saved, so we always land on orcamento or last real page)
-  const savedPage = localStorage.getItem('cvPage') || 'orcamento';
-  if(savedPage && savedPage !== 'ebook' && $('page-'+savedPage)){
-    switchPage(savedPage);
-  }
 };
-
-
-// ─────────────────────────────────────────
-//  PLANO DE INVESTIMENTO
-// ─────────────────────────────────────────
-let riskProfile = 'moderado';
-
-// PROFILES now only stores numeric/style data; text comes from TR[lang]
-function getProfileText(r){
-  const T=TR[lang]||TR.pt;
-  return {
-    label: T['riskC riskM riskA'.split(' ')[['conservador','moderado','arrojado'].indexOf(r)]],
-    allocLabels: T.allocLabels[r],
-    tips: T.tips[r],
-    tipsTitle: T.tipsTitle,
-  };
-}
-const PROFILES = {
-  conservador: {
-    label: 'Conservador 🛡️',
-    taxa: 7,
-    color: '#2563eb',
-    alloc: [
-      { label: 'Tesouro Direto / Renda Fixa', pct: 60, color: '#2563eb', bg: '#dbeafe' },
-      { label: 'Fundos de Baixo Risco',        pct: 25, color: '#0891b2', bg: '#cffafe' },
-      { label: 'Reserva de Emergência (CDB)',   pct: 15, color: '#059669', bg: '#d1fae5' },
-    ],
-    tips: [
-      '🛡️ Mantenha 6 meses de gastos fixos em reserva de emergência antes de investir.',
-      '📊 Priorize CDBs com liquidez diária para a reserva.',
-      '📅 Títulos do Tesouro Selic protegem da inflação com baixo risco.',
-      '🔄 Reinvista os rendimentos mensalmente para acelerar os juros compostos.',
-    ]
-  },
-  moderado: {
-    label: 'Moderado ⚖️',
-    taxa: 12,
-    color: '#6d28d9',
-    alloc: [
-      { label: 'Renda Fixa / Tesouro',   pct: 40, color: '#6d28d9', bg: '#ede9fe' },
-      { label: 'Fundos Multimercado',     pct: 30, color: '#d97706', bg: '#fef3c7' },
-      { label: 'Ações / ETFs',            pct: 20, color: '#059669', bg: '#d1fae5' },
-      { label: 'FIIs (Fundos Imobiliários)', pct: 10, color: '#0891b2', bg: '#cffafe' },
-    ],
-    tips: [
-      '⚖️ Diversifique entre renda fixa e variável para equilibrar risco e retorno.',
-      '📈 ETFs de índice (ex: BOVA11) permitem exposição ao mercado com baixo custo.',
-      '🏢 FIIs distribuem rendimentos mensais — boa fonte de renda passiva.',
-      '🔁 Rebalanceie a carteira a cada 6 meses para manter as proporções.',
-    ]
-  },
-  arrojado: {
-    label: 'Arrojado 🚀',
-    taxa: 18,
-    color: '#dc2626',
-    alloc: [
-      { label: 'Ações Nacionais',        pct: 35, color: '#dc2626', bg: '#fee2e2' },
-      { label: 'Ações Internacionais / BDRs', pct: 25, color: '#d97706', bg: '#fef3c7' },
-      { label: 'Criptoativos',           pct: 15, color: '#8b5cf6', bg: '#ede9fe' },
-      { label: 'Renda Fixa (reserva)',   pct: 15, color: '#059669', bg: '#d1fae5' },
-      { label: 'Startups / Venture',     pct: 10, color: '#0891b2', bg: '#cffafe' },
-    ],
-    tips: [
-      '🚀 Ativos de alto risco exigem horizonte de pelo menos 5–10 anos.',
-      '₿ Limite criptoativos a no máximo 10–15% da carteira total.',
-      '🌍 Diversificação internacional reduz risco cambial e geopolítico.',
-      '📉 Nunca invista em renda variável dinheiro que pode precisar em menos de 2 anos.',
-    ]
-  }
-};
-
-function setRisk(r){
-  riskProfile = r;
-  const d = getData(); d.cfg.riskProfile = r; save(d);
-  document.querySelectorAll('.risk-btn').forEach(b=>{
-    b.style.background = 'var(--surf2)';
-    b.style.color = 'var(--txt2)';
-    b.style.borderColor = 'var(--bdr)';
-  });
-  const active = $('risk-'+r);
-  if(active){
-    active.style.background = PROFILES[r].color;
-    active.style.color = '#fff';
-    active.style.borderColor = PROFILES[r].color;
-  }
-  // sync taxa sugerida
-  const taxaEl = $('plano-taxa');
-  if(taxaEl && (!taxaEl.dataset.userEdited)) taxaEl.value = PROFILES[r].taxa;
-  calcPlano();
-  renderPlanoAlloc();
-  renderPlanoTips();
-}
-
-function calcPlano(){
-  const inicial  = safe($('plano-inicial').value);
-  const mensal   = safe($('plano-mensal').value);
-  const taxaAnual= safe($('plano-taxa').value) / 100;
-  const anos     = Math.max(1, parseInt($('plano-anos').value)||1);
-  const meses    = anos * 12;
-  const taxaMes  = Math.pow(1 + taxaAnual, 1/12) - 1;
-
-  // Juros compostos: FV = PV*(1+r)^n + PMT * [((1+r)^n - 1) / r]
-  let fv = inicial * Math.pow(1 + taxaMes, meses);
-  if(taxaMes > 0){
-    fv += mensal * ((Math.pow(1 + taxaMes, meses) - 1) / taxaMes);
-  } else {
-    fv += mensal * meses;
-  }
-
-  const totalInvestido = inicial + mensal * meses;
-  const rendimento = Math.max(0, fv - totalInvestido);
-
-  const rI = $('plano-r-investido'); if(rI) rI.textContent = fmtM(totalInvestido);
-  const rR = $('plano-r-rendimento'); if(rR) rR.textContent = fmtM(rendimento);
-  const rF = $('plano-r-final'); if(rF) rF.textContent = fmtM(fv);
-
-  // bar proportions
-  const pctInv = fv > 0 ? (totalInvestido / fv * 100) : 50;
-  const barI = $('plano-bar-inv'); if(barI) barI.style.width = pctInv.toFixed(1)+'%';
-  const barR = $('plano-bar-rend'); if(barR) barR.style.width = (100-pctInv).toFixed(1)+'%';
-
-  renderMilestones(inicial, mensal, taxaMes, anos);
-}
-
-function renderMilestones(inicial, mensal, taxaMes, totalAnos){
-  const container = $('plano-milestones'); if(!container) return;
-  container.innerHTML = '';
-  const checkpoints = [1, 2, 5, 10, 15, 20, 30].filter(y => y <= totalAnos+1);
-  if(!checkpoints.includes(totalAnos)) checkpoints.push(totalAnos);
-  checkpoints.sort((a,b)=>a-b);
-
-  checkpoints.forEach(anos=>{
-    const n = anos * 12;
-    let fv = inicial * Math.pow(1+taxaMes, n);
-    if(taxaMes > 0) fv += mensal * ((Math.pow(1+taxaMes,n)-1)/taxaMes);
-    else fv += mensal * n;
-    const inv = inicial + mensal * n;
-    const rend = Math.max(0, fv - inv);
-    const isLast = anos === checkpoints[checkpoints.length-1];
-
-    const row = document.createElement('div');
-    row.className = 'flex items-center gap-3 py-2 rounded-xl px-3 transition-all';
-    row.style = isLast
-      ? 'background:linear-gradient(135deg,#4c1d95,#6d28d9);'
-      : 'background:var(--surf2);border:1px solid var(--bdr);';
-    row.innerHTML = `
-      <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-black flex-shrink-0"
-           style="background:${isLast?'rgba(255,255,255,.2)':'var(--bdr)'};color:${isLast?'#fff':'var(--txt3)'};">
-        ${anos}${(TR[lang]||TR.pt).milestonesYr}
-      </div>
-      <div class="flex-1 min-w-0">
-        <div class="text-sm font-black ${isLast?'text-white':''}">
-          ${fmtM(fv)}
-        </div>
-        <div class="text-xs ${isLast?'text-white/60':''}">
-          +${fmtM(rend)} ${(TR[lang]||TR.pt).milestonesInterest}
-        </div>
-      </div>
-      <div class="text-xs font-bold flex-shrink-0 ${isLast?'text-white/80':''}">
-        ${rend>0?'×'+( fv/Math.max(inv,1) ).toFixed(1):''}
-      </div>`;
-    container.appendChild(row);
-  });
-}
-
-function renderPlanoAlloc(){
-  const container = $('plano-alloc'); if(!container) return;
-  const p = PROFILES[riskProfile];
-  const pt = getProfileText(riskProfile);
-  container.innerHTML = '';
-  p.alloc.forEach((a,i)=>{
-    const label = (pt.allocLabels && pt.allocLabels[i]) ? pt.allocLabels[i] : a.label;
-    const row = document.createElement('div');
-    row.className = 'flex items-center gap-3';
-    row.innerHTML = `
-      <div class="flex-1">
-        <div class="flex justify-between items-center mb-1">
-          <span class="text-xs font-bold" style="color:var(--txt);">${label}</span>
-          <span class="text-xs font-black" style="color:${a.color};">${a.pct}%</span>
-        </div>
-        <div class="h-1.5 rounded-full overflow-hidden" style="background:var(--bdr);">
-          <div class="h-full rounded-full transition-all" style="width:${a.pct}%;background:${a.color};"></div>
-        </div>
-      </div>`;
-    container.appendChild(row);
-  });
-}
-
-function renderPlanoTips(){
-  const container = $('plano-tips'); if(!container) return;
-  const p = PROFILES[riskProfile];
-  const pt = getProfileText(riskProfile);
-  const profileLabel = pt.label || p.label;
-  const tips = (pt.tips && pt.tips.length) ? pt.tips : p.tips;
-  const tipsTitle = pt.tipsTitle || '💡 Dicas para o Perfil';
-  container.style.background = p.bg || '#ede9fe';
-  container.style.borderColor = p.color;
-  container.innerHTML = `
-    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:${p.color};">
-      ${tipsTitle} ${profileLabel}
-    </div>
-    <div class="flex flex-col gap-2">
-      ${tips.map(t=>`
-        <div class="flex gap-2 items-start text-xs leading-relaxed" style="color:var(--txt2);">
-          <span class="flex-shrink-0 mt-0.5">•</span><span>${t}</span>
-        </div>`).join('')}
-    </div>`;
-}
-
-function renderPlano(){
-  const d = getData();
-  // restore risk profile
-  if(d.cfg.riskProfile) riskProfile = d.cfg.riskProfile;
-
-  // sync aporte mensal with invest meta from budget
-  const sal  = safe($('salario').value);
-  let pI;
-  if(mode==='pct') pI = Math.max(0, Math.min(100, safe($('pctInvest').value)));
-  else pI = sal > 0 ? safe($('pctInvest').value)/sal*100 : 0;
-  const mI = sal * pI / 100;
-  if(mI > 0 && !$('plano-mensal').dataset.userEdited){
-    $('plano-mensal').value = fmt(mI);
-  }
-
-  // set taxa from profile if not user-edited
-  if(!$('plano-taxa').dataset.userEdited){
-    $('plano-taxa').value = PROFILES[riskProfile].taxa;
-  }
-
-  setRisk(riskProfile);
-  calcPlano();
-}
-
-// mark user-edited on manual input
-['plano-taxa','plano-mensal','plano-inicial','plano-anos'].forEach(id=>{
-  document.addEventListener('DOMContentLoaded',()=>{
-    const el = $(id);
-    if(el) el.addEventListener('input',()=>{ el.dataset.userEdited='1'; });
-  });
-});
-
 </script>
-
-<!-- ══════════════════════════════════════
-     NAV SHEET — Menu lateral
-══════════════════════════════════════ -->
-<div id="navSheetOverlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);"
-     onclick="closeNavSheet()">
-  <div id="navSheet" onclick="event.stopPropagation()" style="position:absolute;bottom:0;left:0;right:0;border-radius:24px 24px 0 0;background:var(--surf);max-height:85vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0);animation:nsSlideUp .28s cubic-bezier(.32,.72,0,1)">
-
-    <!-- handle -->
-    <div class="w-10 h-1 rounded-full mx-auto mt-4 mb-2" style="background:var(--bdr2,#cbd5e1);"></div>
-
-    <!-- header -->
-    <div class="px-5 py-3 flex items-center justify-between" style="border-bottom:1px solid var(--bdr);">
-      <div>
-        <div class="text-base font-black" style="color:var(--txt);" id="ns-title">Menu</div>
-        <div class="text-xs mt-0.5" style="color:var(--txt3);" id="ns-sub">Mente Próspera</div>
-      </div>
-      <button onclick="closeNavSheet()" class="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold"
-              style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt3);">✕</button>
-    </div>
-
-    <div class="px-4 py-3 flex flex-col gap-2">
-
-      <!-- APRENDER -->
-      <div class="ns-section-label" id="ns-lbl-learn" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);padding:8px 0 4px;">APRENDER</div>
-
-      <a href="tutorial.html" class="ns-row" onclick="closeNavSheet()">
-        <div class="ns-icon" style="background:#ede9fe;">🎓</div>
-        <div class="ns-info">
-          <div class="ns-row-title" id="ns-tut-t" style="color:var(--txt);">Tutorial Completo</div>
-          <div class="ns-row-sub" id="ns-tut-s" style="color:var(--txt3);">Aprende a usar todas as ferramentas passo a passo</div>
-        </div>
-        <span style="color:var(--txt3);font-size:16px;">›</span>
-      </a>
-
-      <!-- CONFIGURAÇÕES -->
-      <div class="ns-section-label" id="ns-lbl-config" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);padding:8px 0 4px;">CONFIGURAÇÕES</div>
-
-      <!-- Theme toggle -->
-      <button class="ns-row" onclick="toggleTheme()" style="background:none;border:none;cursor:pointer;width:100%;text-align:left;">
-        <div class="ns-icon" style="background:var(--surf2);" id="ns-theme-icon">🌙</div>
-        <div class="ns-info">
-          <div class="ns-row-title" id="ns-theme-t" style="color:var(--txt);">Modo Escuro</div>
-          <div class="ns-row-sub" id="ns-theme-s" style="color:var(--txt3);">Alternar entre tema claro e escuro</div>
-        </div>
-        <div id="ns-theme-toggle"
-             class="flex-shrink-0 w-10 h-6 rounded-full relative transition-all"
-             style="background:#6d28d9;">
-          <div id="ns-toggle-ball" class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-white shadow transition-all"></div>
-        </div>
-      </button>
-
-      <!-- Language -->
-      <div class="ns-row" style="cursor:default;flex-direction:column;align-items:stretch;gap:10px;">
-        <div class="flex items-center gap-3">
-          <div class="ns-icon" style="background:var(--surf2);">🌍</div>
-          <div class="ns-info">
-            <div class="ns-row-title" id="ns-lang-t" style="color:var(--txt);">Idioma</div>
-            <div class="ns-row-sub" style="color:var(--txt3);">PT · ES · EN</div>
-          </div>
-        </div>
-        <div class="flex gap-2 pl-1">
-          <button onclick="setLang('pt')" id="ns-lbtn-pt"
-                  class="flex-1 py-2 rounded-xl text-xs font-bold border transition-all"
-                  style="background:#6d28d9;color:#fff;border-color:#6d28d9;">🇧🇷 PT</button>
-          <button onclick="setLang('es')" id="ns-lbtn-es"
-                  class="flex-1 py-2 rounded-xl text-xs font-bold border transition-all"
-                  style="background:var(--surf2);color:var(--txt2);border-color:var(--bdr);">🌎 ES</button>
-          <button onclick="setLang('en')" id="ns-lbtn-en"
-                  class="flex-1 py-2 rounded-xl text-xs font-bold border transition-all"
-                  style="background:var(--surf2);color:var(--txt2);border-color:var(--bdr);">🇺🇸 EN</button>
-        </div>
-      </div>
-
-      <!-- Install -->
-      <button class="ns-row" onclick="openInstallModal();closeNavSheet()" style="background:none;border:none;cursor:pointer;width:100%;text-align:left;">
-        <div class="ns-icon" style="background:#ede9fe;">📲</div>
-        <div class="ns-info">
-          <div class="ns-row-title" id="ns-install-t" style="color:var(--txt);">Instalar no Telemóvel</div>
-          <div class="ns-row-sub" id="ns-install-s" style="color:var(--txt3);">Adicionar à tela inicial como app nativa</div>
-        </div>
-        <span style="color:var(--txt3);font-size:16px;">›</span>
-      </button>
-
-    </div>
-    <div style="height:calc(env(safe-area-inset-bottom,0px) + 16px);"></div>
-  </div>
-</div>
-
-<style>
-/* ── Nav sheet styles ── */
-#navSheet{animation:slideUp .28s cubic-bezier(.32,.72,0,1)}
-.ns-row{
-  display:flex;align-items:center;gap:12px;
-  padding:12px 14px;border-radius:16px;
-  background:var(--surf2);border:1px solid var(--bdr);
-  transition:all .15s;text-decoration:none;
-}
-.ns-row:hover,.ns-row:active{border-color:#6d28d9;background:#ede9fe}
-.ns-icon{
-  width:40px;height:40px;border-radius:12px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:20px;
-}
-.ns-info{flex:1;min-width:0}
-.ns-row-title{font-size:13px;font-weight:700;margin-bottom:1px}
-.ns-row-sub{font-size:11px;color:var(--txt3);line-height:1.4}
-</style>
-
-
-
-<script src="auth.js"></script>
 </body>
 </html>
