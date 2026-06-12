@@ -193,25 +193,31 @@ body{
 </head>
 <body style="background:#f1f5f9;min-height:100vh;">
 <script>
-// Instantly hide login screen if Firebase already has a session cached
-// (avoids the ~400ms flash before onAuthStateChanged fires)
+// Auth screen management — runs before everything else
 (function(){
   try {
-    // Firebase stores its auth state under keys starting with "firebase:authUser:"
+    var screen = document.getElementById('auth-screen');
+    if(!screen) return;
+    // If Firebase config not filled → run without auth
+    if(typeof FIREBASE_CONFIG === 'undefined' ||
+       !FIREBASE_CONFIG.apiKey ||
+       FIREBASE_CONFIG.apiKey === 'SUBSTITUI_AQUI'){
+      screen.style.display = 'none'; // no auth needed
+      return;
+    }
+    // Firebase IS configured — check for cached session
     var hasSession = Object.keys(localStorage).some(function(k){
       return k.indexOf('firebase:authUser:') === 0;
     });
-    if(hasSession){
-      // hide immediately — auth.js will verify and show app, or re-show login if expired
-      var s = document.getElementById('auth-screen');
-      if(s) s.style.display = 'none';
-    }
+    // If session cached, hide immediately (auth.js will verify)
+    // If no session, show auth screen
+    screen.style.display = hasSession ? 'none' : 'flex';
   } catch(e){}
 })();
 </script>
 
 <!-- AUTH SCREEN -->
-<div id="auth-screen" style="display:flex;">
+<div id="auth-screen" style="display:none;">
   <div class="auth-card">
     <div class="auth-logo">
       <img src="icons/icon-192.png" alt="" onerror="this.parentElement.innerHTML='&#x1F4B0;'">
@@ -1772,18 +1778,14 @@ async function triggerInstall(){
 // ── Mais Sheet ────────────────────────────────────────────────────
 function openNavSheet(){
   var ov = $('navSheetOverlay');
-  ov.style.display = 'flex';
-  ov.style.alignItems = 'flex-end';
-  ov.style.justifyContent = 'center';
+  if(!ov) return;
+  ov.style.cssText = 'display:flex;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;';
   syncNavSheetLang();
   syncNavSheetTheme();
 }
 function closeNavSheet(){
-  $('navSheetOverlay').style.display = 'none';
-}
-function goToLiberdade(){
-  localStorage.setItem('cvPage','orcamento'); // don't save liberdade as app page
-  window.location.href='calculadora-liberdade-financeira.html';
+  var ov = $('navSheetOverlay');
+  if(ov) ov.style.display = 'none';
 }
 // keep lang buttons in sheet in sync
 function syncNavSheetLang(){
@@ -2556,12 +2558,9 @@ function renderPlano(){
 <!-- ══════════════════════════════════════
      NAV SHEET — Menu lateral
 ══════════════════════════════════════ -->
-<div id="navSheetOverlay" class="fixed inset-0 z-[400]" style="display:none;"
-     style="background:rgba(0,0,0,.55);backdrop-filter:blur(4px);"
+<div id="navSheetOverlay" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);"
      onclick="closeNavSheet()">
-  <div id="navSheet" onclick="event.stopPropagation()"
-       class="absolute bottom-0 left-0 right-0 rounded-t-3xl"
-       style="background:var(--surf);max-height:88vh;overflow-y:auto;">
+  <div id="navSheet" onclick="event.stopPropagation()" style="position:absolute;bottom:0;left:0;right:0;border-radius:24px 24px 0 0;background:var(--surf);max-height:85vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0);animation:nsSlideUp .28s cubic-bezier(.32,.72,0,1)">
 
     <!-- handle -->
     <div class="w-10 h-1 rounded-full mx-auto mt-4 mb-2" style="background:var(--bdr2,#cbd5e1);"></div>
