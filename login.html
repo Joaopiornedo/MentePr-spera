@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Entrar — Mente Próspera</title>
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="firebase-config.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#0d0a1a 0%,#1a0f3a 50%,#0d1a35 100%);
+  padding:20px;-webkit-font-smoothing:antialiased;
+}
+input,button{font-family:inherit}
+
+.card{
+  width:100%;max-width:380px;
+  background:rgba(255,255,255,.07);
+  backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:24px;padding:36px 28px 32px;
+  box-shadow:0 32px 80px rgba(0,0,0,.5);
+}
+.logo{
+  width:52px;height:52px;border-radius:14px;overflow:hidden;
+  background:linear-gradient(135deg,#6d28d9,#8b5cf6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;margin:0 auto 16px;
+}
+.logo img{width:100%;height:100%;object-fit:cover;border-radius:14px}
+h1{font-size:20px;font-weight:900;color:#fff;text-align:center;margin-bottom:4px}
+.sub{font-size:12px;color:rgba(255,255,255,.4);text-align:center;margin-bottom:24px}
+
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10px;font-weight:700;color:rgba(255,255,255,.45);
+  margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase}
+.field input{
+  width:100%;background:rgba(255,255,255,.08);
+  border:1.5px solid rgba(255,255,255,.15);border-radius:10px;
+  padding:12px 14px;font-size:15px;color:#fff;outline:none;transition:border-color .15s;
+}
+.field input:focus{border-color:#8b5cf6;background:rgba(255,255,255,.12)}
+.field input::placeholder{color:rgba(255,255,255,.2)}
+
+.btn{
+  width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;
+  font-size:15px;font-weight:800;margin-top:6px;transition:opacity .15s;
+}
+.btn:hover{opacity:.88}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.err{
+  display:none;border-radius:10px;padding:10px 14px;
+  font-size:12px;font-weight:600;margin-bottom:12px;border:1px solid;
+}
+.err.e{background:#fee2e2;color:#dc2626;border-color:#fca5a5}
+.err.ok{background:#d1fae5;color:#059669;border-color:#6ee7b7}
+
+.divider{height:1px;background:rgba(255,255,255,.08);margin:18px 0}
+.link-row{text-align:center;font-size:12px;color:rgba(255,255,255,.35)}
+.link-row span{color:#8b5cf6;font-weight:700;cursor:pointer}
+.link-row span:hover{color:#a78bfa}
+.reset-row{text-align:center;font-size:12px;margin-top:8px}
+.reset-row span{color:rgba(255,255,255,.3);cursor:pointer}
+.reset-row span:hover{color:#8b5cf6}
+
+/* hidden utility */
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <img src="icons/icon-192.png" alt="" onerror="this.parentElement.innerHTML='💰'">
+  </div>
+  <h1 id="ttl">Entrar</h1>
+  <p class="sub" id="sub">A tua conta Mente Próspera</p>
+
+  <div class="err" id="err"></div>
+
+  <!-- Name (register only) -->
+  <div class="field hidden" id="name-row">
+    <label>Nome</label>
+    <input type="text" id="inp-name" placeholder="Como te chamas?" autocomplete="name">
+  </div>
+
+  <div class="field">
+    <label>Email</label>
+    <input type="email" id="inp-email" placeholder="email@exemplo.com" autocomplete="email">
+  </div>
+
+  <div class="field">
+    <label>Senha</label>
+    <input type="password" id="inp-pass" placeholder="Mínimo 6 caracteres" autocomplete="current-password">
+  </div>
+
+  <!-- Confirm pass (register only) -->
+  <div class="field hidden" id="pass2-row">
+    <label>Confirmar senha</label>
+    <input type="password" id="inp-pass2" placeholder="Repete a senha" autocomplete="new-password">
+  </div>
+
+  <button class="btn" id="btn" onclick="submit()">Entrar</button>
+
+  <div class="reset-row hidden" id="reset-row">
+    <span onclick="resetPass()">Esqueci a senha</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="link-row" id="link-row">
+    Não tens conta? <span onclick="setMode('register')">Criar agora</span>
+  </div>
+</div>
+
+<!-- Firebase compat SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ── Init ──────────────────────────────────────────────────────
+var app, auth, db;
+try {
+  app  = firebase.initializeApp(window.FIREBASE_CONFIG);
+  auth = firebase.auth();
+  db   = firebase.firestore();
+} catch(e) {
+  // Firebase config missing → go straight to app
+  window.location.href = 'index.html';
+}
+
+var mode = 'login'; // 'login' | 'register'
+
+// If already logged in → redirect to app
+auth.onAuthStateChanged(function(user) {
+  if (user) window.location.href = 'index.html';
+});
+
+// ── Mode switch ───────────────────────────────────────────────
+function setMode(m) {
+  mode = m;
+  clearErr();
+  var isReg = m === 'register';
+  toggle('name-row',  isReg);
+  toggle('pass2-row', isReg);
+  toggle('reset-row', !isReg);
+  document.getElementById('ttl').textContent  = isReg ? 'Criar conta'  : 'Entrar';
+  document.getElementById('sub').textContent  = isReg ? 'Junta-te à Mente Próspera' : 'A tua conta Mente Próspera';
+  document.getElementById('btn').textContent  = isReg ? 'Criar conta'  : 'Entrar';
+  document.getElementById('link-row').innerHTML = isReg
+    ? 'Já tens conta? <span onclick="setMode(\'login\')">Entrar</span>'
+    : 'Não tens conta? <span onclick="setMode(\'register\')">Criar agora</span>';
+  document.getElementById(isReg ? 'inp-name' : 'inp-email').focus();
+}
+
+function toggle(id, show) {
+  var el = document.getElementById(id);
+  if (el) el.className = 'field' + (show ? '' : ' hidden');
+}
+
+// ── Submit ────────────────────────────────────────────────────
+function submit() {
+  if (mode === 'login') doLogin();
+  else doRegister();
+}
+
+function doLogin() {
+  var email = val('inp-email');
+  var pass  = val('inp-pass');
+  if (!email || !pass) return showErr('Preenche o email e a senha.');
+  setLoading(true);
+  auth.signInWithEmailAndPassword(email, pass)
+    .then(function() { window.location.href = 'index.html'; })
+    .catch(function(e) { showErr(fbMsg(e.code)); setLoading(false); });
+}
+
+function doRegister() {
+  var name  = val('inp-name');
+  var email = val('inp-email');
+  var pass  = val('inp-pass');
+  var pass2 = val('inp-pass2');
+  if (!email || !pass) return showErr('Preenche o email e a senha.');
+  if (pass.length < 6)  return showErr('A senha deve ter pelo menos 6 caracteres.');
+  if (pass !== pass2)   return showErr('As senhas não coincidem.');
+  setLoading(true);
+  auth.createUserWithEmailAndPassword(email, pass)
+    .then(function(cred) {
+      var tasks = [];
+      if (name) tasks.push(cred.user.updateProfile({ displayName: name }));
+      tasks.push(db.collection('users_public').doc(cred.user.uid).set({
+        uid: cred.user.uid, email: email, displayName: name || '',
+        registeredAt: firebase.firestore.FieldValue.serverTimestamp(),
+        lastLoginAt:  firebase.firestore.FieldValue.serverTimestamp(),
+      }));
+      return Promise.all(tasks);
+    })
+    .then(function() { window.location.href = 'index.html'; })
+    .catch(function(e) { showErr(fbMsg(e.code)); setLoading(false); });
+}
+
+function resetPass() {
+  var email = val('inp-email');
+  if (!email) { document.getElementById('inp-email').focus(); return showErr('Introduz o teu email primeiro.'); }
+  auth.sendPasswordResetEmail(email)
+    .then(function() { showErr('✅ Email de recuperação enviado!', true); })
+    .catch(function(e) { showErr(fbMsg(e.code)); });
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function val(id) { return (document.getElementById(id) || {value:''}).value.trim(); }
+function setLoading(on) {
+  var b = document.getElementById('btn');
+  b.disabled = on; b.textContent = on ? '...' : (mode === 'register' ? 'Criar conta' : 'Entrar');
+}
+function showErr(msg, isOk) {
+  var el = document.getElementById('err');
+  el.textContent = msg; el.style.display = 'block';
+  el.className = 'err ' + (isOk ? 'ok' : 'e');
+}
+function clearErr() { var el = document.getElementById('err'); el.style.display = 'none'; }
+function fbMsg(code) {
+  return ({
+    'auth/email-already-in-use':   'Este email já está registado.',
+    'auth/invalid-email':          'Email inválido.',
+    'auth/user-not-found':         'Email não encontrado.',
+    'auth/wrong-password':         'Senha incorrecta.',
+    'auth/invalid-credential':     'Email ou senha incorrectos.',
+    'auth/too-many-requests':      'Demasiadas tentativas. Tenta mais tarde.',
+    'auth/network-request-failed': 'Sem ligação à internet.',
+    'auth/weak-password':          'Senha demasiado fraca.',
+  })[code] || ('Erro: ' + code);
+}
+
+// Enter key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') submit();
+});
+
+// Init: show reset-row, set login mode
+setMode('login');
+</script>
+</body>
+</html>

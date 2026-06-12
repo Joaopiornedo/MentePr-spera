@@ -41,17 +41,11 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <!-- Firebase config -->
 <script src="firebase-config.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  if (typeof window.FIREBASE_CONFIG === 'undefined' ||
-      !window.FIREBASE_CONFIG.apiKey ||
-      window.FIREBASE_CONFIG.apiKey === 'SUBSTITUI_AQUI') {
-    var s = document.getElementById('auth-screen');
-    if (s) s.style.display = 'none';
-    if (typeof window._appInit === 'function') window._appInit();
-  }
-});
-</script>
+<!-- Firebase compat SDKs (work as normal scripts, no modules needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="auth.js"></script>
 <script>
   tailwind.config = {
     darkMode: ['selector', '[data-theme="dark"]'],
@@ -161,30 +155,9 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 .eb-arrow{transition:transform .2s}.ebook-chapter.open .eb-arrow{transform:rotate(90deg)}
 
 /* == AUTH SCREEN == */
-#auth-screen{position:fixed;inset:0;z-index:1000;align-items:center;justify-content:center;background:linear-gradient(160deg,#0d0a1a 0%,#1a0f3a 50%,#0d1a35 100%);padding:20px;}
-.auth-card{width:100%;max-width:400px;background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.12);border-radius:28px;padding:36px 28px 32px;box-shadow:0 32px 80px rgba(0,0,0,.5);}
-.auth-logo{width:56px;height:56px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;}
-.auth-logo img{width:100%;height:100%;object-fit:cover;border-radius:16px}
-.auth-title{font-size:22px;font-weight:900;color:#fff;text-align:center;margin-bottom:4px}
-.auth-subtitle{font-size:13px;color:rgba(255,255,255,.45);text-align:center;margin-bottom:24px}
-.auth-field{margin-bottom:14px}
-.auth-field label{display:block;font-size:11px;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase}
-.auth-field input{width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 14px;font-size:15px;color:#fff;outline:none;transition:border-color .15s;font-family:inherit;}
-.auth-field input::placeholder{color:rgba(255,255,255,.25)}
-.auth-field input:focus{border-color:#8b5cf6;background:rgba(255,255,255,.1)}
-.auth-btn{width:100%;padding:14px;border-radius:14px;border:none;cursor:pointer;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;font-size:15px;font-weight:800;font-family:inherit;margin-top:6px;box-shadow:0 8px 32px rgba(109,40,217,.4);transition:all .2s;}
-.auth-btn:hover{transform:translateY(-1px)}
-.auth-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.auth-error{display:none;border-radius:10px;padding:10px 14px;font-size:12px;font-weight:600;margin-bottom:12px;border:1px solid;}
-.auth-link{text-align:center;font-size:12px;color:rgba(255,255,255,.4);margin-top:16px}
-.auth-reset{text-align:center;font-size:12px;margin-top:8px}
-.auth-reset span{color:rgba(255,255,255,.35);cursor:pointer;transition:color .15s}
-.auth-reset span:hover{color:#8b5cf6}
-.auth-divider{height:1px;background:rgba(255,255,255,.08);margin:18px 0}
-#user-bar{display:none;align-items:center;gap:8px;padding:6px 12px;border-radius:10px;cursor:pointer;background:var(--surf2);border:1px solid var(--bdr);max-width:160px;}
-#user-bar:hover{background:#ede9fe}
-#user-bar-avatar{width:26px;height:26px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,#6d28d9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;}
-#user-bar-name{font-size:12px;font-weight:700;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px}
+
+
+
 /* ── safe area ── */
 /* Preenche a área atrás da Dynamic Island / notch com a cor do topbar */
 body{
@@ -204,42 +177,6 @@ body{
 </head>
 <body style="background:#f1f5f9;min-height:100vh;">
 
-<!-- AUTH SCREEN -->
-<div id="auth-screen" style="display:none;">
-  <div class="auth-card">
-    <div class="auth-logo">
-      <img src="icons/icon-192.png" alt="" onerror="this.parentElement.innerHTML='&#x1F4B0;'">
-    </div>
-    <div class="auth-title" id="auth-title">Entrar</div>
-    <div class="auth-subtitle" id="auth-subtitle">A tua conta Mente Próspera</div>
-    <div class="auth-error" id="auth-error"></div>
-    <div class="auth-field" id="auth-name-row" style="display:none;">
-      <label>Nome</label>
-      <input type="text" id="auth-name" placeholder="Como te chamas?">
-    </div>
-    <div class="auth-field">
-      <label>Email</label>
-      <input type="email" id="auth-email" placeholder="email@exemplo.com" autocomplete="email">
-    </div>
-    <div class="auth-field">
-      <label>Senha</label>
-      <input type="password" id="auth-pass" placeholder="Minimo 6 caracteres" autocomplete="current-password">
-    </div>
-    <div class="auth-field" id="auth-pass2-row" style="display:none;">
-      <label>Confirmar senha</label>
-      <input type="password" id="auth-pass2" placeholder="Repete a senha" autocomplete="new-password">
-    </div>
-    <button class="auth-btn" id="auth-submit-btn" data-label="Entrar" onclick="authLogin()">Entrar</button>
-    <div class="auth-reset" id="auth-reset-row">
-      <span onclick="authResetPassword()">Esqueci a senha</span>
-    </div>
-    <div class="auth-divider"></div>
-    <div class="auth-link" id="auth-link-row">
-      Nao tens conta?
-      <span onclick="authSwitchMode('register')" style="color:#8b5cf6;font-weight:700;cursor:pointer;">Criar agora</span>
-    </div>
-  </div>
-</div>
 
 <!-- ══════════════════════════════════════
      TOPBAR
@@ -257,12 +194,14 @@ body{
   </div>
   <!-- actions -->
   <div class="flex items-center gap-2">
-    <!-- user bar -->
-    <div id="user-bar" onclick="authLogout()" title="Clica para sair">
-      <div id="user-bar-avatar">&#x1F464;</div>
-      <div id="user-bar-name">...</div>
+    <div id="user-bar-name">...</div>
     </div>
 
+    <!-- user bar (shown when logged in) -->
+    <div id="user-bar" style="display:none;align-items:center;gap:8px;padding:5px 10px;border-radius:10px;cursor:pointer;background:var(--surf2);border:1px solid var(--bdr);max-width:160px;" onclick="authLogout && authLogout()">
+      <div id="user-bar-avatar" style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">👤</div>
+      <div id="user-bar-name" style="font-size:12px;font-weight:700;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px;">...</div>
+    </div>
     <!-- nav menu button (replaces settings gear) -->
     <button onclick="openNavSheet()"
             class="flex items-center gap-1.5 px-3 h-9 rounded-xl transition-all"
@@ -2232,8 +2171,25 @@ function defaultItems(){
   }
 }
 
-// auth.js calls _appInit() after login
-window._appInit = function(){
+window.onload = function(){
+  // Check Firebase session — redirect to login.html if not authenticated
+  (function(){
+    try {
+      if(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0){
+        var user = firebase.auth().currentUser;
+        if(!user){
+          // Check localStorage for cached session key
+          var hasSession = Object.keys(localStorage).some(function(k){
+            return k.indexOf('firebase:authUser:') === 0;
+          });
+          if(!hasSession){
+            window.location.href = 'login.html';
+            return;
+          }
+        }
+      }
+    } catch(e) {}
+  })();
   // theme
   const savedTheme=localStorage.getItem('cvTheme')||'light';
   applyTheme(savedTheme);
@@ -2289,7 +2245,7 @@ window._appInit = function(){
   if(savedPage && savedPage !== 'ebook' && $('page-'+savedPage)){
     switchPage(savedPage);
   }
-}; // end _appInit
+};
 
 
 // ─────────────────────────────────────────
@@ -2641,6 +2597,6 @@ function renderPlano(){
 </style>
 
 
-<script src="auth.js"></script>
+
 </body>
 </html>
