@@ -544,11 +544,11 @@ button{font-family:var(--sans)}
 .eb-brand-title{font-size:14px;font-weight:800;color:var(--text,#e2e8f0)}
 .eb-brand-sub{font-size:10px;color:var(--text3,#94a3b8)}
 .eb-menu-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;height:36px;
-  border-radius:10px;background:rgba(255,255,255,.1);
-  border:1px solid rgba(255,255,255,.18);color:#fff;
+  border-radius:10px;background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);color:#fff;
   cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;}
 .eb-bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:300;
-  display:grid;grid-template-columns:repeat(5,1fr);
+  display:grid !important;grid-template-columns:repeat(5,1fr) !important;
   background:var(--surface,#fff);border-top:1px solid var(--border,#e2e8f0);
   padding-bottom:env(safe-area-inset-bottom,0px);}
 .eb-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -557,6 +557,7 @@ button{font-family:var(--sans)}
 .eb-nav-item.active,.eb-nav-item:hover{color:#6d28d9}
 .eb-nav-icon{font-size:18px;line-height:1;margin-bottom:2px}
 #ebNavSheet{animation:ebUp .28s cubic-bezier(.32,.72,0,1)}
+#ebNavSheetOverlay{align-items:flex-end !important;justify-content:center !important;}
 @keyframes ebUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important}
 </style>
@@ -1495,7 +1496,7 @@ function loadLang(){
 <!-- ══════════════════════════════════════
      NAV SHEET — Menu lateral
 ══════════════════════════════════════ -->
-<div id="ebNavSheetOverlay" class="hidden fixed inset-0 z-[400]"
+<div id="ebNavSheetOverlay" style="display:none;position:fixed;inset:0;z-index:400;"
      style="background:rgba(0,0,0,.55);backdrop-filter:blur(4px);"
      onclick="ebCloseMenu()">
   <div id="ebNavSheet" onclick="event.stopPropagation()"
@@ -1533,7 +1534,7 @@ function loadLang(){
       <div class="ns-section-label" id="ns-lbl-config" style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);padding:8px 0 4px;">CONFIGURAÇÕES</div>
 
       <!-- Theme toggle -->
-      <button class="ns-row" onclick="toggleTheme()" style="background:none;border:none;cursor:pointer;width:100%;text-align:left;">
+      <button class="ns-row" onclick="ebToggleTheme()" style="background:none;border:none;cursor:pointer;width:100%;text-align:left;">
         <div class="ns-icon" style="background:var(--surf2);" id="ns-theme-icon">🌙</div>
         <div class="ns-info">
           <div class="ns-row-title" id="ns-theme-t" style="color:var(--txt);">Modo Escuro</div>
@@ -1591,55 +1592,75 @@ function loadLang(){
   <button class="eb-nav-item" onclick="location.href='calculadora-liberdade-financeira.html'"><span class="eb-nav-icon">🏆</span><span>Liberdade</span></button>
 </nav>
 <script>
-var _ebInstall=null;
-window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();_ebInstall=e;});
+// ── Ebook shared nav ─────────────────────────────────────────
+var _ebInstall = null;
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault(); _ebInstall = e;
+});
+
 function ebOpenMenu(){
-  var ov=document.getElementById('ebNavSheetOverlay');
-  ov.classList.remove('hidden'); ov.style.display='flex';
+  var ov = document.getElementById('ebNavSheetOverlay');
+  ov.style.display    = 'flex';
+  ov.style.alignItems = 'flex-end';
+  ov.style.justifyContent = 'center';
   ebSyncMenu();
 }
 function ebCloseMenu(){
-  var ov=document.getElementById('ebNavSheetOverlay');
-  ov.classList.add('hidden'); ov.style.display='none';
+  document.getElementById('ebNavSheetOverlay').style.display = 'none';
 }
-function ebNavGo(p){localStorage.setItem('cvPage',p);location.href='index.html';}
+function ebNavGo(p){ localStorage.setItem('cvPage', p); location.href = 'index.html'; }
 function ebSetLang(l){
-  localStorage.setItem('cvLang',l);
-  var map={pt:'ebook-cardss-pt.html',es:'ebook-cardss-es.html',en:'ebook-cardss-en.html'};
-  location.href=map[l];
+  localStorage.setItem('cvLang', l);
+  var map = {pt:'ebook-cardss-pt.html', es:'ebook-cardss-es.html', en:'ebook-cardss-en.html'};
+  location.href = map[l];
 }
 function ebOpenInstall(){
   ebCloseMenu();
-  if(_ebInstall){_ebInstall.prompt();}
+  if(_ebInstall) _ebInstall.prompt();
 }
-function toggleTheme(){
-  var dark=(localStorage.getItem('cvTheme')||'dark')==='dark';
-  var next=dark?'light':'dark';
-  localStorage.setItem('cvTheme',next);
-  document.documentElement.setAttribute('data-theme',next);
+function ebToggleTheme(){
+  var dark = (localStorage.getItem('cvTheme') || 'dark') === 'dark';
+  var next = dark ? 'light' : 'dark';
+  localStorage.setItem('cvTheme', next);
+  document.documentElement.setAttribute('data-theme', next);
   ebSyncMenu();
 }
 function ebSyncMenu(){
-  var dark=(localStorage.getItem('cvTheme')||'dark')==='dark';
-  var icon=document.getElementById('ns-theme-icon');
-  var tog=document.getElementById('ns-theme-toggle');
-  var ball=document.getElementById('ns-toggle-ball');
-  var lbl=document.getElementById('ns-theme-t');
-  if(icon) icon.textContent=dark?'☀️':'🌙';
-  if(tog)  tog.style.background=dark?'#6d28d9':'#cbd5e1';
-  if(ball){ball.style.right=dark?'0.125rem':'auto';ball.style.left=dark?'auto':'0.125rem';}
-  if(lbl)  lbl.textContent=dark?'Modo Claro':'Modo Escuro';
-  var saved=localStorage.getItem('cvLang')||'pt';
+  var dark = (localStorage.getItem('cvTheme') || 'dark') === 'dark';
+  // theme icon
+  var icon = document.getElementById('ns-theme-icon');
+  if(icon) icon.textContent = dark ? '☀️' : '🌙';
+  // theme label
+  var lbl = document.getElementById('ns-theme-t');
+  if(lbl) lbl.textContent = dark ? 'Modo Claro' : 'Modo Escuro';
+  // toggle switch
+  var tog  = document.getElementById('ns-theme-toggle');
+  var ball = document.getElementById('ns-toggle-ball');
+  if(tog)  tog.style.background = dark ? '#6d28d9' : '#cbd5e1';
+  if(ball){ ball.style.left = dark ? 'auto' : '0.125rem';
+            ball.style.right = dark ? '0.125rem' : 'auto'; }
+  // lang buttons
+  var saved = localStorage.getItem('cvLang') || 'pt';
   ['pt','es','en'].forEach(function(k){
-    var b=document.getElementById('ns-lbtn-'+k);
+    var b = document.getElementById('ns-lbtn-' + k);
     if(!b) return;
-    if(k===saved){b.style.background='#6d28d9';b.style.color='#fff';b.style.borderColor='#6d28d9';}
-    else{b.style.background='';b.style.color='';b.style.borderColor='';}
+    if(k === saved){
+      b.style.background  = '#6d28d9';
+      b.style.color       = '#fff';
+      b.style.borderColor = '#6d28d9';
+    } else {
+      b.style.background  = '';
+      b.style.color       = '';
+      b.style.borderColor = '';
+    }
   });
 }
+// On load — apply saved theme and sync menu state
 (function(){
-  var t=localStorage.getItem('cvTheme')||'dark';
-  document.documentElement.setAttribute('data-theme',t);
+  var t = localStorage.getItem('cvTheme') || 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  // sync after DOM ready
+  setTimeout(ebSyncMenu, 0);
 })();
 </script>
 </body>

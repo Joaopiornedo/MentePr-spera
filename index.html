@@ -884,6 +884,7 @@ function applyTheme(t){
   $('t-themeLabel').textContent=t==='dark'?TR[lang].lightMode:TR[lang].darkMode;
   localStorage.setItem('cvTheme',t);
   syncNavSheetTheme();
+  syncNavSheetLang();
 }
 
 // ─────────────────────────────────────────
@@ -1752,12 +1753,15 @@ async function triggerInstall(){
 }
 // ── Mais Sheet ────────────────────────────────────────────────────
 function openNavSheet(){
-  $('navSheetOverlay').classList.remove('hidden');
+  var ov = $('navSheetOverlay');
+  ov.style.display = 'flex';
+  ov.style.alignItems = 'flex-end';
+  ov.style.justifyContent = 'center';
   syncNavSheetLang();
   syncNavSheetTheme();
 }
 function closeNavSheet(){
-  $('navSheetOverlay').classList.add('hidden');
+  $('navSheetOverlay').style.display = 'none';
 }
 function goToLiberdade(){
   localStorage.setItem('cvPage','orcamento'); // don't save liberdade as app page
@@ -1776,12 +1780,17 @@ function syncNavSheetLang(){
 }
 // keep theme toggle in sheet in sync
 function syncNavSheetTheme(){
-  const dark=document.documentElement.getAttribute('data-theme')==='dark';
-  const icon=$('ns-theme-icon'); const t=$('ns-theme-t'); const tog=$('ns-theme-toggle'); const ball=$('ns-toggle-ball');
-  if(icon) icon.textContent=dark?'☀️':'🌙';
-  if(t){const T=TR&&TR[lang||'pt']; if(T) t.textContent=dark?(T.lightMode||'Modo Claro'):(T.darkMode||'Modo Escuro');}
-  if(tog) tog.style.background=dark?'#6d28d9':'#cbd5e1';
-  if(ball) ball.style.transform=dark?'translateX(0)':'translateX(-16px)';
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const icon = $('ns-theme-icon');
+  const lbl  = $('ns-theme-t');
+  const tog  = $('ns-theme-toggle');
+  const ball = $('ns-toggle-ball');
+  if(icon) icon.textContent = dark ? '☀️' : '🌙';
+  if(lbl)  lbl.textContent  = dark ? (TR&&TR[lang||'pt']&&TR[lang||'pt'].lightMode)||'Modo Claro'
+                                     : (TR&&TR[lang||'pt']&&TR[lang||'pt'].darkMode)||'Modo Escuro';
+  if(tog)  tog.style.background = dark ? '#6d28d9' : '#cbd5e1';
+  if(ball) { ball.style.right = dark ? '0.125rem' : 'auto';
+             ball.style.left  = dark ? 'auto' : '0.125rem'; }
 }
 
 // ── Service Worker — registo e detecção de actualização ─────────
@@ -2528,7 +2537,7 @@ function renderPlano(){
 <!-- ══════════════════════════════════════
      NAV SHEET — Menu lateral
 ══════════════════════════════════════ -->
-<div id="navSheetOverlay" class="hidden fixed inset-0 z-[400]"
+<div id="navSheetOverlay" class="fixed inset-0 z-[400]" style="display:none;"
      style="background:rgba(0,0,0,.55);backdrop-filter:blur(4px);"
      onclick="closeNavSheet()">
   <div id="navSheet" onclick="event.stopPropagation()"
