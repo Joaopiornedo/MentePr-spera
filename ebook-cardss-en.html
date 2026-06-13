@@ -1,9 +1,16 @@
 <!DOCTYPE html>
-<html lang="pt" data-theme="dark">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Os Fundamentos da Mente Próspera — Cartões</title>
+<title>Mente Próspera</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6366f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mente Próspera">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════
@@ -101,7 +108,7 @@ button{font-family:var(--sans)}
 }
 .topbar-title{font-family:var(--serif);font-size:14px;font-weight:700;color:var(--text);line-height:1.2;transition:color var(--t)}
 .topbar-sub{font-size:10px;color:var(--text2);transition:color var(--t)}
-.topbar-actions{display:flex;gap:7px}
+.topbar-actions{display:flex;align-items:center;gap:10px}
 .tbtn{
   display:inline-flex;align-items:center;justify-content:center;gap:5px;
   height:34px;padding:0 12px;
@@ -109,6 +116,7 @@ button{font-family:var(--sans)}
   border-radius:var(--r-sm);cursor:pointer;
   font-size:12px;font-weight:700;color:var(--text2);
   text-decoration:none;transition:all var(--t);white-space:nowrap;
+  overflow: hidden;
 }
 .tbtn:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.1)}
 .tbtn.icon{width:34px;padding:0;font-size:16px}
@@ -523,6 +531,73 @@ button{font-family:var(--sans)}
 .lang-close-btn{width:100%;background:none;border:1px solid var(--border);border-radius:10px;padding:11px;font-size:14px;color:var(--text2);cursor:pointer;margin-top:14px}
 
 </style>
+<style id="eb-nav-css">
+.eb-topbar{position:sticky;top:0;z-index:300;display:flex;align-items:center;
+  justify-content:space-between;padding:0 16px;height:52px;
+  background:var(--topbar,rgba(13,13,18,.96));backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border,rgba(255,255,255,.1));}
+.eb-brand{display:flex;align-items:center;gap:10px}
+.eb-logo{width:32px;height:32px;border-radius:9px;overflow:hidden;
+  background:linear-gradient(135deg,#6d28d9,#8b5cf6);
+  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.eb-logo img{width:100%;height:100%;object-fit:cover;border-radius:9px}
+.eb-brand-title{font-size:14px;font-weight:800;color:var(--text,#f1f5f9)}
+.eb-brand-sub{font-size:10px;color:var(--text3,#94a3b8)}
+.eb-menu-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;height:36px;
+  border-radius:10px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  color:#fff;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;}
+.eb-bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:300;
+  display:grid;grid-template-columns:repeat(5,1fr);
+  background:var(--surface,#fff);border-top:1px solid var(--border,#e2e8f0);
+  padding-bottom:env(safe-area-inset-bottom,0px);}
+.eb-nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;padding:7px 2px 6px;font-size:9px;font-weight:700;font-family:inherit;
+  color:var(--text3,#94a3b8);border:none;background:none;cursor:pointer;line-height:1;}
+.eb-nav-item.active,.eb-nav-item:hover{color:#6d28d9}
+.eb-nav-icon{font-size:18px;line-height:1}
+.eb-ns-ov{display:none;position:fixed;inset:0;z-index:9000;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+  align-items:flex-end;justify-content:center;}
+.eb-ns-sheet{width:100%;max-width:540px;background:var(--surface,#fff);
+  border-radius:24px 24px 0 0;max-height:88vh;overflow-y:auto;
+  padding-bottom:calc(env(safe-area-inset-bottom,0px)+16px);
+  animation:ebUp .28s cubic-bezier(.32,.72,0,1);}
+@keyframes ebUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.eb-handle{width:40px;height:4px;background:#cbd5e1;border-radius:2px;margin:14px auto 0}
+.eb-ns-header{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;border-bottom:1px solid var(--border,#e2e8f0);}
+.eb-ns-title{font-size:16px;font-weight:900;color:var(--text,#0f172a)}
+.eb-ns-sub{font-size:11px;color:var(--text3,#94a3b8);margin-top:2px}
+.eb-ns-close{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;
+  justify-content:center;background:var(--surface2,#f8fafc);
+  border:1px solid var(--border,#e2e8f0);color:var(--text3,#94a3b8);
+  cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;}
+.eb-ns-body{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.eb-sec{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3,#94a3b8);padding:8px 0 2px}
+.eb-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;
+  background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0);
+  text-decoration:none;cursor:pointer;font-family:inherit;
+  width:100%;text-align:left;transition:all .15s;color:var(--text,#0f172a);box-sizing:border-box;}
+.eb-row:hover,.eb-row:active{border-color:#6d28d9;background:#ede9fe}
+.eb-row-icon{width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:18px}
+.eb-row-info{flex:1;min-width:0}
+.eb-row-title{font-size:13px;font-weight:700;color:var(--text,#0f172a);margin-bottom:2px}
+.eb-row-sub{font-size:11px;color:var(--text3,#94a3b8);line-height:1.4}
+.eb-row-arr{color:var(--text3,#94a3b8);font-size:16px;flex-shrink:0}
+.eb-toggle{flex-shrink:0;width:40px;height:24px;border-radius:100px;
+  position:relative;transition:background .2s;background:#6d28d9}
+.eb-toggle-ball{position:absolute;top:3px;right:3px;
+  width:18px;height:18px;border-radius:50%;background:#fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.25);transition:all .2s}
+.eb-lang-row{display:flex;gap:8px;padding-top:4px}
+.eb-lang-btn{flex:1;padding:9px 0;border-radius:10px;font-size:11px;font-weight:700;
+  border:1px solid var(--border,#e2e8f0);background:var(--surface2,#f8fafc);
+  color:var(--text2,#475569);cursor:pointer;font-family:inherit;transition:all .15s}
+.eb-lang-btn.eb-on{background:#6d28d9;color:#fff;border-color:#6d28d9}
+body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important}
+</style>
 </head>
 <body>
 
@@ -530,20 +605,23 @@ button{font-family:var(--sans)}
 <div class="progress-top" id="progressTop"></div>
 
 <!-- TOPBAR -->
-<div class="topbar">
-  <div class="topbar-brand">
-    <div class="topbar-logo">💰</div>
+<header class="eb-topbar">
+  <div class="eb-brand">
+    <div class="eb-logo"><img src="icons/icon-192.png" alt="Logo" onerror="this.parentElement.innerHTML='💰'"></div>
     <div>
-      <div class="topbar-title">Mente Próspera</div>
-      <div class="topbar-sub" id="topbarSub">15 Cartões · Ebook</div>
+      <div class="eb-brand-title">Prosperous Mind</div>
+      <div class="eb-brand-sub">15 Cards · Ebook</div>
     </div>
   </div>
-  <div class="topbar-actions">
-    <button class="tbtn icon" id="btnTheme" onclick="toggleTheme()" title="Tema">☀️</button>
-    <button class="tbtn" id="btnLang" onclick="openLangModal()" title="Idioma" style="gap:4px;"><span id="langFlagSm">🇧🇷</span> <span id="langCodeSm">PT</span></button>
-    <a href="index.html" class="tbtn" title="Calculadora">🧮 <span class="lbl">Calculadora</span></a>
-  </div>
-</div>
+  <button class="eb-menu-btn" onclick="ebMenu()">
+    <svg width="14" height="12" viewBox="0 0 14 12" fill="none">
+      <rect y="0" width="14" height="2" rx="1" fill="currentColor"/>
+      <rect y="5" width="10" height="2" rx="1" fill="currentColor"/>
+      <rect y="10" width="6"  height="2" rx="1" fill="currentColor"/>
+    </svg>
+    Menu
+  </button>
+</header>
 
 <!-- ════════════════════════════════
      HOME — ÍNDICE
@@ -555,18 +633,18 @@ button{font-family:var(--sans)}
   <div class="cover">
     <img src="https://images.unsplash.com/photo-1579621970795-87facc2f976d?w=900&q=80" alt="Capa">
     <div class="cover-over">
-      <div class="cover-badge">✦ Complete ebook · 15 Cards</div>
-      <div class="cover-h">The Foundations  <span>of a Prosperous Mind</span></div>
+      <div class="cover-badge">✦ Ebook Complete · 15 Cards</div>
+      <div class="cover-h">The Foundations<span> of a Prosperous Mind</span></div>
       <div class="cover-p">The complete guide to transforming your mindset and building financial freedom.</div>
       <div class="cover-stats">
-        <div><div class="cover-stat-n">15</div><div class="cover-stat-l">Cartões</div></div>
+        <div><div class="cover-stat-n">15</div><div class="cover-stat-l">Cards</div></div>
         <div><div class="cover-stat-n">~90</div><div class="cover-stat-l">Min</div></div>
-        <div><div class="cover-stat-n">2</div><div class="cover-stat-l">Partes</div></div>
+        <div><div class="cover-stat-n">2</div><div class="cover-stat-l">Parts</div></div>
       </div>
     </div>
   </div>
 
-  <button class="start-btn" onclick="openCard(0)">📖 Start Reading →</button>
+  <buttOn class="start-btn" onclick="openCard(0)">📖 Start ReadingO →</buttOn>
 
   <!-- Parte 1 -->
   <div class="part-label">Parte 1 — Os Fundamentos da Mente</div>
@@ -1255,7 +1333,7 @@ button{font-family:var(--sans)}
   <button class="bb-btn" id="bbPrev" onclick="prevCard()">←</button>
   <div class="bb-info">
     <div class="bb-chap" id="bbChap">Cartão 1 · Parte 1</div>
-    <div class="bb-title" id="bbTitle">O Hábito</div>
+    <div class="bb-title" id="bbTitle">The Habit</div>
     <div class="bb-prog"><div class="bb-fill" id="bbFill" style="width:7%"></div></div>
   </div>
   <button class="bb-btn gold" id="bbNext" onclick="nextCard()">→</button>
@@ -1268,21 +1346,21 @@ button{font-family:var(--sans)}
 //  DATA
 // ════════════════════════════════
 const CARDS = [
-  { label:'Cartão 1 · Parte 1',  title:'O Hábito' },
-  { label:'Cartão 2 · Parte 1',  title:'A Mentalidade' },
-  { label:'Cartão 3 · Parte 1',  title:'As Leis' },
-  { label:'Cartão 4 · Parte 1',  title:'Os Arquivos' },
-  { label:'Cartão 5 · Parte 1',  title:'A Visão' },
-  { label:'Cartão 6 · Parte 1',  title:'A Atitude' },
-  { label:'Cartão 7 · Parte 1',  title:'A Doação' },
-  { label:'Cartão 8 · Parte 1',  title:'A Parceria' },
-  { label:'Passo 1 · Parte 2',   title:'Organizando a Casa' },
-  { label:'Passo 2 · Parte 2',   title:'Acelerando os Ganhos' },
-  { label:'Passo 3 · Parte 2',   title:'Vender na Internet' },
-  { label:'Passo 4 · Parte 2',   title:'Ganhando no Bairro' },
-  { label:'Passo 5 · Parte 2',   title:'Comércio Digital' },
-  { label:'Passo 6 · Parte 2',   title:'Designs e Sites' },
-  { label:'Bônus · Parte 2',     title:'Novo Mercado Digital' },
+  { label:'Cartão 1 · Parte 1',  title:'The Habit' },
+  { label:'Cartão 2 · Parte 1',  title:'The Mindset' },
+  { label:'Cartão 3 · Parte 1',  title:'The Laws' },
+  { label:'Cartão 4 · Parte 1',  title:'The Files' },
+  { label:'Cartão 5 · Parte 1',  title:'The Vision' },
+  { label:'Cartão 6 · Parte 1',  title:'The Attitude' },
+  { label:'Cartão 7 · Parte 1',  title:'The Giving' },
+  { label:'Cartão 8 · Parte 1',  title:'The Partnership' },
+  { label:'Passo 1 · Parte 2',   title:'Organizing the House' },
+  { label:'Passo 2 · Parte 2',   title:'Accelerating Earnings' },
+  { label:'Passo 3 · Parte 2',   title:'Selling on the Internet' },
+  { label:'Passo 4 · Parte 2',   title:'Earning in Your Neighborhood' },
+  { label:'Passo 5 · Parte 2',   title:'Digital Commerce' },
+  { label:'Passo 6 · Parte 2',   title:'Designs and' },
+  { label:'Bônus · Parte 2',     title:'New Digital Market' },
 ];
 const TOTAL = CARDS.length;
 let current = -1;
@@ -1378,7 +1456,7 @@ function toggleTheme() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const next = isDark ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
-  document.getElementById('btnTheme').textContent = isDark ? '🌙' : '☀️';
+  document.getElementById('btnTheme').textContent = isDark ? '☀️' : '🌙';
   localStorage.setItem('ebookCardsTheme', next);
 }
 
@@ -1388,7 +1466,7 @@ function toggleTheme() {
 (function(){
   const theme = localStorage.getItem('ebookCardsTheme') || 'dark';
   document.documentElement.setAttribute('data-theme', theme);
-  document.getElementById('btnTheme').textContent = theme === 'dark' ? '☀️' : '🌙';
+  document.getElementById('btnTheme').textContent = theme === 'dark' ? '🌙' : '☀️';
 
   // Resume
   const saved = localStorage.getItem('ebookCardsPos');
@@ -1409,40 +1487,10 @@ const EBOOK_LANGS = {
 };
 let ebookLang = localStorage.getItem('cvLang') || 'pt';
 
-function openLangModal(){ document.getElementById('langOverlay').classList.add('open'); }
-function closeLangModal(e){ if(!e || e.target===document.getElementById('langOverlay')) document.getElementById('langOverlay').classList.remove('open'); }
-
-function setLang(lang){
-
-  // Salva na mesma chave global que a calculadora usa
-  localStorage.setItem('cvLang', lang);
-  
-  // Atualiza o visual do modal de seleção
-  document.querySelectorAll('.lang-option').forEach(el=>el.classList.remove('selected'));
-  const opt = document.getElementById('lang-'+lang);
-  if(opt) opt.classList.add('selected');
-  
-  closeLangModal();
-  
-  // Redireciona para o arquivo da língua correspondente
-  window.location.href = 'ebook-cardss-' + lang + '.html';
-}
-
 function loadLang(){
   // Lê o idioma da calculadora ('cvLang') ou assume português ('pt') por padrão
   const saved = localStorage.getItem('cvLang') || 'pt';
   ebookLang = saved;
-  
-  // Atualiza qual bandeira fica marcada como selecionada no modal
-  document.querySelectorAll('.lang-option').forEach(el=>el.classList.remove('selected'));
-  const opt = document.getElementById('lang-'+saved);
-  if(opt) opt.classList.add('selected');
-  
-  // CORREÇÃO ESSENCIAL: Usa o objeto correto do seu código (LANGS) para o topo da página
-  if (typeof LANGS !== 'undefined' && LANGS[saved]) {
-    document.getElementById('langFlagSm').textContent = LANGS[saved].flag;
-    document.getElementById('langCodeSm').textContent = LANGS[saved].code;
-  }
   
   // CHAMA A FUNÇÃO DE TRADUÇÃO DAS CARTAS
   // Se o seu script possuir uma função para traduzir o texto dos blocos (como applyTranslations), chame-a aqui:
@@ -1453,32 +1501,161 @@ function loadLang(){
 
 </script>
 
-<!-- LANGUAGE MODAL -->
-<div class="lang-modal-overlay" id="langOverlay" onclick="closeLangModal(event)">
-  <div class="lang-sheet" onclick="event.stopPropagation()">
-    <div class="lang-handle"></div>
-    <div class="lang-title">Idioma / Language</div>
-    <div class="lang-sub">Escolha o idioma / Choose language</div>
-    <div class="lang-options">
-      <div class="lang-option selected" id="lang-pt" onclick="setLang('pt')">
-        <span class="lang-flag">🇧🇷</span>
-        <div><div class="lang-name">Português</div><div class="lang-native">Brasil</div></div>
-        <span class="lang-check">✓</span>
-      </div>
-      <div class="lang-option" id="lang-es" onclick="setLang('es')">
-        <span class="lang-flag">🌎</span>
-        <div><div class="lang-name">Español</div><div class="lang-native">Latinoamérica</div></div>
-        <span class="lang-check">✓</span>
-      </div>
-      <div class="lang-option" id="lang-en" onclick="setLang('en')">
-        <span class="lang-flag">🇺🇸</span>
-        <div><div class="lang-name">English</div><div class="lang-native">United States</div></div>
-        <span class="lang-check">✓</span>
-      </div>
+
+<div class="eb-ns-ov" id="ebNsOv" onclick="if(event.target===this)ebMenuClose()">
+  <div class="eb-ns-sheet" onclick="event.stopPropagation()">
+    <div class="eb-handle"></div>
+    <div class="eb-ns-header">
+      <div><div class="eb-ns-title">Menu</div><div class="eb-ns-sub">Mente Próspera</div></div>
+      <button class="eb-ns-close" onclick="ebMenuClose()">✕</button>
     </div>
-    <button class="lang-close-btn" onclick="closeLangModal()">Fechar / Close</button>
+    <div class="eb-ns-body">
+      <div class="eb-sec">LEARN</div>
+      <a href="tutorial.html" class="eb-row">
+        <div class="eb-row-icon" style="background:#ede9fe">🎓</div>
+        <div class="eb-row-info"><div class="eb-row-title">Tutorial</div><div class="eb-row-sub">How to use every tool</div></div>
+        <span class="eb-row-arr">›</span>
+      </a>
+      <div class="eb-sec">NAVIGATE</div>
+      <button class="eb-row" onclick="ebGo('orcamento')">
+        <div class="eb-row-icon" style="background:#ede9fe">💰</div>
+        <div class="eb-row-info"><div class="eb-row-title">Budget</div><div class="eb-row-sub">Salary and expenses</div></div>
+        <span class="eb-row-arr">›</span>
+      </button>
+      <button class="eb-row" onclick="ebGo('historico')">
+        <div class="eb-row-icon" style="background:#dbeafe">📅</div>
+        <div class="eb-row-info"><div class="eb-row-title">History</div><div class="eb-row-sub">Archived months</div></div>
+        <span class="eb-row-arr">›</span>
+      </button>
+      <button class="eb-row" onclick="ebGo('plano')">
+        <div class="eb-row-icon" style="background:#d1fae5">📈</div>
+        <div class="eb-row-info"><div class="eb-row-title">Plan</div><div class="eb-row-sub">Investment simulator</div></div>
+        <span class="eb-row-arr">›</span>
+      </button>
+      <a href="calculadora-liberdade-financeira.html" class="eb-row">
+        <div class="eb-row-icon" style="background:#cffafe">🏆</div>
+        <div class="eb-row-info"><div class="eb-row-title">Financial Freedom</div><div class="eb-row-sub">Years to financial independence</div></div>
+        <span class="eb-row-arr">›</span>
+      </a>
+      <div class="eb-sec">SETTINGS</div>
+      <button class="eb-row" onclick="ebTheme()">
+        <div class="eb-row-icon" style="background:var(--surface2,#f8fafc)" id="eb-th-ic">🌙</div>
+        <div class="eb-row-info">
+          <div class="eb-row-title" id="eb-th-lb">Dark Mode</div>
+          <div class="eb-row-sub">Alternar tema claro / escuro</div>
+        </div>
+        <div class="eb-toggle" id="eb-tog"><div class="eb-toggle-ball" id="eb-ball"></div></div>
+      </button>
+      <div class="eb-row" style="cursor:default;flex-direction:column;align-items:stretch;gap:10px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="eb-row-icon" style="background:var(--surface2,#f8fafc)">🌍</div>
+          <div class="eb-row-info"><div class="eb-row-title">Language</div><div class="eb-row-sub">PT · ES · EN</div></div>
+        </div>
+        <div class="eb-lang-row">
+          <button class="eb-lang-btn" id="eb-lb-pt" onclick="ebLang('pt')">🇧🇷 PT</button>
+          <button class="eb-lang-btn" id="eb-lb-es" onclick="ebLang('es')">🌎 ES</button>
+          <button class="eb-lang-btn" id="eb-lb-en" onclick="ebLang('en')">🇺🇸 EN</button>
+        </div>
+      </div>
+      <button class="eb-row" onclick="ebInstall()">
+        <div class="eb-row-icon" style="background:#ede9fe">📲</div>
+        <div class="eb-row-info"><div class="eb-row-title">Install App</div><div class="eb-row-sub">Add to home screen</div></div>
+        <span class="eb-row-arr">›</span>
+      </button>
+    </div>
   </div>
 </div>
+<nav class="eb-bottom-nav">
+  <button class="eb-nav-item" onclick="ebGo('orcamento')"><span class="eb-nav-icon">💰</span><span>Budget</span></button>
+  <button class="eb-nav-item active" ><span class="eb-nav-icon">📚</span><span>Ebook</span></button>
+  <button class="eb-nav-item" onclick="ebGo('historico')"><span class="eb-nav-icon">📅</span><span>History</span></button>
+  <button class="eb-nav-item" onclick="ebGo('plano')"><span class="eb-nav-icon">📈</span><span>Plan</span></button>
+  <button class="eb-nav-item" onclick="location.href='calculadora-liberdade-financeira.html'"><span class="eb-nav-icon">🏆</span><span>Freedom</span></button>
+</nav>
+<div id="ebInstOv" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="width:100%;max-width:500px;background:var(--surface,#fff);border-radius:24px 24px 0 0;padding:24px 20px 40px;" onclick="event.stopPropagation()">
+    <div style="width:40px;height:4px;background:#cbd5e1;border-radius:2px;margin:0 auto 20px"></div>
+    <div style="font-size:32px;text-align:center;margin-bottom:10px">📲</div>
+    <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:16px;color:var(--text,#0f172a)">Instalar App</div>
+    <div id="ebPwaBtn" style="display:none;margin-bottom:12px"><button onclick="if(_ebPwa)_ebPwa.prompt()" style="width:100%;padding:13px;border-radius:14px;font-size:14px;font-weight:800;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;border:none;cursor:pointer">📲 Instalar Agora</button></div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
+      <div style="padding:10px;border-radius:10px;background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0);font-size:12px"><b>📱 iPhone</b> — Safari → Compartilhar ↑ → Adicionar à Tela de Início</div>
+      <div style="padding:10px;border-radius:10px;background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0);font-size:12px"><b>🤖 Android</b> — Chrome → Menu ⋮ → Adicionar à tela inicial</div>
+      <div style="padding:10px;border-radius:10px;background:var(--surface2,#f8fafc);border:1px solid var(--border,#e2e8f0);font-size:12px"><b>💻 PC</b> — Chrome/Edge → ícone ⊕ → Instalar</div>
+    </div>
+    <button onclick="document.getElementById('ebInstOv').style.display='none'" style="width:100%;padding:10px;background:none;border:none;font-size:13px;color:#94a3b8;cursor:pointer">Fechar</button>
+  </div>
+</div>
+<script>
+// ── Ebook shared settings ─────────────────────────────
+var _ebPwa = null;
+var _ebLang = 'en';  // this file's language
+var _ebDarkLabel  = 'Dark Mode';
+var _ebLightLabel = 'Light Mode';
 
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault(); _ebPwa = e;
+  var b = document.getElementById('ebPwaBtn');
+  if(b) b.style.display = 'block';
+});
+
+function ebMenu(){ var o=document.getElementById('ebNsOv'); o.style.display='flex'; ebSync(); }
+function ebMenuClose(){ document.getElementById('ebNsOv').style.display='none'; }
+function ebGo(p){ localStorage.setItem('cvPage',p); location.href='index.html'; }
+function ebInstall(){ ebMenuClose(); var o=document.getElementById('ebInstOv'); if(o) o.style.display='flex'; else if(_ebPwa) _ebPwa.prompt(); }
+
+function ebLang(l){
+  localStorage.setItem('cvLang', l);
+  var map = {pt:'ebook-cardss-pt.html', es:'ebook-cardss-es.html', en:'ebook-cardss-en.html'};
+  location.href = map[l];  // reload correct language file
+}
+
+function ebTheme(){
+  var dark = (localStorage.getItem('cvTheme')||'dark') === 'dark';
+  var next = dark ? 'light' : 'dark';
+  localStorage.setItem('cvTheme', next);
+  document.documentElement.setAttribute('data-theme', next);
+  ebSync();
+}
+
+function ebSync(){
+  var dark = (localStorage.getItem('cvTheme')||'dark') === 'dark';
+  // theme icon + label + toggle
+  var ic = document.getElementById('eb-th-ic');
+  var lb = document.getElementById('eb-th-lb');
+  var tg = document.getElementById('eb-tog');
+  var bl = document.getElementById('eb-ball');
+  if(ic) ic.textContent = dark ? '☀️' : '🌙';
+  if(lb) lb.textContent = dark ? _ebLightLabel : _ebDarkLabel;
+  if(tg) tg.style.background = dark ? '#6d28d9' : '#cbd5e1';
+  if(bl){ bl.style.right = dark ? '3px' : 'auto'; bl.style.left = dark ? 'auto' : '3px'; }
+  // lang buttons
+  var saved = localStorage.getItem('cvLang') || 'pt';
+  ['pt','es','en'].forEach(function(k){
+    var b = document.getElementById('eb-lb-'+k);
+    if(b) b.className = 'eb-lang-btn' + (k===saved ? ' eb-on' : '');
+  });
+}
+
+// On load: check saved lang — redirect if different from this file
+(function(){
+  var savedLang  = localStorage.getItem('cvLang') || 'pt';
+  var savedTheme = localStorage.getItem('cvTheme') || 'dark';
+  var map = {pt:'ebook-cardss-pt.html', es:'ebook-cardss-es.html', en:'ebook-cardss-en.html'};
+  var thisFile = (location.pathname.split('/').pop()) || ('ebook-cardss-' + _ebLang + '.html');
+
+  // Apply theme immediately
+  document.documentElement.setAttribute('data-theme', savedTheme);
+
+  // If saved lang doesn't match this file → redirect
+  if(map[savedLang] && thisFile !== map[savedLang] && thisFile.indexOf('ebook-cardss') !== -1){
+    location.href = map[savedLang];
+    return;
+  }
+
+  // Sync menu visuals after DOM ready
+  setTimeout(ebSync, 0);
+})();
+</script>
 </body>
 </html>

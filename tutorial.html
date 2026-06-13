@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Tutorial — Calculadora da Virada</title>
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ══ TOKENS ══════════════════════════════════════════════ */
+:root{
+  --ink:#0f172a; --ink2:#475569; --ink3:#94a3b8;
+  --bg:#f1f5f9; --surf:#fff; --surf2:#f8fafc; --bdr:#e2e8f0;
+  --v:#6d28d9; --v2:#8b5cf6; --vl:#ede9fe; --vd:#4c1d95;
+  --g:#059669; --gl:#d1fae5;
+  --a:#d97706; --al:#fef3c7;
+  --c:#0891b2; --cl:#cffafe;
+  --r:#dc2626; --rl:#fee2e2;
+  --glow:rgba(109,40,217,.16);
+  --nav-w:260px;
+  --top-h:56px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:15px}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh;}
+button,a{font-family:inherit}
+
+/* ══ TOPBAR ══════════════════════════════════════════════ */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:var(--top-h);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--bdr);
+}
+.top-brand{display:flex;align-items:center;gap:10px}
+.top-logo{
+  width:32px;height:32px;border-radius:9px;overflow:hidden;
+  background:linear-gradient(135deg,var(--v),var(--v2));
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.top-logo img{width:100%;height:100%;object-fit:cover;border-radius:9px}
+.top-title{font-size:14px;font-weight:800;color:var(--ink)}
+.top-sub{font-size:10px;color:var(--ink3);font-weight:500}
+.top-actions{display:flex;align-items:center;gap:6px}
+.lang-row{display:flex;gap:2px;background:var(--surf2);border-radius:8px;padding:2px;border:1px solid var(--bdr)}
+.lbtn{padding:4px 9px;border-radius:6px;font-size:11px;font-weight:700;border:none;background:transparent;color:var(--ink3);cursor:pointer;transition:all .15s}
+.lbtn.on{background:var(--v);color:#fff}
+.nav-toggle{
+  display:none;width:34px;height:34px;border-radius:9px;border:1px solid var(--bdr);
+  background:var(--surf2);cursor:pointer;align-items:center;justify-content:center;font-size:18px;
+}
+.back-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 12px;border-radius:9px;font-size:12px;font-weight:700;
+  background:var(--vl);color:var(--v);border:1px solid #c4b5fd;
+  text-decoration:none;transition:all .15s;
+}
+.back-btn:hover{background:var(--v);color:#fff}
+
+/* ══ LAYOUT ══════════════════════════════════════════════ */
+.shell{
+  display:grid;
+  grid-template-columns:var(--nav-w) 1fr;
+  min-height:calc(100vh - var(--top-h));
+  margin-top:var(--top-h);
+}
+
+/* ══ SIDEBAR ══════════════════════════════════════════════ */
+.sidebar{
+  position:sticky;top:var(--top-h);height:calc(100vh - var(--top-h));
+  overflow-y:auto;background:var(--surf);border-right:1px solid var(--bdr);
+  padding:20px 0 40px;scrollbar-width:thin;
+}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--bdr)}
+.sidebar-section-label{
+  font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink3);padding:16px 20px 6px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 20px;cursor:pointer;transition:all .15s;
+  border-left:3px solid transparent;position:relative;
+}
+.nav-item:hover{background:var(--surf2);color:var(--v)}
+.nav-item.active{
+  background:var(--vl);border-left-color:var(--v);color:var(--v);
+}
+.nav-item.active .nav-icon{background:var(--v);color:#fff}
+.nav-icon{
+  width:28px;height:28px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;background:var(--surf2);transition:all .15s;
+}
+.nav-label{font-size:13px;font-weight:600;flex:1}
+.nav-badge{
+  font-size:9px;font-weight:800;padding:2px 6px;border-radius:100px;
+  background:var(--vl);color:var(--v);flex-shrink:0;
+}
+.nav-sub{
+  padding-left:52px;
+}
+.nav-sub-item{
+  display:flex;align-items:center;gap:7px;
+  padding:6px 20px 6px 0;cursor:pointer;font-size:12px;
+  color:var(--ink3);transition:color .15s;
+}
+.nav-sub-item:hover{color:var(--v)}
+.nav-sub-item.active{color:var(--v);font-weight:700}
+.nav-sub-item::before{content:'·';flex-shrink:0}
+
+/* ══ MAIN CONTENT ══════════════════════════════════════════ */
+.main{padding:32px 40px 80px;max-width:820px}
+.topic{display:none}
+.topic.active{display:block}
+
+/* ══ SECTION HERO ══════════════════════════════════════════ */
+.section-hero{
+  border-radius:20px;padding:32px;margin-bottom:28px;
+  position:relative;overflow:hidden;
+}
+.section-hero::before{
+  content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23fff' opacity='.05'/%3E%3C/svg%3E") repeat;
+}
+.section-hero-eyebrow{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.7;color:#fff;margin-bottom:8px;position:relative}
+.section-hero-title{font-family:'Sora',sans-serif;font-size:clamp(22px,4vw,32px);font-weight:800;color:#fff;line-height:1.15;margin-bottom:10px;position:relative}
+.section-hero-sub{font-size:14px;color:rgba(255,255,255,.7);line-height:1.65;max-width:520px;position:relative}
+.section-hero-icon{position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:72px;opacity:.15;line-height:1}
+
+/* ══ STEP CARDS ════════════════════════════════════════════ */
+.steps{display:flex;flex-direction:column;gap:16px;margin-bottom:28px}
+.step-card{
+  background:var(--surf);border:1px solid var(--bdr);border-radius:16px;
+  overflow:hidden;transition:box-shadow .2s;
+}
+.step-card:hover{box-shadow:0 4px 20px var(--glow)}
+.step-header{display:flex;align-items:flex-start;gap:14px;padding:18px 20px}
+.step-num{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:900;color:#fff;margin-top:1px;
+}
+.step-content{flex:1}
+.step-title{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.step-body{font-size:13px;color:var(--ink2);line-height:1.65}
+.step-body b{color:var(--ink)}
+.step-body code{
+  background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:5px;padding:1px 6px;font-size:12px;font-family:monospace;
+}
+.step-visual{padding:0 20px 20px;margin-top:-4px}
+
+/* ══ TIP / WARN / INFO BOXES ═══════════════════════════════ */
+.tip-box{
+  border-radius:12px;padding:14px 16px;
+  display:flex;gap:10px;align-items:flex-start;
+  font-size:13px;line-height:1.6;margin-bottom:16px;
+}
+.tip-box.tip{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}
+.tip-box.warn{background:var(--al);border:1px solid #fcd34d;color:#92400e}
+.tip-box.info{background:var(--vl);border:1px solid #c4b5fd;color:#5b21b6}
+.tip-box.note{background:var(--cl);border:1px solid #7dd3fc;color:#075985}
+.tip-icon{font-size:18px;flex-shrink:0;line-height:1.2}
+
+/* ══ MINI MOCKUP (inline interactive demo) ══════════════════ */
+.mini-phone{
+  background:linear-gradient(135deg,#1e1535,#2d1b69);
+  border-radius:20px;padding:14px;
+  box-shadow:0 12px 40px rgba(0,0,0,.25);
+  max-width:300px;margin:0 auto;
+}
+.mini-screen{
+  background:rgba(255,255,255,.06);border-radius:12px;padding:14px;
+}
+.mini-label{font-size:9px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:4px}
+.mini-value{font-size:28px;font-weight:900;color:#fff;line-height:1}
+.mini-bar-row{display:flex;height:6px;border-radius:100px;overflow:hidden;gap:1px;margin:10px 0}
+.mini-bar-seg{height:100%;border-radius:100px}
+.mini-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.mini-card{background:rgba(255,255,255,.1);border-radius:8px;padding:8px 6px;text-align:center}
+.mini-card-l{font-size:7px;color:rgba(255,255,255,.45);font-weight:700;text-transform:uppercase;margin-bottom:3px}
+.mini-card-v{font-size:13px;font-weight:900;color:#fff}
+
+/* ══ INTERACTIVE DEMO ═══════════════════════════════════════ */
+.demo-box{
+  background:var(--surf);border:1.5px solid var(--bdr);border-radius:16px;
+  padding:20px;margin-bottom:16px;
+}
+.demo-title{font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.demo-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.demo-label{font-size:12px;font-weight:600;color:var(--ink2);min-width:120px}
+.demo-input{
+  background:var(--surf2);border:1.5px solid var(--bdr);border-radius:10px;
+  padding:8px 12px;font-size:15px;font-weight:700;color:var(--ink);
+  outline:none;width:130px;transition:border-color .15s;
+  font-family:inherit;
+}
+.demo-input:focus{border-color:var(--v)}
+.demo-result{
+  background:var(--vl);border-radius:10px;padding:8px 14px;
+  font-size:13px;font-weight:700;color:var(--v);
+}
+.demo-result.green{background:var(--gl);color:var(--g)}
+.demo-result.amber{background:var(--al);color:var(--a)}
+.demo-result.red{background:var(--rl);color:var(--r)}
+.demo-bar-wrap{margin-top:4px}
+.demo-bar-bg{height:8px;border-radius:100px;background:var(--bdr);overflow:hidden}
+.demo-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--v),var(--v2));transition:width .4s ease}
+
+/* ══ CHECK LIST ════════════════════════════════════════════ */
+.check-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.check-item{
+  display:flex;gap:10px;align-items:flex-start;
+  padding:10px 14px;background:var(--surf);border:1px solid var(--bdr);
+  border-radius:12px;font-size:13px;color:var(--ink2);line-height:1.55;
+}
+.check-item::before{
+  content:'✓';width:20px;height:20px;border-radius:50%;
+  background:var(--g);color:#fff;font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+
+/* ══ SECTION DIVIDER ════════════════════════════════════════ */
+.sdiv{
+  display:flex;align-items:center;gap:12px;margin:28px 0 20px;
+}
+.sdiv-line{flex:1;height:1px;background:var(--bdr)}
+.sdiv-label{font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+
+/* ══ VIDEO PLACEHOLDER ══════════════════════════════════════ */
+.video-placeholder{
+  border-radius:16px;overflow:hidden;background:var(--ink);
+  aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:12px;margin-bottom:20px;cursor:pointer;
+  border:1px solid var(--bdr);
+}
+.video-placeholder:hover .vp-btn{transform:scale(1.08)}
+.vp-btn{
+  width:56px;height:56px;border-radius:50%;background:var(--v);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;transition:transform .15s;
+}
+.vp-label{font-size:13px;color:rgba(255,255,255,.5)}
+
+/* ══ FAQ ACCORDION ══════════════════════════════════════════ */
+.faq{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.faq-item{border:1.5px solid var(--bdr);border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.faq-item.open{border-color:var(--v)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;font-size:14px;font-weight:700;color:var(--ink);user-select:none}
+.faq-arrow{font-size:11px;color:var(--ink3);transition:transform .2s;flex-shrink:0}
+.faq-item.open .faq-arrow{transform:rotate(180deg);color:var(--v)}
+.faq-a{display:none;padding:0 18px 14px;font-size:13px;color:var(--ink2);line-height:1.7}
+.faq-item.open .faq-a{display:block}
+
+/* ══ PROGRESS TRACKER ═══════════════════════════════════════ */
+.prog-tracker{
+  display:flex;gap:0;margin-bottom:28px;
+  border:1px solid var(--bdr);border-radius:14px;overflow:hidden;
+}
+.prog-step{
+  flex:1;padding:10px 8px;text-align:center;font-size:11px;font-weight:700;
+  background:var(--surf2);color:var(--ink3);border-right:1px solid var(--bdr);
+  cursor:pointer;transition:all .15s;
+}
+.prog-step:last-child{border-right:none}
+.prog-step.done{background:var(--gl);color:var(--g)}
+.prog-step.current{background:var(--v);color:#fff}
+.prog-step:hover:not(.current):not(.done){background:var(--vl);color:var(--v)}
+
+/* ══ TAG ════════════════════════════════════════════════════ */
+.tag{
+  display:inline-block;padding:2px 9px;border-radius:100px;
+  font-size:10px;font-weight:700;
+}
+.tag.app{background:var(--vl);color:var(--v)}
+.tag.excel{background:var(--gl);color:var(--g)}
+.tag.pdf{background:var(--al);color:var(--a)}
+.tag.calc{background:var(--cl);color:var(--c)}
+
+/* ══ SHORTCUT GRID ══════════════════════════════════════════ */
+.shortcut-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+.shortcut-card{
+  background:var(--surf);border:1px solid var(--bdr);border-radius:14px;
+  padding:16px;cursor:pointer;transition:all .15s;text-align:center;
+}
+.shortcut-card:hover{border-color:var(--v);background:var(--vl);transform:translateY(-2px)}
+.shortcut-card.active-sc{border-color:var(--v);background:var(--vl)}
+.sc-icon{font-size:30px;margin-bottom:8px}
+.sc-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.sc-sub{font-size:11px;color:var(--ink3)}
+
+/* ══ MOBILE ════════════════════════════════════════════════ */
+@media(max-width:768px){
+  :root{--nav-w:100%}
+  .shell{grid-template-columns:1fr}
+  .sidebar{
+    position:fixed;top:var(--top-h);left:0;right:0;bottom:0;
+    z-index:100;transform:translateX(-100%);
+    transition:transform .28s cubic-bezier(.32,.72,0,1);
+    height:calc(100vh - var(--top-h));
+  }
+  .sidebar.open{transform:translateX(0)}
+  .main{padding:20px 16px 80px}
+  .nav-toggle{display:flex}
+  .shortcut-grid{grid-template-columns:1fr 1fr}
+  .back-btn span{display:none}
+}
+@media(max-width:480px){
+  .shortcut-grid{grid-template-columns:1fr 1fr}
+  .prog-tracker{flex-wrap:wrap}
+  .prog-step{border-radius:0;flex-basis:50%;border:none;border-bottom:1px solid var(--bdr)}
+}
+/* overlay */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;backdrop-filter:blur(2px)}
+.sb-overlay.open{display:block}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="top-brand">
+    <button class="nav-toggle" id="navToggle" onclick="toggleSidebar()">☰</button>
+    <div class="top-logo">
+      <img src="icons/icon-192.png" alt="" onerror="this.parentElement.innerHTML='💰'">
+    </div>
+    <div>
+      <div class="top-title" id="tt-appName">Calculadora da Virada</div>
+      <div class="top-sub" id="tt-appSub">Central de Tutoriais</div>
+    </div>
+  </div>
+  <div class="top-actions">
+    <div class="lang-row">
+      <button class="lbtn on" onclick="setLang('pt')">PT</button>
+      <button class="lbtn" onclick="setLang('es')">ES</button>
+      <button class="lbtn" onclick="setLang('en')">EN</button>
+    </div>
+    <a href="index.html" class="back-btn"><span>←</span><span id="tt-backBtn">Ir para a App</span></a>
+  </div>
+</header>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sb-overlay" id="sbOverlay" onclick="toggleSidebar()"></div>
+
+<div class="shell">
+
+<!-- SIDEBAR NAV -->
+<nav class="sidebar" id="sidebar">
+
+  <div class="sidebar-section-label" id="sbl-start">INÍCIO</div>
+  <div class="nav-item active" onclick="goTo('inicio')">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-label" id="nl-inicio">Visão Geral</div>
+  </div>
+
+  <div class="sidebar-section-label" id="sbl-app">CALCULADORA (APP)</div>
+  <div class="nav-item" onclick="goTo('app-install')">
+    <div class="nav-icon">📲</div>
+    <div class="nav-label" id="nl-install">Instalar a App</div>
+  </div>
+  <div class="nav-item" onclick="goTo('app-salario')">
+    <div class="nav-icon">💰</div>
+    <div class="nav-label" id="nl-salario">Salário & Distribuição</div>
+  </div>
+  <div class="nav-item" onclick="goTo('app-despesas')">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-label" id="nl-despesas">Gastos Fixos & Check</div>
+  </div>
+  <div class="nav-item" onclick="goTo('app-lazer')">
+    <div class="nav-icon">☕</div>
+    <div class="nav-label" id="nl-lazer">Lazer & Fracionamento</div>
+  </div>
+  <div class="nav-item" onclick="goTo('app-invest')">
+    <div class="nav-icon">🛡️</div>
+    <div class="nav-label" id="nl-invest">Investimentos</div>
+  </div>
+  <div class="nav-item" onclick="goTo('app-sonhos')">
+    <div class="nav-icon">🎯</div>
+    <div class="nav-label" id="nl-sonhos">Sonhos & Metas</div>
+  </div>
+  <div class="nav-item" onclick="goTo('app-parcelados')">
+    <div class="nav-icon">💳</div>
+    <div class="nav-label" id="nl-parcelados">Compras Parceladas</div>
+  </div>
+  <div class="nav-item" onclick="goTo('app-historico')">
+    <div class="nav-icon">📅</div>
+    <div class="nav-label" id="nl-historico">Fechar & Arquivar Mês</div>
+  </div>
+  <div class="nav-item" onclick="goTo('app-plano')">
+    <div class="nav-icon">📈</div>
+    <div class="nav-label" id="nl-plano">Aba Plano</div>
+  </div>
+
+  <div class="sidebar-section-label" id="sbl-bonus">BÓNUS</div>
+  <div class="nav-item" onclick="goTo('excel')">
+    <div class="nav-icon">📊</div>
+    <div class="nav-label" id="nl-excel">Planilha de Diagnóstico</div>
+    <div class="nav-badge tag excel" id="nb-excel">Excel</div>
+  </div>
+  <div class="nav-item" onclick="goTo('pdf')">
+    <div class="nav-icon">🎯</div>
+    <div class="nav-label" id="nl-pdf">Pack de Metas</div>
+    <div class="nav-badge tag pdf" id="nb-pdf">PDF</div>
+  </div>
+  <div class="nav-item" onclick="goTo('liberdade')">
+    <div class="nav-icon">🏆</div>
+    <div class="nav-label" id="nl-liberdade">Liberdade Financeira</div>
+    <div class="nav-badge tag calc" id="nb-calc">App</div>
+  </div>
+
+  <div class="sidebar-section-label" id="sbl-faq">AJUDA</div>
+  <div class="nav-item" onclick="goTo('faq')">
+    <div class="nav-icon">❓</div>
+    <div class="nav-label" id="nl-faq">Perguntas Frequentes</div>
+  </div>
+
+</nav>
+
+<!-- MAIN -->
+<main class="main" id="mainContent">
+
+<!-- ══════════════════════════════════
+     INÍCIO — Visão Geral
+══════════════════════════════════ -->
+<div class="topic active" id="topic-inicio">
+  <div class="section-hero" style="background:linear-gradient(135deg,#2e0d6b,#6d28d9)">
+    <div class="section-hero-icon">🎓</div>
+    <div class="section-hero-eyebrow" id="h-inicio-eyebrow">BEM-VINDO</div>
+    <div class="section-hero-title" id="h-inicio-title">Central de Tutoriais</div>
+    <div class="section-hero-sub" id="h-inicio-sub">Aprende a usar cada ferramenta do teu combo financeiro — passo a passo, sem complicações.</div>
+  </div>
+
+  <div class="shortcut-grid">
+    <div class="shortcut-card" onclick="goTo('app-salario')">
+      <div class="sc-icon">📱</div>
+      <div class="sc-title" id="sc-app-t">Calculadora da Virada</div>
+      <div class="sc-sub" id="sc-app-s">App principal · 8 tópicos</div>
+    </div>
+    <div class="shortcut-card" onclick="goTo('excel')">
+      <div class="sc-icon">📊</div>
+      <div class="sc-title" id="sc-excel-t">Planilha Diagnóstico</div>
+      <div class="sc-sub" id="sc-excel-s">Excel / Google Sheets</div>
+    </div>
+    <div class="shortcut-card" onclick="goTo('pdf')">
+      <div class="sc-icon">🎯</div>
+      <div class="sc-title" id="sc-pdf-t">Pack de Metas</div>
+      <div class="sc-sub" id="sc-pdf-s">Templates imprimíveis</div>
+    </div>
+    <div class="shortcut-card" onclick="goTo('liberdade')">
+      <div class="sc-icon">🏆</div>
+      <div class="sc-title" id="sc-lib-t">Liberdade Financeira</div>
+      <div class="sc-sub" id="sc-lib-s">Calculadora de FI</div>
+    </div>
+  </div>
+
+  <div class="tip-box info">
+    <div class="tip-icon">💡</div>
+    <div id="tip-inicio">Usa o menu lateral para navegar entre os tópicos. No telemóvel, toca no ícone ☰ para abrir o menu.</div>
+  </div>
+
+  <div class="sdiv"><div class="sdiv-line"></div><div class="sdiv-label" id="sdiv-flow">FLUXO RECOMENDADO</div><div class="sdiv-line"></div></div>
+
+  <div class="check-list">
+    <div class="check-item" id="flow-1">Instala a app no telemóvel (iPhone ou Android) — tutorial em Instalar a App</div>
+    <div class="check-item" id="flow-2">Preenche a planilha de Diagnóstico para conheceres o teu ponto de partida</div>
+    <div class="check-item" id="flow-3">Define o teu salário e percentagens na app (50/30/20 ou personalizado)</div>
+    <div class="check-item" id="flow-4">Adiciona os teus gastos fixos e marca (✓) conforme vais pagando</div>
+    <div class="check-item" id="flow-5">Configura os teus Sonhos com valor e prazo</div>
+    <div class="check-item" id="flow-6">No fim do mês, arquiva e analisa a sobra no Histórico</div>
+    <div class="check-item" id="flow-7">Usa a Calculadora de Liberdade Financeira para ver quando chegares lá</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     INSTALAR APP
+══════════════════════════════════ -->
+<div class="topic" id="topic-app-install">
+  <div class="section-hero" style="background:linear-gradient(135deg,#1e3a5f,#2563eb)">
+    <div class="section-hero-icon">📲</div>
+    <div class="section-hero-eyebrow" id="h-install-eyebrow">APP · PASSO 0</div>
+    <div class="section-hero-title" id="h-install-title">Instalar a App no Telemóvel</div>
+    <div class="section-hero-sub" id="h-install-sub">A Calculadora da Virada é uma PWA — instala como qualquer app nativa, sem App Store, sem Google Play.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#0891b2">1</div>
+        <div class="step-content">
+          <div class="step-title" id="inst-1-t">iPhone / iPad (Safari)</div>
+          <div class="step-body" id="inst-1-b">Abre o link da app no <b>Safari</b> (obrigatório — não funciona no Chrome no iPhone). Toca no botão <b>Compartilhar ↑</b> na barra inferior. Selecciona <b>"Adicionar à Tela de Início"</b>. Confirma o nome e toca em <b>Adicionar</b>.</div>
+        </div>
+      </div>
+      <div class="step-visual">
+        <div class="tip-box note"><div class="tip-icon">📱</div><span id="inst-1-note">A app vai aparecer no ecrã inicial como qualquer outra app. Ícone roxo com 💰.</span></div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#059669">2</div>
+        <div class="step-content">
+          <div class="step-title" id="inst-2-t">Android (Chrome)</div>
+          <div class="step-body" id="inst-2-b">Abre o link no <b>Chrome</b>. Aparecerá automaticamente um banner <b>"Adicionar à tela inicial"</b> — toca nele. Ou vai ao menu <b>⋮</b> → <b>"Instalar aplicativo"</b>.</div>
+        </div>
+      </div>
+      <div class="step-visual">
+        <div class="tip-box tip"><div class="tip-icon">✅</div><span id="inst-2-note">No Android podes usar também o botão 📲 no cabeçalho da app para desencadear a instalação directamente.</span></div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#6d28d9">3</div>
+        <div class="step-content">
+          <div class="step-title" id="inst-3-t">PC — Chrome / Edge</div>
+          <div class="step-body" id="inst-3-b">Na barra de endereço aparece um ícone <b>⊕</b>. Clica nele e selecciona <b>"Instalar Calculadora da Virada"</b>. A app abre numa janela própria, sem barra de browser.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box warn">
+    <div class="tip-icon">⚠️</div>
+    <div id="inst-warn">Os dados ficam guardados <b>no dispositivo</b> onde instalaste. Se instalares em dois telemóveis, cada um tem os seus próprios dados independentes.</div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SALÁRIO & DISTRIBUIÇÃO
+══════════════════════════════════ -->
+<div class="topic" id="topic-app-salario">
+  <div class="section-hero" style="background:linear-gradient(135deg,#2e0d6b,#6d28d9)">
+    <div class="section-hero-icon">💰</div>
+    <div class="section-hero-eyebrow" id="h-sal-eyebrow">APP · PASSO 1</div>
+    <div class="section-hero-title" id="h-sal-title">Salário & Distribuição do Orçamento</div>
+    <div class="section-hero-sub" id="h-sal-sub">O primeiro passo — defines quanto ganhas e como queres dividir o dinheiro entre Fixo, Lazer e Investimentos.</div>
+  </div>
+
+  <!-- DEMO INTERACTIVO -->
+  <div class="demo-box">
+    <div class="demo-title">🎮 <span id="dt-sal">Experimenta aqui — calcula ao vivo</span></div>
+    <div class="demo-row">
+      <div class="demo-label" id="dl-salario">Salário mensal ($)</div>
+      <input type="number" class="demo-input" id="d-salario" value="2000" oninput="demoSalario()">
+    </div>
+    <div class="demo-row">
+      <div class="demo-label" id="dl-fixo">% Gastos Fixos</div>
+      <input type="number" class="demo-input" id="d-fixo" value="50" min="0" max="100" oninput="demoSalario()">
+      <div class="demo-result" id="d-res-fixo">$1,000</div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-label" id="dl-lazer-demo">% Lazer (auto)</div>
+      <div class="demo-input" id="d-lazer-auto" style="color:var(--a);background:var(--al);border-color:var(--a)">30%</div>
+      <div class="demo-result amber" id="d-res-lazer">$600</div>
+    </div>
+    <div class="demo-row">
+      <div class="demo-label" id="dl-invest-demo">% Investimentos</div>
+      <input type="number" class="demo-input" id="d-invest" value="20" min="0" max="100" oninput="demoSalario()">
+      <div class="demo-result green" id="d-res-invest">$400</div>
+    </div>
+    <div class="demo-bar-wrap">
+      <div class="demo-bar-bg"><div class="demo-bar-fill" id="d-bar" style="width:100%"></div></div>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#6d28d9">1</div>
+        <div class="step-content">
+          <div class="step-title" id="sal-1-t">Introduz o teu salário</div>
+          <div class="step-body" id="sal-1-b">No topo da app (bloco roxo escuro), toca no campo do salário e introduz o teu rendimento mensal líquido. O valor é guardado automaticamente — nunca precisas de voltar a introduzir.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#6d28d9">2</div>
+        <div class="step-content">
+          <div class="step-title" id="sal-2-t">Escolhe o modo % ou $</div>
+          <div class="step-body" id="sal-2-b">Na secção <b>Distribuição do orçamento</b>, usa o toggle <code>% Perc.</code> / <code>$ Valor</code> para definir os limites de cada categoria em percentagem do salário ou em valor absoluto. O Lazer calcula-se automaticamente pelo que sobra.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#6d28d9">3</div>
+        <div class="step-content">
+          <div class="step-title" id="sal-3-t">A regra 50/30/20 como ponto de partida</div>
+          <div class="step-body" id="sal-3-b"><b>50%</b> para Gastos Fixos (habitação, comida, transportes), <b>30%</b> para Lazer (restaurantes, saídas, assinaturas), <b>20%</b> para Investimentos e poupança. Ajusta conforme a tua realidade — não há regra universal.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box tip"><div class="tip-icon">💡</div><span id="tip-salario">A barra colorida no topo da secção mostra visualmente como o teu orçamento está dividido — fica vermelha se ultrapassares 100%.</span></div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     GASTOS FIXOS & CHECK
+══════════════════════════════════ -->
+<div class="topic" id="topic-app-despesas">
+  <div class="section-hero" style="background:linear-gradient(135deg,#1e1b4b,#4338ca)">
+    <div class="section-hero-icon">🏠</div>
+    <div class="section-hero-eyebrow" id="h-desp-eyebrow">APP · PASSO 2</div>
+    <div class="section-hero-title" id="h-desp-title">Gastos Fixos & Sistema de Check</div>
+    <div class="section-hero-sub" id="h-desp-sub">Adiciona as tuas contas fixas e marca (✓) cada uma quando pagas. O valor é debitado automaticamente do salário restante.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#4338ca">1</div>
+        <div class="step-content">
+          <div class="step-title" id="desp-1-t">Adicionar uma conta fixa</div>
+          <div class="step-body" id="desp-1-b">Vai à aba <b>🏠 Gastos Fixos</b>. Toca em <b>➕ Adicionar gasto fixo</b>. Preenche a descrição (ex: "Renda"), a data de vencimento e o valor. A linha aparece na lista.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#4338ca">2</div>
+        <div class="step-content">
+          <div class="step-title" id="desp-2-t">Marcar como pago (✓)</div>
+          <div class="step-body" id="desp-2-b">Quando pagas a conta, toca no <b>círculo ✓</b> à esquerda. Ele fica verde e o valor é <b>descontado imediatamente</b> do "Salário Restante" no topo. O item fica riscado para indicar que está pago.</div>
+        </div>
+      </div>
+      <div class="step-visual">
+        <div class="tip-box info"><div class="tip-icon">🔑</div><span id="desp-2-note">Esta é a mecânica central da app — o check acontece quando a despesa sai da conta, não quando está planeada.</span></div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#4338ca">3</div>
+        <div class="step-content">
+          <div class="step-title" id="desp-3-t">Verificar o limite</div>
+          <div class="step-body" id="desp-3-b">A barra no fundo da secção mostra se o total de Gastos Fixos está <b>✅ dentro do limite</b> (verde) ou <b>🚨 acima do limite</b> (vermelho). O limite é definido pela % que configuraste na Distribuição.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box warn"><div class="tip-icon">⚠️</div><span id="tip-desp">Se removeres o check de um item já marcado, o valor volta ao salário disponível — útil se marcares por engano.</span></div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     LAZER
+══════════════════════════════════ -->
+<div class="topic" id="topic-app-lazer">
+  <div class="section-hero" style="background:linear-gradient(135deg,#78350f,#d97706)">
+    <div class="section-hero-icon">☕</div>
+    <div class="section-hero-eyebrow" id="h-lazer-eyebrow">APP · PASSO 3</div>
+    <div class="section-hero-title" id="h-lazer-title">Lazer & Fracionamento de Meta</div>
+    <div class="section-hero-sub" id="h-lazer-sub">O Lazer auto-calcula pelo que sobra. Podes dividir a meta em partes iguais ou adicionar itens manualmente.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#d97706">1</div>
+        <div class="step-content">
+          <div class="step-title" id="lazer-1-t">O Lazer calcula-se sozinho</div>
+          <div class="step-body" id="lazer-1-b">Não defines a % de Lazer directamente. O app subtrai automaticamente as % de Fixo, Investimentos, Sonhos e Parcelados ao salário. O que sobra é o teu Lazer. Por isso, quanto mais poupas noutras categorias, mais Lazer tens.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#d97706">2</div>
+        <div class="step-content">
+          <div class="step-title" id="lazer-2-t">Modo Manual</div>
+          <div class="step-body" id="lazer-2-b">Com o selector em <b>Manual</b>, adicionas itens um a um: restaurantes, assinaturas, cinema, etc. Cada check debita do salário restante. Ideal para quem tem gastos de lazer variáveis.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#d97706">3</div>
+        <div class="step-content">
+          <div class="step-title" id="lazer-3-t">Modo Automático (2×, 3×, 4×)</div>
+          <div class="step-body" id="lazer-3-b">Selecciona <b>2×, 3× ou 4×</b> no selector de divisão. O app divide a meta de Lazer em partes iguais automaticamente. Dás nome a cada parte (ex: "Restaurantes", "Cinema") e marcas (✓) conforme gastas. A área de itens manuais desaparece para evitar duplicações.</div>
+        </div>
+      </div>
+      <div class="step-visual">
+        <div class="tip-box info"><div class="tip-icon">💡</div><span id="lazer-3-note">Exemplo: Meta de Lazer $600. Seleccionas 3×. Aparecem 3 partes de $200 cada para distribuíres como quiseres.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     INVESTIMENTOS
+══════════════════════════════════ -->
+<div class="topic" id="topic-app-invest">
+  <div class="section-hero" style="background:linear-gradient(135deg,#064e3b,#059669)">
+    <div class="section-hero-icon">🛡️</div>
+    <div class="section-hero-eyebrow" id="h-inv-eyebrow">APP · PASSO 4</div>
+    <div class="section-hero-title" id="h-inv-title">Investimentos & Alocação em Conta</div>
+    <div class="section-hero-sub" id="h-inv-sub">Define a meta mínima de investimento e regista onde guardas o dinheiro quando marcas como investido.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#059669">1</div>
+        <div class="step-content">
+          <div class="step-title" id="inv-1-t">Define a meta mínima</div>
+          <div class="step-body" id="inv-1-b">A % de Investimentos que defines na Distribuição torna-se a <b>meta mínima mensal</b>. O alert fica verde quando atinges ou superas essa meta, amarelo se ainda estás abaixo.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#059669">2</div>
+        <div class="step-content">
+          <div class="step-title" id="inv-2-t">Adicionar investimentos manualmente</div>
+          <div class="step-body" id="inv-2-b">Toca em <b>➕ Adicionar investimento</b>. Descreve o activo (ex: "ETF BOVA11", "Fundo Emergência") e o valor aportado. Cada item pode ser dividido automaticamente com o selector de partes.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#059669">3</div>
+        <div class="step-content">
+          <div class="step-title" id="inv-3-t">Dar check num investimento — alocação em conta</div>
+          <div class="step-body" id="inv-3-b">Quando marcas (✓) um investimento, aparece um <b>modal de alocação</b>. Podes escolher em qual das tuas <b>Contas</b> (Nubank, XTB, etc.) foi guardado esse dinheiro — e até dividir por várias contas. Confirmas e o valor entra na conta seleccionada.</div>
+        </div>
+      </div>
+      <div class="step-visual">
+        <div class="tip-box tip"><div class="tip-icon">🏦</div><span id="inv-3-note">Para usar esta funcionalidade, primeiro adiciona as tuas contas bancárias no Painel de Contas (bloco roxo no topo).</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     SONHOS
+══════════════════════════════════ -->
+<div class="topic" id="topic-app-sonhos">
+  <div class="section-hero" style="background:linear-gradient(135deg,#3b0764,#8b5cf6)">
+    <div class="section-hero-icon">🎯</div>
+    <div class="section-hero-eyebrow" id="h-son-eyebrow">APP · PASSO 5</div>
+    <div class="section-hero-title" id="h-son-title">Sonhos & Metas de Poupança</div>
+    <div class="section-hero-sub" id="h-son-sub">Define um objectivo com valor e prazo. A app calcula a parcela mensal e acompanha o progresso visualmente.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#8b5cf6">1</div>
+        <div class="step-content">
+          <div class="step-title" id="son-1-t">Criar um sonho</div>
+          <div class="step-body" id="son-1-b">Na aba <b>🚀 Sonhos</b>, preenche: <b>Nome</b> (ex: "Viagem ao Japão"), <b>Valor total ($)</b> (ex: $3.000) e <b>Prazo em meses</b> (ex: 12). Toca em <b>🚀 Adicionar Sonho</b>.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#8b5cf6">2</div>
+        <div class="step-content">
+          <div class="step-title" id="son-2-t">Impacto no orçamento</div>
+          <div class="step-body" id="son-2-b">A parcela mensal aparece nos <b>mini-cards da Distribuição</b> em lilás. O Lazer reduz automaticamente para acomodar o sonho. Podes ver na barra de distribuição quanto o sonho consome do teu orçamento.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#8b5cf6">3</div>
+        <div class="step-content">
+          <div class="step-title" id="son-3-t">Marcar a parcela do mês (✓)</div>
+          <div class="step-body" id="son-3-b">No início ou final de cada mês, toca no <b>✓</b> do sonho para indicar que reservaste a parcela desse mês. O valor é descontado do salário restante e a <b>barra de progresso</b> avança. O contador "X/Y pagas" actualiza.</div>
+        </div>
+      </div>
+      <div class="step-visual">
+        <div class="tip-box info"><div class="tip-icon">🎯</div><span id="son-3-note">Ao arquivar o mês, as parcelas pagas entram como "sobra com propósito" no histórico — dinheiro guardado, não gasto.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     PARCELADOS
+══════════════════════════════════ -->
+<div class="topic" id="topic-app-parcelados">
+  <div class="section-hero" style="background:linear-gradient(135deg,#164e63,#0891b2)">
+    <div class="section-hero-icon">💳</div>
+    <div class="section-hero-eyebrow" id="h-parc-eyebrow">APP · PASSO 6</div>
+    <div class="section-hero-title" id="h-parc-title">Compras Parceladas</div>
+    <div class="section-hero-sub" id="h-parc-sub">Controla as tuas prestações mensais — separadas dos gastos fixos para não confundires. Aparecem na Distribuição do orçamento.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#0891b2">1</div>
+        <div class="step-content">
+          <div class="step-title" id="parc-1-t">Adicionar uma compra parcelada</div>
+          <div class="step-body" id="parc-1-b">Vai à aba <b>💳 Parcelados</b>. Toca em <b>💳 Adicionar compra parcelada</b>. Preenche: <b>Descrição</b> (ex: "iPhone 15"), <b>Parcela actual</b> (ex: 3), <b>Total de parcelas</b> (ex: 12) e <b>Valor/mês</b> (ex: $150).</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#0891b2">2</div>
+        <div class="step-content">
+          <div class="step-title" id="parc-2-t">O chip de parcelas restantes</div>
+          <div class="step-body" id="parc-2-b">Cada linha mostra um chip azul com <b>"X parcela(s) restante(s)"</b>. Actualiza automaticamente conforme avanças o número da parcela actual. Quando chegares à última, mostra "Quitada".</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#0891b2">3</div>
+        <div class="step-content">
+          <div class="step-title" id="parc-3-t">Impacto no orçamento</div>
+          <div class="step-body" id="parc-3-b">Os parcelados aparecem na barra de Distribuição em <b>azul cyan</b> e têm os seus próprios mini-cards. Cada ✓ debita do salário restante. No histórico, ficam registados separadamente dos gastos fixos.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box warn"><div class="tip-icon">💡</div><span id="tip-parc">Diferença entre Parcelados e Sonhos: nos Parcelados o dinheiro <b>sai</b> (já compraste); nos Sonhos o dinheiro <b>está a ser guardado</b> para comprar.</span></div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     HISTÓRICO
+══════════════════════════════════ -->
+<div class="topic" id="topic-app-historico">
+  <div class="section-hero" style="background:linear-gradient(135deg,#0f2942,#1e40af)">
+    <div class="section-hero-icon">📅</div>
+    <div class="section-hero-eyebrow" id="h-hist-eyebrow">APP · PASSO 7</div>
+    <div class="section-hero-title" id="h-hist-title">Fechar & Arquivar o Mês</div>
+    <div class="section-hero-sub" id="h-hist-sub">No fim de cada mês, arquivas os dados. A app calcula a sobra real e guarda o registo para comparares mês a mês.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#1e40af">1</div>
+        <div class="step-content">
+          <div class="step-title" id="hist-1-t">Quando arquivar?</div>
+          <div class="step-body" id="hist-1-b">Arquiva no <b>final de cada mês</b> — depois de teres marcado todos os gastos, investimentos e parcelas de sonhos desse mês. Não precisas de marcar tudo — a sobra reflecte o que ficou por gastar dentro dos limites.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#1e40af">2</div>
+        <div class="step-content">
+          <div class="step-title" id="hist-2-t">Como arquivar</div>
+          <div class="step-body" id="hist-2-b">Toca no botão <b>🔒 Fechar e Arquivar Mês</b> no fundo da página de Orçamento. Ou vai à aba <b>📅 Histórico</b>, selecciona o mês e toca em <b>🔒 Arquivar</b>. Os dados ficam guardados permanentemente.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#1e40af">3</div>
+        <div class="step-content">
+          <div class="step-title" id="hist-3-t">Interpretar a sobra</div>
+          <div class="step-body" id="hist-3-b">A <b>Sobra</b> no histórico = economia dentro dos limites de Fixo e Lazer + parcelas de sonhos guardadas. Exemplo: limite Fixo $1.100, gastaste $1.000 → sobra $100. Se guardaste $200 para o sonho → sobra total $300.</div>
+        </div>
+      </div>
+      <div class="step-visual">
+        <div class="tip-box tip"><div class="tip-icon">✅</div><span id="hist-3-note">Cada card de histórico mostra o gasto real vs limite por categoria e chips "poupou $X em fixo / lazer" para visualizares onde economizaste.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     ABA PLANO
+══════════════════════════════════ -->
+<div class="topic" id="topic-app-plano">
+  <div class="section-hero" style="background:linear-gradient(135deg,#14532d,#059669)">
+    <div class="section-hero-icon">📈</div>
+    <div class="section-hero-eyebrow" id="h-plano-eyebrow">APP · BÓNUS</div>
+    <div class="section-hero-title" id="h-plano-title">Aba Plano — Simulador de Investimento</div>
+    <div class="section-hero-sub" id="h-plano-sub">Projecta o crescimento do teu patrimônio com juros compostos. Define o perfil de risco e vê os marcos da tua jornada financeira.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#059669">1</div>
+        <div class="step-content">
+          <div class="step-title" id="plano-1-t">Escolhe o teu perfil de risco</div>
+          <div class="step-body" id="plano-1-b">Na aba <b>📈 Plano</b>, selecciona: <b>🛡️ Conservador</b> (retorno ~7%/ano, renda fixa), <b>⚖️ Moderado</b> (12%/ano, carteira diversificada) ou <b>🚀 Arrojado</b> (18%/ano, acções e criptoativos). A taxa sugerida preenche-se automaticamente.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#059669">2</div>
+        <div class="step-content">
+          <div class="step-title" id="plano-2-t">Preenche o simulador</div>
+          <div class="step-body" id="plano-2-b">O campo <b>Aporte mensal</b> preenche-se automaticamente com o valor de Investimentos que configuraste no orçamento. Adiciona o <b>Aporte inicial</b> (poupança já existente), <b>Taxa anual</b> e <b>Período</b>. O resultado aparece em tempo real.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#059669">3</div>
+        <div class="step-content">
+          <div class="step-title" id="plano-3-t">Lê os marcos e a alocação</div>
+          <div class="step-body" id="plano-3-b">A secção <b>Marcos ao Longo do Tempo</b> mostra o patrimônio estimado em 1, 2, 5, 10, 20 e 30 anos com o multiplicador (ex: ×3.2). A <b>Alocação Recomendada</b> mostra como distribuir a carteira pelo teu perfil.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     EXCEL — DIAGNÓSTICO
+══════════════════════════════════ -->
+<div class="topic" id="topic-excel">
+  <div class="section-hero" style="background:linear-gradient(135deg,#14532d,#16a34a)">
+    <div class="section-hero-icon">📊</div>
+    <div class="section-hero-eyebrow" id="h-xl-eyebrow">BÓNUS · EXCEL</div>
+    <div class="section-hero-title" id="h-xl-title">Planilha de Diagnóstico Financeiro</div>
+    <div class="section-hero-sub" id="h-xl-sub">Usa uma vez para fazeres o "raio-x" completo das tuas finanças. Os dados daqui alimentam a Calculadora de Liberdade Financeira.</div>
+  </div>
+
+  <div class="tip-box info"><div class="tip-icon">📥</div><span id="tip-xl-download">Abre o ficheiro <b>diagnostico-financeiro.xlsx</b> no Excel (Windows/Mac) ou faz upload para o Google Sheets (Ficheiro → Importar).</span></div>
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#16a34a">1</div>
+        <div class="step-content">
+          <div class="step-title" id="xl-1-t">Aba "📊 Diagnóstico" — preenche da ordem A → E</div>
+          <div class="step-body" id="xl-1-b"><b>Bloco A</b>: nome, mês de referência, salário e outras rendas. <b>Bloco B</b>: os teus activos (poupança, investimentos, imóveis, carro). <b>Bloco C</b>: as tuas dívidas com taxa de juro. <b>Bloco D</b>: o balanço calcula-se sozinho. <b>Bloco E</b>: despesas mensais por categoria.</div>
+        </div>
+      </div>
+      <div class="step-visual">
+        <div class="tip-box note"><div class="tip-icon">🔵</div><span id="xl-1-note">Células a <b>azul</b> = tu preenches. Células a <b>preto</b> = calculadas automaticamente. Não alteres as células de fórmula.</span></div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#16a34a">2</div>
+        <div class="step-content">
+          <div class="step-title" id="xl-2-t">Aba "🏥 Score de Saúde" — lê o resultado</div>
+          <div class="step-body" id="xl-2-b">Depois de preencher o Diagnóstico, esta aba calcula automaticamente 6 indicadores com semáforo 🟢🟡🔴 e um <b>Score total 0–100</b>. Um score abaixo de 40 indica áreas urgentes; acima de 70 indica saúde financeira sólida.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#16a34a">3</div>
+        <div class="step-content">
+          <div class="step-title" id="xl-3-t">Aba "🎯 Plano de Acção" — define as próximas acções</div>
+          <div class="step-body" id="xl-3-b">Baseando-te no score, preenche as acções prioritárias a esta semana, a 30 dias e a 90 dias. Marca o estado de cada uma à medida que concluis. Esta aba é a ponte entre o diagnóstico e a acção.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#16a34a">4</div>
+        <div class="step-content">
+          <div class="step-title" id="xl-4-t">Aba "📈 Evolução Mensal" — tracking anual</div>
+          <div class="step-body" id="xl-4-b">Todos os meses, copia os valores do <b>Histórico da app</b> para esta tabela. Ao fim do ano tens uma visão completa da tua evolução patrimonial — renda, despesas, poupança, activos e passivos mês a mês.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box tip"><div class="tip-icon">🔄</div><span id="tip-xl-cycle">Repete o diagnóstico a cada 90 dias para veres a evolução do teu score. Usa os valores do Diagnóstico como input para a Calculadora de Liberdade Financeira.</span></div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     PDF — PACK DE METAS
+══════════════════════════════════ -->
+<div class="topic" id="topic-pdf">
+  <div class="section-hero" style="background:linear-gradient(135deg,#78350f,#f59e0b)">
+    <div class="section-hero-icon">🎯</div>
+    <div class="section-hero-eyebrow" id="h-pdf-eyebrow">BÓNUS · PDF</div>
+    <div class="section-hero-title" id="h-pdf-title">Pack de Templates de Metas</div>
+    <div class="section-hero-sub" id="h-pdf-sub">7 cartões visuais para acompanhar objetivos específicos. Imprime e cola num local visível — o reforço físico aumenta a consistência.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#f59e0b">1</div>
+        <div class="step-content">
+          <div class="step-title" id="pdf-1-t">Escolhe o(s) template(s) certos</div>
+          <div class="step-body" id="pdf-1-b">O PDF contém templates para: <b>Viagem ✈️, Casa 🏠, Veículo 🚗, Fundo de Emergência 🛡️, Tecnologia 📱, Educação 🎓, Reforma 🌅</b>. Imprime apenas os que se aplicam aos teus objectivos actuais.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#f59e0b">2</div>
+        <div class="step-content">
+          <div class="step-title" id="pdf-2-t">Preenche com dados reais da app</div>
+          <div class="step-body" id="pdf-2-b">No campo <b>Parcela mensal ($)</b> do template, coloca o mesmo valor que configuraste na aba <b>Sonhos</b> da app. Os dois trabalham em conjunto — a app faz o controlo digital, o template é o reforço visual físico.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#f59e0b">3</div>
+        <div class="step-content">
+          <div class="step-title" id="pdf-3-t">Marca os checkboxes mensais</div>
+          <div class="step-body" id="pdf-3-b">Cada template tem uma grelha de meses com checkboxes. No fim de cada mês, marca o checkbox correspondente. Quando a barra de progresso atingir 100%, o teu sonho está financiado.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#f59e0b">4</div>
+        <div class="step-content">
+          <div class="step-title" id="pdf-4-t">Checklist & Visão Anual</div>
+          <div class="step-body" id="pdf-4-b">O PDF inclui também: <b>Acompanhamento Mensal</b> (todas as metas numa folha), <b>Cartão de Visão Anual</b> (palavra do ano, metas por área de vida) e <b>Checklist Mês Financeiro Perfeito</b> (15 acções mensais).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tip-box warn"><div class="tip-icon">🖨️</div><span id="tip-pdf">Imprime em A4. Para usar digitalmente, abre no <b>Adobe Acrobat</b> ou <b>GoodNotes</b> (iPad) onde podes preencher e marcar os checkboxes directamente.</span></div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     CALC LIBERDADE FINANCEIRA
+══════════════════════════════════ -->
+<div class="topic" id="topic-liberdade">
+  <div class="section-hero" style="background:linear-gradient(135deg,#1e0a3c,#6d28d9,#d97706)">
+    <div class="section-hero-icon">🏆</div>
+    <div class="section-hero-eyebrow" id="h-lib-eyebrow">BÓNUS · CALCULADORA</div>
+    <div class="section-hero-title" id="h-lib-title">Calculadora de Liberdade Financeira</div>
+    <div class="section-hero-sub" id="h-lib-sub">Descobre quantos anos faltam para viveres dos teus rendimentos sem trabalhar. Usa os dados da planilha de Diagnóstico como input.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#6d28d9">1</div>
+        <div class="step-content">
+          <div class="step-title" id="lib-1-t">Preenche os inputs — usa o Diagnóstico</div>
+          <div class="step-body" id="lib-1-b"><b>Patrimônio actual</b>: Total de Activos da planilha (Bloco B). <b>Renda mensal</b>: o mesmo salário da app. <b>Despesas actuais</b>: Total de despesas mensais (Bloco E). <b>Despesas na reforma</b>: o que precisas por mês para viver bem na reforma.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#6d28d9">2</div>
+        <div class="step-content">
+          <div class="step-title" id="lib-2-t">Escolhe o perfil de risco</div>
+          <div class="step-body" id="lib-2-b">Os 3 perfis (Conservador/Moderado/Arrojado) pré-preenchem a taxa de retorno. Usa o mesmo perfil que tens na <b>Aba Plano</b> da app para manter a consistência. Ajusta a inflação de acordo com o teu país.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#6d28d9">3</div>
+        <div class="step-content">
+          <div class="step-title" id="lib-3-t">Interpreta os resultados</div>
+          <div class="step-body" id="lib-3-b">O número grande no centro = anos até à liberdade financeira. Os <b>4 marcos</b> mostram quando atinges 25%, 50%, 75% e 100% do objetivo. Os <b>cenários</b> mostram quantos anos ganhas se aumentares a poupança, o retorno ou reduzires despesas.</div>
+        </div>
+      </div>
+      <div class="step-visual">
+        <div class="tip-box info"><div class="tip-icon">🎯</div><span id="lib-3-note">A <b>Regra dos 25×</b> usada aqui: o teu patrimônio deve ser 25× as tuas despesas anuais na reforma. Equivale à Regra dos 4% — retiras 4% por ano sem esgotar o capital.</span></div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-header">
+        <div class="step-num" style="background:#6d28d9">4</div>
+        <div class="step-content">
+          <div class="step-title" id="lib-4-t">Actualiza a cada 90 dias</div>
+          <div class="step-body" id="lib-4-b">Sempre que actualizares a planilha de Diagnóstico, volta aqui com os novos valores. A data de liberdade financeira deve aproximar-se a cada actualização — este é um dos indicadores mais motivadores da tua evolução.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;text-align:center">
+    <a href="calculadora-liberdade-financeira.html" style="display:inline-flex;align-items:center;gap:8px;background:var(--v);color:#fff;border-radius:14px;padding:14px 28px;font-size:15px;font-weight:800;text-decoration:none;transition:all .15s" onmouseover="this.style.background='#5b21b6'" onmouseout="this.style.background='var(--v)'" id="lib-cta-btn">
+      🏆 Abrir a Calculadora →
+    </a>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════
+     FAQ
+══════════════════════════════════ -->
+<div class="topic" id="topic-faq">
+  <div class="section-hero" style="background:linear-gradient(135deg,#1e293b,#334155)">
+    <div class="section-hero-icon">❓</div>
+    <div class="section-hero-eyebrow" id="h-faq-eyebrow">AJUDA</div>
+    <div class="section-hero-title" id="h-faq-title">Perguntas Frequentes</div>
+    <div class="section-hero-sub" id="h-faq-sub">Respostas às dúvidas mais comuns sobre a app e os bónus.</div>
+  </div>
+  <div class="faq" id="faqList"></div>
+</div>
+
+
+</main>
+</div><!-- end shell -->
+
+<script>
+// ── i18n ─────────────────────────────────────────────────────────────
+const LANG = {
+pt:{
+  backBtn:'Ir para a App', appSub:'Central de Tutoriais',
+  sbl_start:'INÍCIO', sbl_app:'CALCULADORA (APP)', sbl_bonus:'BÓNUS', sbl_faq:'AJUDA',
+  nl_inicio:'Visão Geral', nl_install:'Instalar a App', nl_salario:'Salário & Distribuição',
+  nl_despesas:'Gastos Fixos & Check', nl_lazer:'Lazer & Fracionamento', nl_invest:'Investimentos',
+  nl_sonhos:'Sonhos & Metas', nl_parcelados:'Compras Parceladas', nl_historico:'Fechar & Arquivar Mês',
+  nl_plano:'Aba Plano', nl_excel:'Planilha de Diagnóstico', nl_pdf:'Pack de Metas',
+  nl_liberdade:'Liberdade Financeira', nl_faq:'Perguntas Frequentes',
+  sc_app_t:'Calculadora da Virada', sc_app_s:'App principal · 8 tópicos',
+  sc_excel_t:'Planilha Diagnóstico', sc_excel_s:'Excel / Google Sheets',
+  sc_pdf_t:'Pack de Metas', sc_pdf_s:'Templates imprimíveis',
+  sc_lib_t:'Liberdade Financeira', sc_lib_s:'Calculadora de FI',
+  tip_inicio:'Usa o menu lateral para navegar entre os tópicos. No telemóvel, toca no ícone ☰ para abrir o menu.',
+  sdiv_flow:'FLUXO RECOMENDADO',
+  flow:['Instala a app no telemóvel (iPhone ou Android)',
+        'Preenche a planilha de Diagnóstico para conheceres o teu ponto de partida',
+        'Define o teu salário e percentagens na app (50/30/20 ou personalizado)',
+        'Adiciona os teus gastos fixos e marca (✓) conforme vais pagando',
+        'Configura os teus Sonhos com valor e prazo',
+        'No fim do mês, arquiva e analisa a sobra no Histórico',
+        'Usa a Calculadora de Liberdade Financeira para ver quando chegares lá'],
+  dt_sal:'Experimenta aqui — calcula ao vivo',
+  dl_salario:'Salário mensal ($)', dl_fixo:'% Gastos Fixos',
+  dl_lazer_demo:'% Lazer (auto)', dl_invest_demo:'% Investimentos',
+  lib_cta_btn:'🏆 Abrir a Calculadora →',
+  faqs:[
+    {q:'Os meus dados ficam guardados se fechar a app?', a:'Sim. Tudo é guardado localmente no teu dispositivo usando o localStorage. Os dados persistem mesmo que feches o browser, reinicies o telemóvel ou desliges o Wi-Fi.'},
+    {q:'Posso perder os dados se actualizar a app?', a:'Não. As actualizações afectam apenas o código da app (HTML/CSS/JS). O localStorage onde os teus dados estão guardados nunca é tocado pelas actualizações.'},
+    {q:'Como abro o Excel no Google Sheets?', a:'Vai a Google Drive → Novo → Fazer upload de ficheiro → selecciona o diagnostico-financeiro.xlsx. Clica duas vezes para abrir. Pode pedir para converter — aceita. As fórmulas funcionam na maioria dos casos.'},
+    {q:'O PDF do Pack de Metas pode ser preenchido digitalmente?', a:'Sim. Abre no Adobe Acrobat Reader (gratuito) para preencher texto. Para marcar os checkboxes em iPad, usa o GoodNotes ou Notability. Para Android, usa Xodo PDF.'},
+    {q:'Posso usar a Calculadora de Liberdade Financeira sem preencher o Diagnóstico?', a:'Sim. Podes introduzir os valores directamente na calculadora. O Diagnóstico é recomendado porque te dá valores precisos — especialmente o total de activos e despesas mensais detalhadas.'},
+    {q:'A taxa de retorno na Calculadora é garantida?', a:'Não. É uma projecção baseada em médias históricas. O perfil Conservador usa ~6% (histórico de renda fixa), o Moderado ~10% (carteiras diversificadas), o Arrojado ~15% (bolsa/criptoativos com mais volatilidade). Resultados passados não garantem resultados futuros.'},
+    {q:'O que fazer se o Score de Saúde der abaixo de 20?', a:'Primeiro: não entres em pânico. Começa pela reserva de emergência (meta: 1 mês de despesas). Depois elimina a dívida de maior juro. Usa o Plano de Acção da planilha para definir 3 acções concretas esta semana.'},
+    {q:'Posso instalar a app em mais de um dispositivo?', a:'Sim. Cada dispositivo tem os seus dados independentes. Se usas dois telemóveis, tens dois perfis separados. Não existe sincronização entre dispositivos — é uma decisão de privacidade (os dados nunca saem do aparelho).'},
+  ]
+},
+es:{
+  backBtn:'Ir a la App', appSub:'Centro de Tutoriales',
+  sbl_start:'INICIO', sbl_app:'CALCULADORA (APP)', sbl_bonus:'BONOS', sbl_faq:'AYUDA',
+  nl_inicio:'Visión General', nl_install:'Instalar la App', nl_salario:'Salario & Distribución',
+  nl_despesas:'Gastos Fijos & Check', nl_lazer:'Ocio & División', nl_invest:'Inversiones',
+  nl_sonhos:'Sueños & Metas', nl_parcelados:'Compras a Plazos', nl_historico:'Cerrar & Archivar Mes',
+  nl_plano:'Pestaña Plan', nl_excel:'Planilla de Diagnóstico', nl_pdf:'Pack de Metas',
+  nl_liberdade:'Libertad Financiera', nl_faq:'Preguntas Frecuentes',
+  sc_app_t:'Calculadora del Giro', sc_app_s:'App principal · 8 temas',
+  sc_excel_t:'Planilla Diagnóstico', sc_excel_s:'Excel / Google Sheets',
+  sc_pdf_t:'Pack de Metas', sc_pdf_s:'Templates imprimibles',
+  sc_lib_t:'Libertad Financiera', sc_lib_s:'Calculadora de IF',
+  tip_inicio:'Usa el menú lateral para navegar entre los temas. En el celular, toca el ícono ☰ para abrir el menú.',
+  sdiv_flow:'FLUJO RECOMENDADO',
+  flow:['Instala la app en el celular (iPhone o Android)',
+        'Completa la planilla de Diagnóstico para conocer tu punto de partida',
+        'Define tu salario y porcentajes en la app (50/30/20 o personalizado)',
+        'Agrega tus gastos fijos y marca (✓) a medida que los pagas',
+        'Configura tus Sueños con monto y plazo',
+        'Al fin del mes, archiva y analiza el sobrante en el Historial',
+        'Usa la Calculadora de Libertad Financiera para ver cuándo llegas'],
+  dt_sal:'Prueba aquí — calcula en vivo',
+  dl_salario:'Salario mensual ($)', dl_fixo:'% Gastos Fijos',
+  dl_lazer_demo:'% Ocio (auto)', dl_invest_demo:'% Inversiones',
+  lib_cta_btn:'🏆 Abrir la Calculadora →',
+  faqs:[
+    {q:'¿Mis datos quedan guardados si cierro la app?', a:'Sí. Todo se guarda localmente en tu dispositivo usando localStorage. Los datos persisten aunque cierres el navegador o reinicies el celular.'},
+    {q:'¿Puedo perder datos al actualizar la app?', a:'No. Las actualizaciones solo afectan el código de la app. El localStorage donde están tus datos nunca es tocado por las actualizaciones.'},
+    {q:'¿Cómo abro el Excel en Google Sheets?', a:'Ve a Google Drive → Nuevo → Subir archivo → selecciona diagnostico-financeiro.xlsx. Haz doble clic para abrir y acepta la conversión. Las fórmulas funcionan en la mayoría de los casos.'},
+    {q:'¿El PDF del Pack de Metas puede rellenarse digitalmente?', a:'Sí. Ábrelo en Adobe Acrobat Reader para texto. Para marcar checkboxes en iPad usa GoodNotes o Notability. En Android usa Xodo PDF.'},
+    {q:'¿Puedo usar la Calculadora de Libertad Financiera sin el Diagnóstico?', a:'Sí. Puedes ingresar valores directamente. El Diagnóstico es recomendado porque te da valores precisos de activos y gastos.'},
+    {q:'¿La tasa de retorno es garantizada?', a:'No. Es una proyección basada en promedios históricos. Conservador ~6%, Moderado ~10%, Agresivo ~15%. Los resultados pasados no garantizan resultados futuros.'},
+    {q:'¿Qué hago si mi Score de Salud es menor de 20?', a:'Empieza por el fondo de emergencia (meta: 1 mes de gastos). Luego elimina la deuda de mayor interés. Usa el Plan de Acción de la planilla para definir 3 acciones concretas esta semana.'},
+    {q:'¿Puedo instalar la app en más de un dispositivo?', a:'Sí. Cada dispositivo tiene sus datos independientes. No existe sincronización — es una decisión de privacidad.'},
+  ]
+},
+en:{
+  backBtn:'Go to App', appSub:'Tutorial Hub',
+  sbl_start:'START', sbl_app:'CALCULATOR (APP)', sbl_bonus:'BONUSES', sbl_faq:'HELP',
+  nl_inicio:'Overview', nl_install:'Install the App', nl_salario:'Salary & Distribution',
+  nl_despesas:'Fixed Expenses & Check', nl_lazer:'Leisure & Splitting', nl_invest:'Investments',
+  nl_sonhos:'Dreams & Goals', nl_parcelados:'Instalment Purchases', nl_historico:'Close & Archive Month',
+  nl_plano:'Plan Tab', nl_excel:'Diagnosis Spreadsheet', nl_pdf:'Goals Pack',
+  nl_liberdade:'Financial Freedom', nl_faq:'FAQ',
+  sc_app_t:'Calculadora da Virada', sc_app_s:'Main app · 8 topics',
+  sc_excel_t:'Diagnosis Spreadsheet', sc_excel_s:'Excel / Google Sheets',
+  sc_pdf_t:'Goals Pack', sc_pdf_s:'Printable templates',
+  sc_lib_t:'Financial Freedom', sc_lib_s:'FI Calculator',
+  tip_inicio:'Use the sidebar to navigate between topics. On mobile, tap ☰ to open the menu.',
+  sdiv_flow:'RECOMMENDED FLOW',
+  flow:['Install the app on your phone (iPhone or Android)',
+        'Fill in the Diagnosis spreadsheet to know your starting point',
+        'Set your salary and percentages in the app (50/30/20 or custom)',
+        'Add your fixed expenses and tick (✓) them as you pay',
+        'Set up your Dreams with amount and timeline',
+        'At month-end, archive and analyse the surplus in History',
+        'Use the Financial Freedom Calculator to see when you\'ll get there'],
+  dt_sal:'Try it here — calculates live',
+  dl_salario:'Monthly salary ($)', dl_fixo:'% Fixed expenses',
+  dl_lazer_demo:'% Leisure (auto)', dl_invest_demo:'% Investments',
+  lib_cta_btn:'🏆 Open the Calculator →',
+  faqs:[
+    {q:'Is my data saved when I close the app?', a:'Yes. Everything is stored locally on your device using localStorage. Data persists even if you close the browser, restart your phone, or go offline.'},
+    {q:'Can I lose data when the app updates?', a:'No. Updates only affect the app code (HTML/CSS/JS). The localStorage where your data lives is never touched by updates.'},
+    {q:'How do I open the Excel in Google Sheets?', a:'Go to Google Drive → New → Upload file → select diagnostico-financeiro.xlsx. Double-click to open and accept conversion. Formulas work in most cases.'},
+    {q:'Can the Goals Pack PDF be filled digitally?', a:'Yes. Open in Adobe Acrobat Reader for text. To tick checkboxes on iPad use GoodNotes or Notability. On Android use Xodo PDF.'},
+    {q:'Can I use the Financial Freedom Calculator without the Diagnosis?', a:'Yes. You can enter values directly. The Diagnosis is recommended because it gives you precise asset totals and expense breakdowns.'},
+    {q:'Is the return rate in the Calculator guaranteed?', a:'No. It\'s a projection based on historical averages. Conservative ~6%, Moderate ~10%, Aggressive ~15%. Past performance does not guarantee future results.'},
+    {q:'What should I do if my Health Score is below 20?', a:'Start with the emergency fund (goal: 1 month of expenses). Then eliminate the highest-interest debt. Use the Action Plan in the spreadsheet to define 3 concrete actions for this week.'},
+    {q:'Can I install the app on multiple devices?', a:'Yes. Each device has its own independent data. There\'s no sync between devices — a deliberate privacy decision (data never leaves the device).'},
+  ]
+}
+};
+
+let lang='pt';
+
+function s(id,v){ const e=document.getElementById(id); if(e) e.textContent=v; }
+function sh(id,v){ const e=document.getElementById(id); if(e) e.innerHTML=v; }
+
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('on'));
+  document.querySelector(`.lbtn[onclick="setLang('${l}')"]`)?.classList.add('on');
+  document.documentElement.lang=l;
+  applyLang();
+}
+
+function applyLang(){
+  const T=LANG[lang];
+  s('tt-backBtn',T.backBtn); s('tt-appSub',T.appSub);
+  s('sbl-start',T.sbl_start); s('sbl-app',T.sbl_app); s('sbl-bonus',T.sbl_bonus); s('sbl-faq',T.sbl_faq);
+  s('nl-inicio',T.nl_inicio); s('nl-install',T.nl_install); s('nl-salario',T.nl_salario);
+  s('nl-despesas',T.nl_despesas); s('nl-lazer',T.nl_lazer); s('nl-invest',T.nl_invest);
+  s('nl-sonhos',T.nl_sonhos); s('nl-parcelados',T.nl_parcelados); s('nl-historico',T.nl_historico);
+  s('nl-plano',T.nl_plano); s('nl-excel',T.nl_excel); s('nl-pdf',T.nl_pdf);
+  s('nl-liberdade',T.nl_liberdade); s('nl-faq',T.nl_faq);
+  s('sc-app-t',T.sc_app_t); s('sc-app-s',T.sc_app_s);
+  s('sc-excel-t',T.sc_excel_t); s('sc-excel-s',T.sc_excel_s);
+  s('sc-pdf-t',T.sc_pdf_t); s('sc-pdf-s',T.sc_pdf_s);
+  s('sc-lib-t',T.sc_lib_t); s('sc-lib-s',T.sc_lib_s);
+  s('tip-inicio',T.tip_inicio); s('sdiv-flow',T.sdiv_flow);
+  T.flow.forEach((f,i)=>{ s('flow-'+(i+1),f); });
+  s('dt-sal',T.dt_sal);
+  s('dl-salario',T.dl_salario); s('dl-fixo',T.dl_fixo);
+  s('dl-lazer-demo',T.dl_lazer_demo); s('dl-invest-demo',T.dl_invest_demo);
+  const libCta=document.getElementById('lib-cta-btn'); if(libCta) libCta.textContent=T.lib_cta_btn;
+  buildFAQ(T.faqs);
+  demoSalario();
+}
+
+function buildFAQ(faqs){
+  const list=document.getElementById('faqList'); list.innerHTML='';
+  faqs.forEach(f=>{
+    const d=document.createElement('div'); d.className='faq-item';
+    d.innerHTML=`<div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+      <span>${f.q}</span><span class="faq-arrow">▾</span></div>
+      <div class="faq-a">${f.a}</div>`;
+    list.appendChild(d);
+  });
+}
+
+// ── Navigation ────────────────────────────────────────────────────
+function goTo(id){
+  document.querySelectorAll('.topic').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const topic=document.getElementById('topic-'+id);
+  if(topic) topic.classList.add('active');
+  // find nav-item that calls goTo(id)
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')===`goTo('${id}')`) n.classList.add('active');
+  });
+  document.getElementById('mainContent').scrollTop=0;
+  window.scrollTo({top:0,behavior:'smooth'});
+  closeSidebar();
+}
+
+// ── Sidebar (mobile) ─────────────────────────────────────────────
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sbOverlay').classList.toggle('open');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbOverlay').classList.remove('open');
+}
+
+// ── DEMO: salary calculator ──────────────────────────────────────
+function demoSalario(){
+  const sal=parseFloat(document.getElementById('d-salario').value)||0;
+  const pF=parseFloat(document.getElementById('d-fixo').value)||0;
+  const pI=parseFloat(document.getElementById('d-invest').value)||0;
+  const pL=Math.max(0,100-pF-pI);
+  const mF=sal*pF/100, mL=sal*pL/100, mI=sal*pI/100;
+  const fmt=n=>'$'+Math.round(n).toLocaleString('pt');
+  document.getElementById('d-lazer-auto').textContent=pL.toFixed(1)+'%';
+  document.getElementById('d-res-fixo').textContent=fmt(mF);
+  document.getElementById('d-res-lazer').textContent=fmt(mL);
+  document.getElementById('d-res-invest').textContent=fmt(mI);
+  const total=pF+pL+pI;
+  document.getElementById('d-bar').style.width=Math.min(100,total).toFixed(1)+'%';
+  document.getElementById('d-bar').style.background=total>100?'#dc2626':'linear-gradient(90deg,#6d28d9,#8b5cf6)';
+}
+
+// ── Init ──────────────────────────────────────────────────────────
+applyLang();
+demoSalario();
+</script>
+</body>
+</html>
