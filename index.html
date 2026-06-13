@@ -224,7 +224,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
         <span class="text-white/50 font-bold text-lg">$</span>
         <input type="number" id="salario" value="2000" min="0" step="0.01" placeholder="0.00"
                class="flex-1 bg-transparent border-none outline-none text-white text-2xl font-black placeholder-white/30"
-               oninput="calcularTudo()">
+               oninput="calcularTudo();saveItems();">
         <!-- mode toggle -->
         <div class="flex rounded-lg overflow-hidden flex-shrink-0" style="background:rgba(255,255,255,.15);">
           <button id="mBtn-pct" onclick="setMode('pct')"
@@ -274,7 +274,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
           <input type="number" id="pctFixo" value="50" min="0" max="100"
                  class="inp flex-1 min-w-0 text-center text-base font-bold outline-none rounded-md py-1 px-1.5"
                  style="background:#fff;border:1px solid var(--bdr);color:var(--txt);"
-                 oninput="calcularTudo()">
+                 oninput="calcularTudo();saveItems();">
           <span class="text-xs" style="color:var(--txt3);" id="symFixo">%</span>
         </div>
         <div class="text-xs mt-1" style="color:var(--txt3);" id="valFixo">$1,000.00</div>
@@ -297,7 +297,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
           <input type="number" id="pctInvest" value="20" min="0" max="100"
                  class="inp flex-1 min-w-0 text-center text-base font-bold outline-none rounded-md py-1 px-1.5"
                  style="background:#fff;border:1px solid var(--bdr);color:var(--txt);"
-                 oninput="calcularTudo()">
+                 oninput="calcularTudo();saveItems();">
           <span class="text-xs" style="color:var(--txt3);" id="symInvest">%</span>
         </div>
         <div class="text-xs mt-1" style="color:var(--txt3);" id="valInvest">$400.00</div>
@@ -923,9 +923,10 @@ function renderFracRows(cat){
   if(cat==='lazer'){
     const pF=mode==='pct'?safe($('pctFixo').value):sal>0?safe($('pctFixo').value)/sal*100:0;
     const pI=mode==='pct'?safe($('pctInvest').value):sal>0?safe($('pctInvest').value)/sal*100:0;
-    const d2=getData(); let pS=0;
+    const d2=getData(); let pS=0,pPar2=0;
     d2.sonhos.forEach(s=>{ pS+=sal>0?(s.valor/s.meses/sal*100):0; });
-    pct=Math.max(0,100-pF-pI-pS);
+    (d2.parcelados||[]).forEach(p=>{ pPar2+=sal>0?(p.total/p.parcelas/sal*100):0; });
+    pct=Math.max(0,100-pF-pI-pS-pPar2);
   } else {
     pct=mode==='pct'?safe($('pctInvest').value):sal>0?safe($('pctInvest').value)/sal*100:0;
   }
@@ -1295,8 +1296,8 @@ function calcularTudo(){
   d.sonhos.forEach(s=>{ const p=s.valor/s.meses; const pc=sal>0?p/sal*100:0; sPcts.push({nome:s.nome,pct:pc,p}); pS+=pc; });
 
   // parcelados
-  let pPar=0; const parPcts=[];
-  (d.parcelados||[]).forEach(p=>{ const mensal=p.total/p.parcelas; const pc=sal>0?mensal/sal*100:0; parPcts.push({nome:p.nome,pct:pc,mensal,done:p.done}); pPar+=pc; });
+  let pPar=0,parPago=0; const parPcts=[];
+  (d.parcelados||[]).forEach(p=>{ const mensal=p.total/p.parcelas; const pc=sal>0?mensal/sal*100:0; parPcts.push({nome:p.nome,pct:pc,mensal,done:p.done}); pPar+=pc; if(p.done) parPago+=mensal; });
 
   const pL=Math.max(0,100-pF-pI-pS-pPar);
   const mF=sal*pF/100, mL=sal*pL/100, mI=sal*pI/100;
@@ -1388,12 +1389,12 @@ function calcularTudo(){
 
   // ── Wallet panel ──
   const wTotal=walletTotal();
-  const grandTotal=wTotal+sal;
+  const gastosPagos=doneF+doneL+dFracL+parPago;
+  const grandTotal=wTotal+sal-gastosPagos;
   $('walletGrand').textContent=fmtM(grandTotal).replace('$','');
 
   // ── Savings detail ──
-  const parMensal=(d.parcelados||[]).reduce((s,p)=>s+p.total/p.parcelas,0);
-  const parPago=(d.parcelados||[]).filter(p=>p.done).reduce((s,p)=>s+p.total/p.parcelas,0);
+  const parMensal=pPar>0?(d.parcelados||[]).reduce((s,p)=>s+p.total/p.parcelas,0):0;
   renderSavingsDetail([
     {emoji:'🏠',name:'Fixo',gasto:totalF,meta:mF,isInvest:false,color:'#6d28d9'},
     {emoji:'☕',name:'Lazer',gasto:totalL,meta:mL,isInvest:false,color:'#d97706'},
