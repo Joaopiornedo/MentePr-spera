@@ -779,6 +779,7 @@ let mode='pct', lang='pt', currentPage='orcamento', currentTab='fixo';
 let deferredPWA=null;
 // pending invest alloc
 let pendingAllocItem=null; // {rowEl, value, itemKey}
+let pendingFracAlloc=null; // {cat, i, btn, val}
 let allocInputs={};
 
 // ─────────────────────────────────────────
@@ -955,9 +956,23 @@ function saveFracName(cat,i,val){
 function toggleFracCheck(cat,i,btn){
   const d=getData();
   if(!d.fracs[cat].checks) d.fracs[cat].checks=[];
-  d.fracs[cat].checks[i]=!d.fracs[cat].checks[i];
+  const nowChecked=!d.fracs[cat].checks[i];
+
+  if(cat==='invest' && nowChecked){
+    const sal=safe($('salario').value);
+    const pct=mode==='pct'?safe($('pctInvest').value):sal>0?safe($('pctInvest').value)/sal*100:0;
+    const mI=sal*pct/100;
+    const part=mI/(d.fracs[cat].n||1);
+    if(part>0){
+      pendingFracAlloc={cat,i,btn};
+      openAllocModal(null,part,'invest');
+      return;
+    }
+  }
+
+  d.fracs[cat].checks[i]=nowChecked;
   save(d);
-  btn.classList.toggle('on',d.fracs[cat].checks[i]);
+  btn.classList.toggle('on',nowChecked);
   calcularTudo();
 }
 
@@ -1065,7 +1080,7 @@ function loadItems(){
 //  INVEST ALLOC MODAL (Etapa 4)
 // ─────────────────────────────────────────
 function openAllocModal(rowEl,val,cat){
-  pendingAllocItem={rowEl,val,cat};
+  pendingAllocItem=rowEl?{rowEl,val,cat}:null;
   allocInputs={};
   const d=getData();
   $('allocAmount').textContent=fmtM(val);
@@ -1103,7 +1118,7 @@ function updateAllocRemaining(total){
 }
 
 function confirmAlloc(){
-  if(!pendingAllocItem) return;
+  if(!pendingAllocItem && !pendingFracAlloc) return;
   const d=getData();
   // Credit each account
   Object.entries(allocInputs).forEach(([aid,inputId])=>{
@@ -1114,11 +1129,22 @@ function confirmAlloc(){
   });
   save(d);
   renderWallet();
-  // Now mark item as done
-  const {rowEl}=pendingAllocItem;
-  const btn=rowEl.querySelector('.chk');
-  toggleItemDone(btn,rowEl);
-  pendingAllocItem=null; allocInputs={};
+
+  if(pendingAllocItem){
+    const {rowEl}=pendingAllocItem;
+    toggleItemDone(rowEl.querySelector('.chk'),rowEl);
+    pendingAllocItem=null;
+  } else if(pendingFracAlloc){
+    const {cat,i,btn}=pendingFracAlloc;
+    const d2=getData();
+    if(!d2.fracs[cat].checks) d2.fracs[cat].checks=[];
+    d2.fracs[cat].checks[i]=true;
+    save(d2);
+    btn.classList.add('on');
+    pendingFracAlloc=null;
+  }
+
+  allocInputs={};
   closeModal('allocModal');
   toast('✅ Investimento alocado!');
   calcularTudo();
@@ -1145,7 +1171,7 @@ function deleteDream(id){
 }
 function toggleDreamDone(id){
   const d=getData(); const s=d.sonhos.find(x=>x.id===id);
-  if(s){ s.done=!s.done; save(d); renderDreams(); }
+  if(s){ s.done=!s.done; save(d); renderDreams(); calcularTudo(); }
 }
 function renderDreams(){
   const d=getData(); const sal=safe($('salario').value);
