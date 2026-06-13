@@ -177,6 +177,12 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
     </div>
   </div>
   <!-- menu button -->
+  <!-- user-bar (shown when logged in via Firebase) -->
+  <div id="user-bar" style="display:none;align-items:center;gap:6px;margin-right:4px;">
+    <div id="user-bar-avatar"
+         style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;"
+         onclick="authLogout && authLogout()" title="Sair">?</div>
+  </div>
   <button onclick="openNavSheet()"
           class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-bold transition-all"
           style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);">
@@ -248,7 +254,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
           </button>
         </div>
         <div id="walletList" class="px-3 pb-2 flex flex-col gap-1.5"></div>
-        <div id="walletEmpty" class="px-3 pb-2 text-xs text-white/40 hidden" id="t-walletEmpty">Nenhuma conta ainda.</div>
+        <div id="walletEmpty" class="px-3 pb-2 text-xs text-white/40 hidden">Nenhuma conta ainda.</div>
       </div>
     </div>
   </section>
@@ -441,7 +447,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
       <div class="font-bold text-sm mb-3" style="color:#6d28d9;" id="t-dreamFormTitle">✨ Novo Sonho / Meta</div>
       <div class="flex flex-col gap-2.5">
         <input type="text" id="dreamName" class="inp w-full rounded-xl px-3 py-2.5 text-sm outline-none"
-               style="background:#fff;border:1px solid var(--bdr);color:var(--txt);" id="t-dreamNamePh" placeholder="Ex: iPhone, Carro, Viagem...">
+               style="background:#fff;border:1px solid var(--bdr);color:var(--txt);" placeholder="Ex: iPhone, Carro, Viagem...">
         <div class="grid grid-cols-2 gap-2.5">
           <input type="number" id="dreamValue" class="inp w-full rounded-xl px-3 py-2.5 text-sm outline-none"
                  style="background:#fff;border:1px solid var(--bdr);color:var(--txt);" placeholder="Valor ($)" min="0">
@@ -751,8 +757,8 @@ function toggleTheme(){
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme',t);
   document.body.style.background=t==='dark'?'#0f1117':'#f1f5f9';
-  $('themeIcon').textContent=t==='dark'?'☀️':'🌙';
-  $('t-themeLabel').textContent=t==='dark'?TR[lang].lightMode:TR[lang].darkMode;
+  const icon=$('themeIcon'); if(icon) icon.textContent=t==='dark'?'☀️':'🌙';
+  const lbl=$('t-themeLabel'); if(lbl) lbl.textContent=t==='dark'?TR[lang].lightMode:TR[lang].darkMode;
   localStorage.setItem('cvTheme',t);
 }
 
@@ -1441,7 +1447,7 @@ function setLang(l){
     }
   });
   applyTranslations();
-  closeSettings();
+  if(typeof closeNavSheet==='function') closeNavSheet();
 }
 
 function applyTranslations(){
@@ -1676,5 +1682,12 @@ window.onload=()=>{
     </div>
   </div>
 </div>
+
+<!-- Firebase + Auth (must be last, after app JS) -->
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="auth.js"></script>
 </body>
 </html>
