@@ -511,6 +511,115 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 <!-- ══════════════════════════════════════
      BOTTOM NAV
 ══════════════════════════════════════ -->
+
+<!-- ════════════════════════════════════════════════
+     PAGE 4 — PLANO DE INVESTIMENTO
+════════════════════════════════════════════════ -->
+<div class="page" id="page-plano">
+<div class="max-w-2xl mx-auto px-4 pb-28 pt-5">
+
+  <div class="text-xl font-black mb-1" style="color:var(--txt);" id="t-planoTitle">📈 Plano de Investimento</div>
+  <div class="text-sm mb-5" style="color:var(--txt3);" id="t-planoSub">Simula o crescimento do teu capital ao longo do tempo.</div>
+
+  <!-- Input card -->
+  <div class="rounded-2xl p-5 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
+
+    <div class="grid grid-cols-2 gap-3 mb-3">
+      <!-- Capital inicial -->
+      <div>
+        <label class="text-xs font-bold uppercase tracking-wider mb-1 block" style="color:var(--txt3);" id="t-plCapital">Capital inicial</label>
+        <div class="flex items-center gap-1.5 rounded-xl px-3 py-2.5" style="background:var(--surf2);border:1px solid var(--bdr);">
+          <span style="color:var(--txt3);font-size:12px;">$</span>
+          <input type="number" id="pl-capital" value="1000" min="0" step="0.01"
+                 class="flex-1 min-w-0 bg-transparent border-none outline-none text-sm font-bold"
+                 style="color:var(--txt);" oninput="calcPlano()">
+        </div>
+      </div>
+      <!-- Aporte mensal -->
+      <div>
+        <label class="text-xs font-bold uppercase tracking-wider mb-1 block" style="color:var(--txt3);" id="t-plAporte">Aporte mensal</label>
+        <div class="flex items-center gap-1.5 rounded-xl px-3 py-2.5" style="background:var(--surf2);border:1px solid var(--bdr);">
+          <span style="color:var(--txt3);font-size:12px;">$</span>
+          <input type="number" id="pl-aporte" value="200" min="0" step="0.01"
+                 class="flex-1 min-w-0 bg-transparent border-none outline-none text-sm font-bold"
+                 style="color:var(--txt);" oninput="calcPlano()">
+        </div>
+      </div>
+      <!-- Taxa anual -->
+      <div>
+        <label class="text-xs font-bold uppercase tracking-wider mb-1 block" style="color:var(--txt3);" id="t-plTaxa">Taxa anual (%)</label>
+        <div class="flex items-center gap-1.5 rounded-xl px-3 py-2.5" style="background:var(--surf2);border:1px solid var(--bdr);">
+          <input type="number" id="pl-taxa" value="10" min="0" max="100" step="0.1"
+                 class="flex-1 min-w-0 bg-transparent border-none outline-none text-sm font-bold"
+                 style="color:var(--txt);" oninput="calcPlano()">
+          <span style="color:var(--txt3);font-size:12px;">%</span>
+        </div>
+      </div>
+      <!-- Anos -->
+      <div>
+        <label class="text-xs font-bold uppercase tracking-wider mb-1 block" style="color:var(--txt3);" id="t-plAnos">Anos</label>
+        <div class="flex items-center gap-1.5 rounded-xl px-3 py-2.5" style="background:var(--surf2);border:1px solid var(--bdr);">
+          <input type="number" id="pl-anos" value="10" min="1" max="50" step="1"
+                 class="flex-1 min-w-0 bg-transparent border-none outline-none text-sm font-bold"
+                 style="color:var(--txt);" oninput="calcPlano()">
+          <span style="color:var(--txt3);font-size:12px;" id="t-plAnosSuf">anos</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slider anos -->
+    <input type="range" id="pl-slider" min="1" max="50" value="10"
+           style="width:100%;accent-color:#6d28d9;margin-top:4px;"
+           oninput="document.getElementById('pl-anos').value=this.value;calcPlano()">
+  </div>
+
+  <!-- Result cards -->
+  <div class="grid grid-cols-3 gap-3 mb-4">
+    <div class="rounded-2xl p-4 text-center" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);">
+      <div class="text-xs font-bold text-white/70 mb-1" id="t-plFinal">Capital final</div>
+      <div class="text-xl font-black text-white leading-tight" id="pl-result-total">$0</div>
+    </div>
+    <div class="rounded-2xl p-4 text-center s" style="background:var(--surf);border:1px solid var(--bdr);">
+      <div class="text-xs font-bold mb-1" style="color:var(--txt3);" id="t-plInvestido">Investido</div>
+      <div class="text-xl font-black" style="color:var(--txt);line-height:1.2;" id="pl-result-invest">$0</div>
+    </div>
+    <div class="rounded-2xl p-4 text-center" style="background:#d1fae5;border:1px solid #059669;">
+      <div class="text-xs font-bold mb-1" style="color:#059669;" id="t-plJuros">Juros ganhos</div>
+      <div class="text-xl font-black" style="color:#059669;line-height:1.2;" id="pl-result-juros">$0</div>
+    </div>
+  </div>
+
+  <!-- Progress bar invested vs juros -->
+  <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);">
+    <div class="flex justify-between text-xs font-bold mb-2">
+      <span style="color:#6d28d9;" id="t-plCapitalPct">Capital investido</span>
+      <span style="color:#059669;" id="t-plJurosPct">Juros compostos</span>
+    </div>
+    <div class="h-3 rounded-full overflow-hidden flex" style="background:var(--bdr);">
+      <div id="pl-bar-invest" class="h-full transition-all" style="background:#6d28d9;width:60%"></div>
+      <div id="pl-bar-juros"  class="h-full transition-all" style="background:#059669;width:40%"></div>
+    </div>
+    <div class="flex justify-between text-xs mt-1.5" style="color:var(--txt3);">
+      <span id="pl-pct-invest">60%</span>
+      <span id="pl-pct-juros">40%</span>
+    </div>
+  </div>
+
+  <!-- Yearly table -->
+  <div class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--txt3);" id="t-plTabela">Evolução anual</div>
+  <div class="rounded-2xl overflow-hidden s" style="background:var(--surf);border:1px solid var(--bdr);">
+    <div class="grid text-xs font-bold uppercase tracking-wider px-4 py-2" style="grid-template-columns:1fr 1.5fr 1.5fr 1.5fr;color:var(--txt3);border-bottom:1px solid var(--bdr);">
+      <span id="t-plColAno">Ano</span>
+      <span class="text-right" id="t-plColAporte">Investido</span>
+      <span class="text-right" id="t-plColJuros">Juros</span>
+      <span class="text-right" id="t-plColTotal">Total</span>
+    </div>
+    <div id="pl-table" class="divide-y" style="border-color:var(--bdr);max-height:320px;overflow-y:auto;"></div>
+  </div>
+
+</div>
+</div><!-- end page-plano -->
+
 <nav class="bottom-nav fixed bottom-0 left-0 right-0 z-50"
      style="background:var(--surf);border-top:1px solid var(--bdr);display:grid;grid-template-columns:repeat(5,1fr);">
   <button class="nav-item active flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
@@ -526,7 +635,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
     <span class="text-xl">📅</span><span id="t-navHist">Histórico</span>
   </button>
   <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
-          id="nav-plano">
+          id="nav-plano" onclick="switchPage('plano')">
     <span class="text-xl">📈</span><span id="t-navPlan">Plano</span>
   </button>
   <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
@@ -1245,7 +1354,7 @@ const TR={
     dreamFormTitle:'✨ Novo Sonho / Meta', addDreamBtn:'🚀 Adicionar Sonho',
     dreamsEmpty:'Nenhum sonho adicionado ainda.',
     archiveBtn:'🔒 Fechar e Arquivar Mês',
-    navOrc:'Orçamento', navEbook:'Ebook', navHist:'Histórico', navPlan:'Plano', navLib:'Liberdade',
+    navOrc:'Orçamento', navEbook:'Ebook', navHist:'Histórico', navPlan:'Plano', navLib:'Liberdade', planoTitle:'📈 Plano de Investimento', planoSub:'Simula o crescimento do teu capital ao longo do tempo.',
     histTitle:'📅 Histórico Mensal',
     histSelectLabel:'Selecione o mês e arquive o registo atual:',
     histArchiveBtn:'🔒 Arquivar', histSection:'Registos arquivados',
@@ -1276,7 +1385,7 @@ const TR={
     dreamFormTitle:'✨ Nuevo Sueño / Meta', addDreamBtn:'🚀 Agregar Sueño',
     dreamsEmpty:'Ningún sueño agregado aún.',
     archiveBtn:'🔒 Cerrar y Archivar Mes',
-    navOrc:'Presupuesto', navEbook:'Ebook', navHist:'Historial', navPlan:'Plan', navLib:'Libertad',
+    navOrc:'Presupuesto', navEbook:'Ebook', navHist:'Historial', navPlan:'Plan', navLib:'Libertad', planoTitle:'📈 Plan de Inversión', planoSub:'Simula el crecimiento de tu capital a lo largo del tiempo.',
     histTitle:'📅 Historial Mensual',
     histSelectLabel:'Selecciona el mes y archiva el registro:',
     histArchiveBtn:'🔒 Archivar', histSection:'Registros archivados',
@@ -1307,7 +1416,7 @@ const TR={
     dreamFormTitle:'✨ New Dream / Goal', addDreamBtn:'🚀 Add Dream',
     dreamsEmpty:'No dreams added yet.',
     archiveBtn:'🔒 Close and Archive Month',
-    navOrc:'Budget', navEbook:'Ebook', navHist:'History', navPlan:'Plan', navLib:'Freedom',
+    navOrc:'Budget', navEbook:'Ebook', navHist:'History', navPlan:'Plan', navLib:'Freedom', planoTitle:'📈 Investment Plan', planoSub:'Simulate the growth of your capital over time.',
     histTitle:'📅 Monthly History',
     histSelectLabel:'Select month and archive current data:',
     histArchiveBtn:'🔒 Archive', histSection:'Archived records',
@@ -1424,7 +1533,57 @@ function nsSetLang(l){
   setLang(l);
   nsSyncMenu();
 }
+
+// ── PLANO DE INVESTIMENTO ─────────────────────────────────────────
+function calcPlano(){
+  var capital = safe(document.getElementById('pl-capital').value);
+  var aporte  = safe(document.getElementById('pl-aporte').value);
+  var taxa    = safe(document.getElementById('pl-taxa').value) / 100;
+  var anos    = parseInt(document.getElementById('pl-anos').value) || 1;
+  var slider  = document.getElementById('pl-slider');
+  if(slider) slider.value = anos;
+
+  var taxaMensal = Math.pow(1 + taxa, 1/12) - 1;
+  var meses = anos * 12;
+  var total = capital;
+  for(var i = 0; i < meses; i++){
+    total = total * (1 + taxaMensal) + aporte;
+  }
+
+  var investido = capital + aporte * meses;
+  var juros = total - investido;
+  var pctInvest = total > 0 ? (investido / total * 100) : 60;
+  var pctJuros  = 100 - pctInvest;
+
+  var set = function(id, v){ var e=document.getElementById(id); if(e) e.textContent=v; };
+  set('pl-result-total',  fmtM(total));
+  set('pl-result-invest', fmtM(investido));
+  set('pl-result-juros',  fmtM(juros));
+  document.getElementById('pl-bar-invest').style.width = pctInvest.toFixed(1) + '%';
+  document.getElementById('pl-bar-juros').style.width  = pctJuros.toFixed(1)  + '%';
+  set('pl-pct-invest', pctInvest.toFixed(0) + '%');
+  set('pl-pct-juros',  pctJuros.toFixed(0)  + '%');
+
+  // Yearly table
+  var table = document.getElementById('pl-table');
+  table.innerHTML = '';
+  var acc = capital;
+  for(var a = 1; a <= anos; a++){
+    var inv = capital + aporte * a * 12;
+    for(var m = 0; m < 12; m++) acc = acc * (1 + taxaMensal) + aporte;
+    var j = acc - inv;
+    var row = document.createElement('div');
+    row.style.cssText = 'display:grid;grid-template-columns:1fr 1.5fr 1.5fr 1.5fr;padding:9px 16px;font-size:12px;color:var(--txt2);';
+    row.innerHTML = '<span style="font-weight:700;color:var(--txt);">' + a + '</span>' +
+      '<span style="text-align:right;">'  + fmtM(inv) + '</span>' +
+      '<span style="text-align:right;color:#059669;">' + fmtM(j)   + '</span>' +
+      '<span style="text-align:right;font-weight:700;color:#6d28d9;">' + fmtM(acc) + '</span>';
+    table.appendChild(row);
+  }
+}
+
 window.onload=()=>{
+
   // theme
   const savedTheme=localStorage.getItem('cvTheme')||'light';
   applyTheme(savedTheme);
@@ -1467,6 +1626,7 @@ window.onload=()=>{
 
   // active tab style
   switchTab('fixo');
+  calcPlano();
 };
 </script>
 
