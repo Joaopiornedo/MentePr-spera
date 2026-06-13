@@ -78,6 +78,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 .tab-pill.t-lazer.active{background:#d97706}
 .tab-pill.t-invest.active{background:#059669}
 .tab-pill.t-sonhos.active{background:#8b5cf6}
+.tab-pill.t-parcelado.active{background:#e11d48}
 
 /* ── dashed add btn ── */
 .add-dashed{border:1.5px dashed var(--bdr2);background:transparent;color:var(--txt3);
@@ -213,13 +214,6 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
         <span class="text-3xl font-black text-white/50">$</span>
         <span class="text-5xl font-black text-white leading-none tracking-tight" id="walletGrand">0.00</span>
       </div>
-      <!-- saldo livre pill -->
-      <div class="inline-flex items-center gap-2 mt-2 px-3 py-1.5 rounded-full text-sm font-bold text-white"
-           style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);">
-        <span>🔓</span>
-        <span id="t-walletFree">Saldo livre:</span>
-        <span id="walletFree" class="font-black">$0.00</span>
-      </div>
     </div>
 
     <!-- Salário input inside wallet -->
@@ -268,7 +262,8 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
       <div class="dseg" id="bar-fixo"   style="background:#6d28d9;"></div>
       <div class="dseg" id="bar-lazer"  style="background:#d97706;"></div>
       <div class="dseg" id="bar-invest" style="background:#059669;"></div>
-      <div class="dseg" id="bar-sonhos" style="background:#8b5cf6;"></div>
+      <div class="dseg" id="bar-sonhos"    style="background:#8b5cf6;"></div>
+      <div class="dseg" id="bar-parcelado" style="background:#e11d48;"></div>
     </div>
     <!-- 3 pct cards -->
     <div class="grid grid-cols-3 gap-2.5">
@@ -310,6 +305,8 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
     </div>
     <!-- sonhos dynamic grid -->
     <div id="sonhosPctGrid" class="mt-2.5" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
+    <!-- parcelados dynamic grid -->
+    <div id="parceladosPctGrid" class="mt-2.5" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
     <!-- global alert -->
     <div id="globalAlert" class="hidden mt-3 rounded-xl px-4 py-3 text-xs font-semibold leading-relaxed"></div>
   </div>
@@ -322,6 +319,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
     <button class="tab-pill t-lazer" onclick="switchTab('lazer')" id="tab-lazer">☕ <span id="t-tabLazer">Lazer</span></button>
     <button class="tab-pill t-invest" onclick="switchTab('invest')" id="tab-invest">🛡️ <span id="t-tabInvest">Investimentos</span></button>
     <button class="tab-pill t-sonhos" onclick="switchTab('sonhos')" id="tab-sonhos">🚀 <span id="t-tabSonhos">Sonhos</span></button>
+    <button class="tab-pill t-parcelado" onclick="switchTab('parcelado')" id="tab-parcelado">💳 <span id="t-tabParcelado">Parcelados</span></button>
   </div>
 
 
@@ -465,6 +463,41 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
     </div>
   </div>
 
+
+  <!-- ══ SUB-PANEL PARCELADO ══ -->
+  <div class="sub-panel" id="sub-parcelado">
+    <div class="rounded-2xl p-4 mb-3" style="background:#fff1f2;border:1.5px solid #e11d48;">
+      <div class="font-bold text-sm mb-3" style="color:#e11d48;">💳 Nova Conta Parcelada</div>
+      <div class="flex flex-col gap-2.5">
+        <input type="text" id="parceladoNome" class="inp w-full rounded-xl px-3 py-2.5 text-sm outline-none"
+               style="background:#fff;border:1px solid var(--bdr);color:var(--txt);" placeholder="Ex: TV, Geladeira, Empréstimo...">
+        <div class="grid grid-cols-2 gap-2.5">
+          <input type="number" id="parceladoTotal" class="inp w-full rounded-xl px-3 py-2.5 text-sm outline-none"
+                 style="background:#fff;border:1px solid var(--bdr);color:var(--txt);" placeholder="Valor total ($)" min="0" step="0.01"
+                 oninput="updateParceladoPreview()">
+          <input type="number" id="parceladoParcelas" class="inp w-full rounded-xl px-3 py-2.5 text-sm outline-none"
+                 style="background:#fff;border:1px solid var(--bdr);color:var(--txt);" placeholder="Nº de parcelas" min="1" step="1"
+                 oninput="updateParceladoPreview()">
+        </div>
+        <div id="parceladoPreview" class="text-xs font-bold px-3 py-2 rounded-xl"
+             style="background:#fff;color:#e11d48;border:1px solid #fecdd3;">Parcela mensal: $0.00</div>
+        <button onclick="addParcelado()" class="w-full py-3 rounded-xl font-bold text-sm text-white"
+                style="background:#e11d48;border:none;">💳 Adicionar Parcelamento</button>
+      </div>
+    </div>
+    <div id="parceladosList" class="flex flex-col gap-2.5"></div>
+    <div id="parceladosEmpty" class="text-center py-10 text-sm" style="color:var(--txt3);">
+      <div class="text-4xl mb-2">💳</div>
+      <span>Nenhum parcelamento adicionado ainda.</span>
+    </div>
+  </div>
+
+
+  <!-- ── ANÁLISE DO MÊS ── -->
+  <div class="rounded-2xl p-4 mb-4 mt-4 s" style="background:var(--surf);border:1px solid var(--bdr);box-shadow:var(--shadow);">
+    <div class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--txt3);">📊 Análise do mês</div>
+    <div id="savingsDetail"></div>
+  </div>
 
   <!-- ── ARCHIVE BTN ── -->
   <button onclick="arquivarMes()" class="w-full mt-5 py-4 rounded-2xl font-bold text-base text-white transition-all hover:opacity-85"
@@ -733,7 +766,8 @@ function getData(){
   if(!d.hist)      d.hist=[];
   if(!d.cfg)       d.cfg={};
   if(!d.wallet)    d.wallet=[];
-  if(!d.fracs)     d.fracs={lazer:{n:0,names:[]},invest:{n:0,names:[]}};
+  if(!d.fracs)      d.fracs={lazer:{n:0,names:[]},invest:{n:0,names:[]}};
+  if(!d.parcelados) d.parcelados=[];
   return d;
 }
 function save(d){ localStorage.setItem('cvD6',JSON.stringify(d)); }
@@ -1141,6 +1175,106 @@ function renderDreams(){
 }
 
 // ─────────────────────────────────────────
+//  PARCELAMENTOS
+// ─────────────────────────────────────────
+function updateParceladoPreview(){
+  const total=safe($('parceladoTotal').value);
+  const parcelas=parseInt($('parceladoParcelas').value)||0;
+  $('parceladoPreview').textContent='Parcela mensal: '+(parcelas>0?fmtM(total/parcelas):'$0.00');
+}
+function addParcelado(){
+  const nome=$('parceladoNome').value.trim();
+  const total=safe($('parceladoTotal').value);
+  const parcelas=parseInt($('parceladoParcelas').value)||0;
+  if(!nome||total<=0||parcelas<=0){toast('⚠️ Preencha todos os campos');return;}
+  const d=getData();
+  d.parcelados.push({id:Date.now(),nome,total,parcelas,done:false});
+  save(d);
+  $('parceladoNome').value='';$('parceladoTotal').value='';$('parceladoParcelas').value='';
+  $('parceladoPreview').textContent='Parcela mensal: $0.00';
+  renderParcelados();calcularTudo();
+  toast('💳 Parcelamento adicionado!');
+}
+function deleteParcelado(id){
+  const d=getData();d.parcelados=d.parcelados.filter(p=>p.id!==id);save(d);
+  renderParcelados();calcularTudo();
+}
+function toggleParceladoDone(id){
+  const d=getData();const p=d.parcelados.find(x=>x.id===id);
+  if(p){p.done=!p.done;save(d);renderParcelados();calcularTudo();}
+}
+function renderParcelados(){
+  const d=getData();const sal=safe($('salario').value);
+  const c=$('parceladosList');const e=$('parceladosEmpty');
+  c.innerHTML='';
+  if(!d.parcelados||!d.parcelados.length){e.style.display='block';return;}
+  e.style.display='none';
+  d.parcelados.forEach(p=>{
+    const mensal=p.total/p.parcelas;
+    const pct=sal>0?(mensal/sal*100):0;
+    const div=document.createElement('div');
+    div.className='rounded-2xl p-4 s fade-in'+(p.done?' opacity-60':'');
+    div.style='background:var(--surf);border:1px solid var(--bdr);';
+    div.innerHTML=`
+      <div class="flex items-start gap-3 mb-2">
+        <button class="chk${p.done?' on':''}" onclick="toggleParceladoDone(${p.id})"
+                style="border-color:${p.done?'#059669':'var(--bdr2)'};background:${p.done?'#059669':'transparent'};color:${p.done?'#fff':'transparent'};">✓</button>
+        <div class="flex-1 min-w-0">
+          <div class="font-bold text-sm${p.done?' line-through':''}" style="color:var(--txt);">💳 ${esc(p.nome)}</div>
+          <div class="text-xs mt-0.5" style="color:var(--txt3);">Total: ${fmtM(p.total)} · ${p.parcelas}× de ${fmtM(mensal)}</div>
+        </div>
+        <button onclick="deleteParcelado(${p.id})" class="text-xs px-2 py-1 rounded-lg" style="background:none;border:none;color:var(--txt3);">✕</button>
+      </div>
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+           style="background:#fff1f2;color:#e11d48;">💳 ${fmtM(mensal)}/mês &nbsp;·&nbsp; ${fmt(pct,1)}% do salário</div>`;
+    c.appendChild(div);
+  });
+}
+
+// ─────────────────────────────────────────
+//  SAVINGS DETAIL
+// ─────────────────────────────────────────
+function renderSavingsDetail(cats){
+  const el=$('savingsDetail');if(!el)return;
+  el.innerHTML='';
+  let totalEcon=0;
+  cats.forEach((cat,i)=>{
+    const diff=cat.meta-cat.gasto;
+    const pct=cat.meta>0?Math.min(100,cat.gasto/cat.meta*100):0;
+    let status,bg,fg;
+    if(cat.isInvest){
+      if(cat.gasto>=cat.meta-0.005){status='🎉 Meta atingida!';bg='#d1fae5';fg='#059669';}
+      else{status='📉 Falta '+fmtM(cat.meta-cat.gasto);bg='#fef3c7';fg='#d97706';}
+    } else {
+      if(diff>0.005){status='✅ Economizou '+fmtM(diff);bg='#d1fae5';fg='#059669';totalEcon+=diff;}
+      else if(diff<-0.005){status='🚨 Excedeu '+fmtM(-diff);bg='#fee2e2';fg='#dc2626';}
+      else{status='✅ No limite';bg='#d1fae5';fg='#059669';}
+    }
+    const row=document.createElement('div');
+    row.style='padding:10px 0;'+(i<cats.length-1?'border-bottom:1px solid var(--bdr);':'');
+    row.innerHTML=`<div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:16px;width:22px;flex-shrink:0;">${cat.emoji}</span>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:700;color:var(--txt);">${cat.name}</div>
+        <div style="font-size:11px;color:var(--txt3);margin-top:1px;">Planejado ${fmtM(cat.gasto)} de ${fmtM(cat.meta)}</div>
+        <div style="height:4px;border-radius:99px;background:var(--bdr);margin-top:4px;overflow:hidden;">
+          <div style="width:${pct.toFixed(1)}%;height:100%;background:${cat.color};border-radius:99px;transition:width .4s;"></div>
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:8px;flex-shrink:0;background:${bg};color:${fg};">${status}</div>
+    </div>`;
+    el.appendChild(row);
+  });
+  if(totalEcon>0.005){
+    const tot=document.createElement('div');
+    tot.style='display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--bdr);';
+    tot.innerHTML=`<span style="font-size:12px;font-weight:700;color:var(--txt3);">💰 Total economizado este mês</span>
+      <span style="font-size:14px;font-weight:900;color:#059669;">${fmtM(totalEcon)}</span>`;
+    el.appendChild(tot);
+  }
+}
+
+// ─────────────────────────────────────────
 //  MAIN CALC
 // ─────────────────────────────────────────
 function calcularTudo(){
@@ -1160,7 +1294,11 @@ function calcularTudo(){
   let pS=0; const sPcts=[];
   d.sonhos.forEach(s=>{ const p=s.valor/s.meses; const pc=sal>0?p/sal*100:0; sPcts.push({nome:s.nome,pct:pc,p}); pS+=pc; });
 
-  const pL=Math.max(0,100-pF-pI-pS);
+  // parcelados
+  let pPar=0; const parPcts=[];
+  (d.parcelados||[]).forEach(p=>{ const mensal=p.total/p.parcelas; const pc=sal>0?mensal/sal*100:0; parPcts.push({nome:p.nome,pct:pc,mensal,done:p.done}); pPar+=pc; });
+
+  const pL=Math.max(0,100-pF-pI-pS-pPar);
   const mF=sal*pF/100, mL=sal*pL/100, mI=sal*pI/100;
 
   // UI budget cards
@@ -1187,6 +1325,7 @@ function calcularTudo(){
   $('bar-lazer').style.width=fmt(pL,2)+'%';
   $('bar-invest').style.width=fmt(pI,2)+'%';
   $('bar-sonhos').style.width=fmt(pS,2)+'%';
+  $('bar-parcelado').style.width=fmt(pPar,2)+'%';
 
   // sonhos pct grid
   const sg=$('sonhosPctGrid'); sg.innerHTML='';
@@ -1199,15 +1338,27 @@ function calcularTudo(){
     sg.appendChild(d2);
   });
 
-  // global alert (dreams overflow)
+  // parcelados pct grid
+  const pg=$('parceladosPctGrid'); pg.innerHTML='';
+  parPcts.forEach(pp=>{
+    const d2=document.createElement('div');
+    d2.className='rounded-xl p-3'; d2.style='background:#fff1f2;border:1.5px dashed #e11d48;';
+    d2.innerHTML=`<div class="text-xs font-bold uppercase tracking-wider mb-1 truncate" style="color:#e11d48;">💳 ${esc(pp.nome)}</div>
+      <div class="text-base font-black" style="color:#e11d48;">${fmt(pp.pct,1)}%</div>
+      <div class="text-xs mt-0.5" style="color:#e11d48;">${fmtM(pp.mensal)}/mês</div>`;
+    pg.appendChild(d2);
+  });
+
+  // global alert (dreams/parcelados overflow)
   const ga=$('globalAlert');
-  if(pS>0&&pL<=0){
+  const totalExtra=pS+pPar;
+  if(totalExtra>0&&pL<=0){
     ga.className='block mt-3 rounded-xl px-4 py-3 text-xs font-semibold leading-relaxed';
-    ga.style='background:#fee2e2;color:#dc2626;'; ga.innerHTML='🚨 <b>Sonhos a extrapolar o orçamento!</b>';
-  } else if(pS>0){
+    ga.style='background:#fee2e2;color:#dc2626;'; ga.innerHTML='🚨 <b>Sonhos e parcelamentos a extrapolar o orçamento!</b>';
+  } else if(totalExtra>0){
     ga.className='block mt-3 rounded-xl px-4 py-3 text-xs font-semibold leading-relaxed';
     ga.style='background:#d1fae5;color:#059669;';
-    ga.innerHTML=`✅ Lazer ajustado para ${fmt(pL,1)}% para acomodar os sonhos.`;
+    ga.innerHTML=`✅ Lazer ajustado para ${fmt(pL,1)}% para acomodar sonhos e parcelamentos.`;
   } else { ga.className='hidden'; }
 
   // re-render fractions (meta values may have changed)
@@ -1237,14 +1388,18 @@ function calcularTudo(){
 
   // ── Wallet panel ──
   const wTotal=walletTotal();
-  // Saldo total = wallet accounts + salary (salary auto-adds to total)
   const grandTotal=wTotal+sal;
   $('walletGrand').textContent=fmtM(grandTotal).replace('$','');
 
-  // Saldo livre = grandTotal - paid expenses
-  const gastosPagos=doneF+doneL+dFracL;
-  const livreSaldo=grandTotal-gastosPagos;
-  $('walletFree').textContent=fmtM(livreSaldo);
+  // ── Savings detail ──
+  const parMensal=(d.parcelados||[]).reduce((s,p)=>s+p.total/p.parcelas,0);
+  const parPago=(d.parcelados||[]).filter(p=>p.done).reduce((s,p)=>s+p.total/p.parcelas,0);
+  renderSavingsDetail([
+    {emoji:'🏠',name:'Fixo',gasto:totalF,meta:mF,isInvest:false,color:'#6d28d9'},
+    {emoji:'☕',name:'Lazer',gasto:totalL,meta:mL,isInvest:false,color:'#d97706'},
+    {emoji:'🛡️',name:'Invest.',gasto:totalI,meta:mI,isInvest:true,color:'#059669'},
+    ...(parMensal>0?[{emoji:'💳',name:'Parcelados',gasto:parPago,meta:parMensal,isInvest:true,color:'#e11d48'}]:[])
+  ]);
 }
 
 function fracCheckedTotal(cat,metaTotal){
@@ -1275,17 +1430,31 @@ function arquivarMes(){
   const hoje=new Date().toISOString().slice(0,7);
   const mes=$('mesRef')?($('mesRef').value||hoje):hoje;
   const d=getData();
+  const sal=safe($('salario').value);
+  const tF=sumAllItems('fixo'),tL=sumAllItems('lazer'),tI=sumAllItems('invest');
+  const parMensal=(d.parcelados||[]).reduce((s,p)=>s+p.total/p.parcelas,0);
+
+  // compute budgets to get economy values
+  let pF2=mode==='pct'?safe($('pctFixo').value):sal>0?safe($('pctFixo').value)/sal*100:0;
+  let pI2=mode==='pct'?safe($('pctInvest').value):sal>0?safe($('pctInvest').value)/sal*100:0;
+  let pS2=0; d.sonhos.forEach(s=>{ pS2+=sal>0?(s.valor/s.meses/sal*100):0; });
+  let pPar2=0; (d.parcelados||[]).forEach(p=>{ pPar2+=sal>0?(p.total/p.parcelas/sal*100):0; });
+  const pL2=Math.max(0,100-pF2-pI2-pS2-pPar2);
+  const mF2=sal*pF2/100, mL2=sal*pL2/100;
+
   const reg={
-    id:Date.now(), mes,
-    salario:safe($('salario').value),
-    totalFixo:sumAllItems('fixo'),
-    totalLazer:sumAllItems('lazer'),
-    totalInvest:sumAllItems('invest'),
-    sobra:safe($('salario').value)-sumAllItems('fixo')-sumAllItems('lazer')-sumAllItems('invest')
+    id:Date.now(),mes,salario:sal,
+    totalFixo:tF,totalLazer:tL,totalInvest:tI,totalParcelado:parMensal,
+    econFixo:Math.max(0,mF2-tF),econLazer:Math.max(0,mL2-tL),
+    sobra:sal-tF-tL-tI-parMensal
   };
   d.hist=d.hist.filter(h=>h.mes!==mes);
-  d.hist.push(reg); save(d);
-  renderHistory(); toast(`🔒 Mês ${mes} arquivado!`);
+  d.hist.push(reg);
+  // reset parcelados done para o novo mês
+  (d.parcelados||[]).forEach(p=>p.done=false);
+  save(d);
+  renderParcelados();renderHistory();
+  toast(`🔒 Mês ${mes} arquivado!`);
   if(currentPage!=='historico') switchPage('historico');
 }
 function deleteHistory(id){
@@ -1304,6 +1473,20 @@ function renderHistory(){
     const card=document.createElement('div');
     card.className='rounded-2xl p-4 mb-3 s transition-all';
     card.style='background:var(--surf);border:1px solid var(--bdr);';
+
+    const gridItems=[
+      ['🏠 Fixo',h.totalFixo,'#6d28d9'],
+      ['☕ Lazer',h.totalLazer,'#d97706'],
+      ['🛡️ Invest.',h.totalInvest,'#059669'],
+      ['💰 Sobra',h.sobra,safe(h.sobra)>=0?'#059669':'#dc2626']
+    ];
+    if(h.totalParcelado>0) gridItems.push(['💳 Parc.',h.totalParcelado,'#e11d48']);
+
+    const econParts=[];
+    if(h.econFixo>0.005) econParts.push(`${fmtM(h.econFixo)} em Fixo`);
+    if(h.econLazer>0.005) econParts.push(`${fmtM(h.econLazer)} em Lazer`);
+    const econStr=econParts.join(' · ');
+
     card.innerHTML=`
       <div class="flex items-center justify-between mb-3">
         <div><div class="font-bold" style="color:var(--txt);">📅 ${h.mes}</div>
@@ -1312,12 +1495,13 @@ function renderHistory(){
                 style="background:none;border:none;color:var(--txt3);" onmouseover="this.style.background='#fee2e2';this.style.color='#dc2626';" onmouseout="this.style.background='none';this.style.color='var(--txt3)';">🗑</button>
       </div>
       <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        ${[['🏠 Fixo',h.totalFixo,'#6d28d9'],['☕ Lazer',h.totalLazer,'#d97706'],['🛡️ Invest.',h.totalInvest,'#059669'],['💰 Sobra',h.sobra,safe(h.sobra)>=0?'#059669':'#dc2626']].map(([l,v,c])=>`
+        ${gridItems.map(([l,v,col])=>`
         <div class="rounded-xl p-2.5 text-center" style="background:var(--surf2);">
           <div class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--txt3);">${l}</div>
-          <div class="font-black text-sm" style="color:${c};">${fmtM(v)}</div>
+          <div class="font-black text-sm" style="color:${col};">${fmtM(v)}</div>
         </div>`).join('')}
-      </div>`;
+      </div>
+      ${econStr?`<div class="mt-2 px-3 py-2 rounded-xl text-xs font-semibold" style="background:#d1fae5;color:#059669;">💰 Economizou: ${econStr}</div>`:''}`;
     c.appendChild(card);
   });
 }
@@ -1623,6 +1807,9 @@ window.onload=()=>{
 
   // sonhos
   renderDreams();
+
+  // parcelados
+  renderParcelados();
 
   // month input
   if($('mesRef')) $('mesRef').value=new Date().toISOString().slice(0,7);

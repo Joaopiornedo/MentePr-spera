@@ -195,6 +195,9 @@
     // Recarregar sonhos
     if (window.renderDreams) window.renderDreams();
 
+    // Recarregar parcelados
+    if (window.renderParcelados) window.renderParcelados();
+
     // Recarregar histórico (se na página certa)
     if (window.renderHistory) window.renderHistory();
 
