@@ -1,178 +1,100 @@
-  const pills = document.querySelectorAll('.tab-pill');
-  if (pills[0]) pills[0].textContent = L.tabFixo;
-  if (pills[1]) pills[1].textContent = L.tabLazer;
-  if (pills[2]) pills[2].textContent = L.tabInvest;
-  if (pills[3]) pills[3].textContent = L.tabSonhos;
-  // fixo panel
-  const fTitle = document.querySelector('#sub-fixo .budget-card-title span:first-child');
-  if (fTitle) fTitle.textContent = L.fixoTitle;
-  const fLim = document.querySelector('#sub-fixo .budget-card-meta');
-  if (fLim) fLim.innerHTML = L.fixoLimitLabel + '<strong id="meta-fixo">' + ($('meta-fixo')?.textContent||'') + '</strong>';
-  const fCols = document.querySelectorAll('#sub-fixo .budget-card-header ~ div > span');
-  if (fCols[0]) fCols[0].textContent = L.fixoColDesc;
-  if (fCols[1]) fCols[1].textContent = L.fixoColDue;
-  if (fCols[2]) fCols[2].textContent = L.fixoColVal;
-  const fAdd = document.querySelector('#sub-fixo .add-item-btn');
-  if (fAdd) fAdd.textContent = L.fixoAddBtn;
-  const fTotLbl = document.querySelector('#sub-fixo .budget-footer-label');
-  if (fTotLbl) fTotLbl.textContent = L.fixoTotal;
-  // lazer panel
-  const lTitle = document.querySelector('#sub-lazer .budget-card-title span:first-child');
-  if (lTitle) lTitle.textContent = L.lazerTitle;
-  const lLim = document.querySelector('#sub-lazer .budget-card-meta');
-  if (lLim) lLim.innerHTML = L.lazerLimitLabel + '<strong id="meta-lazer">' + ($('meta-lazer')?.textContent||'') + '</strong>';
-  const lAdd = document.querySelector('#sub-lazer .add-item-btn');
-  if (lAdd) lAdd.textContent = L.lazerAddBtn;
-  const lTotLbl = document.querySelector('#sub-lazer .budget-footer-label');
-  if (lTotLbl) lTotLbl.textContent = L.lazerTotal;
-  // invest panel
-  const iTitle = document.querySelector('#sub-invest .budget-card-title span:first-child');
-  if (iTitle) iTitle.textContent = L.investTitle;
-  const iLim = document.querySelector('#sub-invest .budget-card-meta');
-  if (iLim) iLim.innerHTML = L.investLimitLabel + '<strong id="meta-invest">' + ($('meta-invest')?.textContent||'') + '</strong>';
-  const iAdd = document.querySelector('#sub-invest .add-item-btn');
-  if (iAdd) iAdd.textContent = L.investAddBtn;
-  const iTotLbl = document.querySelector('#sub-invest .budget-footer-label');
-  if (iTotLbl) iTotLbl.textContent = L.investTotal;
-  // sonhos
-  const sTitle = document.querySelector('.dream-form h4');
-  if (sTitle) sTitle.textContent = L.sonhosFormTitle;
-  const sName = $('dreamName'); if (sName) sName.placeholder = L.sonhosNamePh;
-  const sVal  = $('dreamValue'); if (sVal) sVal.placeholder = L.sonhosValPh;
-  const sMon  = $('dreamMonths'); if (sMon) sMon.placeholder = L.sonhosMonthsPh;
-  const sBtn  = document.querySelector('.dream-submit'); if (sBtn) sBtn.textContent = L.sonhosAddBtn;
-  const sEmpty = $('dreamsEmpty');
-  if (sEmpty) sEmpty.innerHTML = '<div style="font-size:36px;margin-bottom:8px;">🌟</div>' + L.sonhosEmpty;
-  // archive btn
-  const ab = document.querySelector('.btn-close'); if (ab) ab.textContent = L.archiveBtn;
-  // history page
-  const hTitle = document.querySelector('#page-historico > div > div:first-child');
-  if (hTitle && hTitle.style) hTitle.textContent = L.historyTitle;
-  const hSel = document.querySelector('#page-historico .card div:first-child');
-  if (hSel) hSel.textContent = L.historySelectLabel;
-  const hArc = document.querySelector('.archive-btn'); if (hArc) hArc.textContent = L.historyArchiveBtn;
-  const hSecH = document.querySelector('#page-historico .section-header');
-  if (hSecH) hSecH.textContent = L.historySectionHeader;
-  // nav
-  const navItems = document.querySelectorAll('.nav-item');
-  if (navItems[0]) navItems[0].lastChild.textContent = L.navOrcamento;
-  if (navItems[1]) navItems[1].lastChild.textContent = L.navEbook;
-  if (navItems[2]) navItems[2].lastChild.textContent = L.navHistorico;
-  // ebook
-  const ebBadge = document.querySelector('.ebook-badge'); if (ebBadge) ebBadge.textContent = L.ebookBadge;
-  const ebH1 = document.querySelector('.ebook-cover h1');
-  if (ebH1) ebH1.innerHTML = L.ebookTitle + '<br><span>' + L.ebookTitleSpan + '</span>';
-  const ebSub = document.querySelector('.ebook-cover p'); if (ebSub) ebSub.textContent = L.ebookSubtitle;
-  const ebParts = document.querySelectorAll('#page-ebook .section-header');
-  if (ebParts[0]) ebParts[0].textContent = L.ebookPart1;
-  if (ebParts[1]) ebParts[1].textContent = L.ebookPart2;
-  // item placeholders (existing rows)
-  document.querySelectorAll('.item-name').forEach(el => el.placeholder = L.itemDescPh);
-  // re-render dreams (to update remove btn text)
-  renderDreams();
-  // re-run calc to update dynamic text (balance pill, alerts)
-  calcularTudo();
-}
-
-function loadLang() {
-  const saved = localStorage.getItem('cvLang') || 'pt';
-  currentLang = saved;
-  document.querySelectorAll('.lang-option').forEach(el => el.classList.remove('selected'));
-  const opt = $('lang-' + saved);
-  if (opt) opt.classList.add('selected');
-  $('langFlagSm').textContent = LANGS[saved].flag;
-  $('langCodeSm').textContent = LANGS[saved].code;
-  applyTranslations();
-}
-  // parcelados
-  renderParcelados();
-
-  // month input
-  if($('mesRef')) $('mesRef').value=new Date().toISOString().slice(0,7);
-
-  // calc
-  calcularTudo();
-
-  // active tab style
-  switchTab('fixo');
-  calcPlano();
-};
+<!DOCTYPE html>
+<html lang="pt">
+<html lang="pt" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Calculadora da Virada</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6366f1">
+<meta name="theme-color" content="#6d28d9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="CalcVirada">
+<meta name="apple-mobile-web-app-title" content="Calculadora da Virada">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: ['selector', '[data-theme="dark"]'],
+    theme: { extend: {} }
+  }
 </script>
+<style>
+/* ═══════════════════════════════════════════════════════
+   DESIGN TOKENS — LIGHT MODE (default)
+═══════════════════════════════════════════════════════ */
+:root {
+  --bg:           #F4F6FB;
+  --surface:      #FFFFFF;
+  --surface2:     #F8F9FD;
+  --border:       #E4E7F0;
+  --border2:      #CDD1DF;
+  --text:         #1A1D27;
+  --text2:        #52566A;
+  --text3:        #8B90A7;
+  --primary:      #6366F1;
+  --primary-soft: #EEF0FD;
+  --primary-dark: #4F52CC;
+  --green:        #10B981;
+  --green-soft:   #D1FAE5;
+  --amber:        #F59E0B;
+  --amber-soft:   #FEF3C7;
+  --red:          #EF4444;
+  --red-soft:     #FEE2E2;
+  --blue:         #3B82F6;
+  --blue-soft:    #DBEAFE;
+  --purple:       #8B5CF6;
+  --purple-soft:  #EDE9FE;
+  --shadow:       0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-sm:    0 1px 2px rgba(0,0,0,0.05);
+  --radius:       14px;
+  --radius-sm:    8px;
+  --radius-xs:    6px;
+  --transition:   0.2s ease;
+}
+[data-theme="dark"] {
+  --bg:           #0F1117;
+  --surface:      #1A1D27;
+  --surface2:     #21253A;
+  --border:       #2E3347;
+  --border2:      #3D4360;
+  --text:         #E8EAF2;
+  --text2:        #9BA3C4;
+  --text3:        #5C6480;
+  --primary-soft: #2A2C5A;
+  --green-soft:   #0D2B22;
+  --amber-soft:   #2D2209;
+  --red-soft:     #2D1515;
+  --blue-soft:    #172040;
+  --purple-soft:  #231B45;
+  --shadow:       0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.25);
+}
 
-<!-- LANGUAGE MODAL -->
-<div class="lang-modal-overlay" id="langOverlay" onclick="closeLangModal(event)">
-  <div class="lang-sheet" onclick="event.stopPropagation()">
-    <div class="lang-handle"></div>
-    <div class="lang-title" id="lmt-title">Idioma / Language</div>
-    <div class="lang-sub" id="lmt-sub">Escolha o idioma do aplicativo</div>
-    <div class="lang-options">
-      <div class="lang-option selected" id="lang-pt" onclick="setLang('pt')">
-        <span class="lang-flag">🇧🇷</span>
-        <div><div class="lang-name">Português</div><div class="lang-native">Brasil</div></div>
-        <span class="lang-check">✓</span>
-      </div>
-      <div class="lang-option" id="lang-es" onclick="setLang('es')">
-        <span class="lang-flag">🌎</span>
-        <div><div class="lang-name">Español</div><div class="lang-native">Latinoamérica</div></div>
-        <span class="lang-check">✓</span>
-      </div>
-      <div class="lang-option" id="lang-en" onclick="setLang('en')">
-        <span class="lang-flag">🇺🇸</span>
-        <div><div class="lang-name">English</div><div class="lang-native">United States</div></div>
-        <span class="lang-check">✓</span>
-<!-- ══ NAV SHEET ══ -->
-<div id="nsOverlay" onclick="if(event.target===this)closeNavSheet()">
-  <div id="nsSheet" onclick="event.stopPropagation()">
-    <div class="ns-handle"></div>
-    <div class="ns-header">
-      <div><div class="ns-title">Menu</div><div class="ns-sub">Mente Próspera</div></div>
-      <button class="ns-close" onclick="closeNavSheet()">✕</button>
-    </div>
-    <div class="ns-body">
+/* ═══════ RESET & BASE ═══════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background var(--transition), color var(--transition);
+  -webkit-font-smoothing: antialiased;
+}
 
-      <div class="ns-sec" id="ns-sec-learn">APRENDER</div>
-      <a href="tutorial.html" class="ns-row">
-        <div class="ns-icon" style="background:#ede9fe">🎓</div>
-        <div class="ns-info"><div class="ns-row-title" id="ns-tut-t">Tutorial</div><div class="ns-row-sub" id="ns-tut-s">Como usar todas as ferramentas</div></div>
-        <span class="ns-arr">›</span>
-      </a>
+/* ═══════ SCROLLBAR ═══════ */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
 
-      <div class="ns-sec" id="ns-sec-config">CONFIGURAÇÕES</div>
-      <button class="ns-row" onclick="nsToggleTheme()">
-        <div class="ns-icon" style="background:var(--surf2)" id="ns-theme-icon">🌙</div>
-        <div class="ns-info">
-          <div class="ns-row-title" id="ns-theme-t">Modo Escuro</div>
-          <div class="ns-row-sub" id="ns-theme-s">Alternar tema claro / escuro</div>
-        </div>
-        <div class="ns-toggle" id="ns-toggle"><div class="ns-toggle-ball" id="ns-ball"></div></div>
-      </button>
-      <div class="ns-row" style="cursor:default;flex-direction:column;align-items:stretch;gap:10px">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div class="ns-icon" style="background:var(--surf2)">🌍</div>
-          <div class="ns-info"><div class="ns-row-title" id="ns-lang-t">Idioma</div><div class="ns-row-sub">PT · ES · EN</div></div>
-        </div>
-        <div class="ns-lang-row">
-          <button class="ns-lang-btn on" id="ns-lb-pt" onclick="nsSetLang('pt')">🇧🇷 PT</button>
-          <button class="ns-lang-btn" id="ns-lb-es" onclick="nsSetLang('es')">🌎 ES</button>
-          <button class="ns-lang-btn" id="ns-lb-en" onclick="nsSetLang('en')">🇺🇸 EN</button>
-        </div>
-      </div>
-      <button class="ns-row" onclick="openInstallModal();closeNavSheet()">
-        <div class="ns-icon" style="background:#ede9fe">📲</div>
-        <div class="ns-info"><div class="ns-row-title" id="ns-inst-t">Instalar App</div><div class="ns-row-sub" id="ns-inst-s">Adicionar à tela inicial</div></div>
-        <span class="ns-arr">›</span>
-      </button>
+/* ═══════ LAYOUT ═══════ */
+.app-wrapper {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 16px 16px 100px;
+}
 
-    </div>
-    <button class="lang-close-btn" id="lmt-close" onclick="closeLangModal()">Fechar</button>
-  </div>
-</div>
-
-<!-- Firebase + Auth (must be last, after app JS) -->
-<script src="firebase-config.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="auth.js"></script>
-</body>
-</html>
+/* ═══════ TOPBAR ═══════ */
+.topbar {
+  display: flex;
+  align-items: center;
