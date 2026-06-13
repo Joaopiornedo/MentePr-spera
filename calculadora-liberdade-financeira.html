@@ -761,11 +761,13 @@ syncSlider('taxa','taxaVal');
 syncSlider('inflacao','inflacaoVal');
 // Apply saved lang and theme from localStorage
 (function(){
-  var t = localStorage.getItem('cvTheme') || 'dark';
-  document.documentElement && document.documentElement.setAttribute && document.documentElement.setAttribute('data-theme', t);
+  var t = localStorage.getItem('cvTheme') || 'light';
+  document.documentElement.setAttribute('data-theme', t);
+  document.body.style.background = t === 'dark' ? '#0f0d18' : '#f1f5f9';
+  document.body.style.color = t === 'dark' ? '#e2e8f0' : '#0f172a';
   var l = localStorage.getItem('cvLang') || 'pt';
   if(typeof setLang === 'function') setLang(l);
-  else { if(typeof lang !== 'undefined') lang = l; applyTranslations(); }
+  else { lang = l; applyTranslations(); }
 })();
 calc();
 </script>
@@ -850,6 +852,8 @@ function ebTheme(){
   var next = dark ? 'light' : 'dark';
   localStorage.setItem('cvTheme', next);
   document.documentElement.setAttribute('data-theme', next);
+  document.body.style.background = next === 'dark' ? '#0f0d18' : '#f1f5f9';
+  document.body.style.color = next === 'dark' ? '#e2e8f0' : '#0f172a';
   ebSync();
 }
 
@@ -875,12 +879,14 @@ function ebSync(){
 // On load: check saved lang — redirect if different from this file
 (function(){
   var savedLang  = localStorage.getItem('cvLang') || 'pt';
-  var savedTheme = localStorage.getItem('cvTheme') || 'dark';
+  var savedTheme = localStorage.getItem('cvTheme') || 'light';
   var map = {pt:'ebook-cardss-pt.html', es:'ebook-cardss-es.html', en:'ebook-cardss-en.html'};
   var thisFile = (location.pathname.split('/').pop()) || ('ebook-cardss-' + _ebLang + '.html');
 
-  // Apply theme immediately
+  // Apply theme immediately (JS direct + CSS attribute)
   document.documentElement.setAttribute('data-theme', savedTheme);
+  document.body.style.background = savedTheme === 'dark' ? '#0f0d18' : '#f1f5f9';
+  document.body.style.color = savedTheme === 'dark' ? '#e2e8f0' : '#0f172a';
 
   // If saved lang doesn't match this file → redirect
   if(map[savedLang] && thisFile !== map[savedLang] && thisFile.indexOf('ebook-cardss') !== -1){
