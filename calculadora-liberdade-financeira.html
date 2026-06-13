@@ -796,8 +796,12 @@ function ebInstall(){ ebMenuClose(); var o=document.getElementById('ebInstOv'); 
 
 function ebLang(l){
   localStorage.setItem('cvLang', l);
+  var thisFile = location.pathname.split('/').pop();
+  if(thisFile === 'calculadora-liberdade-financeira.html'){
+    ebSync(); ebMenuClose(); return;
+  }
   var map = {pt:'ebook-cardss-pt.html', es:'ebook-cardss-es.html', en:'ebook-cardss-en.html'};
-  location.href = map[l];  // reload correct language file
+  location.href = map[l];
 }
 
 function ebTheme(){

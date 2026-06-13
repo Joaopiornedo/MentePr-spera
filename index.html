@@ -1422,10 +1422,12 @@ function calcularTudo(){
 
   // ── Savings detail ──
   const parMensal=pPar>0?(d.parcelados||[]).reduce((s,p)=>s+p.total/p.parcelas,0):0;
+  const mS=d.sonhos.reduce((s,x)=>s+x.valor/x.meses,0);
   renderSavingsDetail([
     {emoji:'🏠',name:'Fixo',gasto:totalF,meta:mF,isInvest:false,color:'#6d28d9'},
     {emoji:'☕',name:'Lazer',gasto:totalL,meta:mL,isInvest:false,color:'#d97706'},
-    {emoji:'🛡️',name:'Invest.',gasto:totalI,meta:mI,isInvest:true,color:'#059669'},
+    {emoji:'🛡️',name:'Invest.',gasto:totalI+dFracI,meta:mI,isInvest:true,color:'#059669'},
+    ...(mS>0?[{emoji:'🚀',name:'Sonhos',gasto:sonhosPago,meta:mS,isInvest:true,color:'#8b5cf6'}]:[]),
     ...(parMensal>0?[{emoji:'💳',name:'Parcelados',gasto:parPago,meta:parMensal,isInvest:true,color:'#e11d48'}]:[])
   ]);
 }
