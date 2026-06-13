@@ -133,9 +133,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 </style>
 <style id="eb-nav-css">
 .eb-topbar{position:sticky;top:0;z-index:300;display:flex;align-items:center;
-  justify-content:space-between;padding:0 16px;height:52px;
+  justify-content:space-between;
+  padding:env(safe-area-inset-top,0px) 16px 0 16px;
+  height:calc(52px + env(safe-area-inset-top,0px));
   background:var(--topbar,rgba(13,13,18,.96));backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border,rgba(255,255,255,.1));}
+/* alinhar brand/menu na zona de 52px abaixo da safe-area */
+.eb-topbar>.eb-brand,.eb-topbar>.eb-menu-btn{
+  margin-top:auto;margin-bottom:auto;
+  height:52px;display:flex;align-items:center;}
 .eb-brand{display:flex;align-items:center;gap:10px}
 .eb-logo{width:32px;height:32px;border-radius:9px;overflow:hidden;
   background:linear-gradient(135deg,#6d28d9,#8b5cf6);
@@ -197,6 +203,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
   color:var(--text2,#475569);cursor:pointer;font-family:inherit;transition:all .15s}
 .eb-lang-btn.eb-on{background:#6d28d9;color:#fff;border-color:#6d28d9}
 body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important}
+
+/* Plano — tabela e cards responsivos */
+#pl-table .grid span:not(:first-child){
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:clamp(9px,2.5vw,12px);
+}
+#pl-table .grid span:first-child{
+  font-size:clamp(9px,2.5vw,12px);
+}
+@media(max-width:400px){
+  .grid.grid-cols-3{gap:6px !important}
+  .grid.grid-cols-3 > div{padding:10px 6px !important}
+}
 </style>
 </head>
 <body style="padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))">
