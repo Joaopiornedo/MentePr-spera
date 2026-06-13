@@ -619,18 +619,18 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
   </div>
 
   <!-- Result cards -->
-  <div class="grid grid-cols-3 gap-3 mb-4">
-    <div class="rounded-2xl p-4 text-center" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);">
+  <div class="grid grid-cols-3 gap-3 mb-4" style="overflow:hidden;">
+    <div class="rounded-2xl p-4 text-center" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);overflow:hidden;min-width:0;">
       <div class="text-xs font-bold text-white/70 mb-1" id="t-plFinal">Capital final</div>
-      <div class="font-black text-white leading-tight" style="font-size:clamp(11px,3.8vw,20px);word-break:break-all;" id="pl-result-total">$0</div>
+      <div class="font-black text-white leading-tight" style="font-size:clamp(14px,4.5vw,22px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="pl-result-total">$0</div>
     </div>
-    <div class="rounded-2xl p-4 text-center s" style="background:var(--surf);border:1px solid var(--bdr);">
+    <div class="rounded-2xl p-4 text-center s" style="background:var(--surf);border:1px solid var(--bdr);overflow:hidden;min-width:0;">
       <div class="text-xs font-bold mb-1" style="color:var(--txt3);" id="t-plInvestido">Investido</div>
-      <div class="font-black" style="color:var(--txt);line-height:1.2;font-size:clamp(11px,3.8vw,20px);word-break:break-all;" id="pl-result-invest">$0</div>
+      <div class="font-black" style="color:var(--txt);line-height:1.2;font-size:clamp(14px,4.5vw,22px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="pl-result-invest">$0</div>
     </div>
-    <div class="rounded-2xl p-4 text-center" style="background:#d1fae5;border:1px solid #059669;">
+    <div class="rounded-2xl p-4 text-center" style="background:#d1fae5;border:1px solid #059669;overflow:hidden;min-width:0;">
       <div class="text-xs font-bold mb-1" style="color:#059669;" id="t-plJuros">Juros ganhos</div>
-      <div class="font-black" style="color:#059669;line-height:1.2;font-size:clamp(11px,3.8vw,20px);word-break:break-all;" id="pl-result-juros">$0</div>
+      <div class="font-black" style="color:#059669;line-height:1.2;font-size:clamp(14px,4.5vw,22px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="pl-result-juros">$0</div>
     </div>
   </div>
 
@@ -1801,9 +1801,17 @@ function calcPlano(){
   var pctJuros  = 100 - pctInvest;
 
   var set = function(id, v){ var e=document.getElementById(id); if(e) e.textContent=v; };
-  set('pl-result-total',  fmtM(total));
-  set('pl-result-invest', fmtM(investido));
-  set('pl-result-juros',  fmtM(juros));
+  // Usar formato compacto nos cards para evitar overflow em celular
+  function fmtC(v){
+    var abs = Math.abs(v);
+    var s = v < 0 ? '-' : '';
+    if(abs >= 1000000) return s + '$' + (abs/1000000).toFixed(1).replace('.',',') + 'M';
+    if(abs >= 1000)    return s + '$' + (abs/1000).toFixed(1).replace('.',',') + 'K';
+    return fmtM(v);
+  }
+  set('pl-result-total',  fmtC(total));
+  set('pl-result-invest', fmtC(investido));
+  set('pl-result-juros',  fmtC(juros));
   document.getElementById('pl-bar-invest').style.width = pctInvest.toFixed(1) + '%';
   document.getElementById('pl-bar-juros').style.width  = pctJuros.toFixed(1)  + '%';
   set('pl-pct-invest', pctInvest.toFixed(0) + '%');
