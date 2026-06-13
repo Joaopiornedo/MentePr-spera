@@ -1416,7 +1416,8 @@ function calcularTudo(){
   // ── Wallet panel ──
   const wTotal=walletTotal();
   const sonhosPago=(d.sonhos||[]).filter(s=>s.done).reduce((sum,s)=>sum+s.valor/s.meses,0);
-  const gastosPagos=doneF+doneL+dFracL+dFracI+parPago+sonhosPago;
+  // doneI+dFracI saem do salário e entram nas contas — wTotal já subiu, então deduzimos do salário para não duplicar
+  const gastosPagos=doneF+doneL+dFracL+dFracI+doneI+parPago+sonhosPago;
   const grandTotal=wTotal+sal-gastosPagos;
   $('walletGrand').textContent=fmtM(grandTotal).replace('$','');
 
