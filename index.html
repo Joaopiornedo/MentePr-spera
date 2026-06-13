@@ -811,6 +811,7 @@ function switchPage(p){
   $('page-'+p).classList.add('active');
   const n=$('nav-'+p); if(n) n.classList.add('active');
   if(p==='historico') renderHistory();
+  if(p==='orcamento'){ renderParcelados(); renderDreams(); calcularTudo(); }
   if(p==='ebook'){ goToEbook(); return; }
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1426,7 +1427,7 @@ function calcularTudo(){
   const mS=d.sonhos.reduce((s,x)=>s+x.valor/x.meses,0);
   renderSavingsDetail([
     {emoji:'🏠',name:'Fixo',gasto:totalF,meta:mF,isInvest:false,color:'#6d28d9'},
-    {emoji:'☕',name:'Lazer',gasto:totalL,meta:mL,isInvest:false,color:'#d97706'},
+    {emoji:'☕',name:'Lazer',gasto:totalL+dFracL,meta:mL,isInvest:false,color:'#d97706'},
     {emoji:'🛡️',name:'Invest.',gasto:totalI+dFracI,meta:mI,isInvest:true,color:'#059669'},
     ...(mS>0?[{emoji:'🚀',name:'Sonhos',gasto:sonhosPago,meta:mS,isInvest:true,color:'#8b5cf6'}]:[]),
     ...(parMensal>0?[{emoji:'💳',name:'Parcelados',gasto:parPago,meta:parMensal,isInvest:true,color:'#e11d48'}]:[])
