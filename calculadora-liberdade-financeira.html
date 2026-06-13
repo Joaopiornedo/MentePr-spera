@@ -114,11 +114,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 .alert.ok{background:var(--gl);color:var(--g)}
 .alert.danger{background:var(--rl);color:var(--r)}
 
-/* ── CTA ── */
-.cta-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--bdr);padding:12px 16px;display:flex;gap:10px;align-items:center;z-index:50}
-.cta-bar-text{flex:1;font-size:12px;font-weight:600;color:var(--ink2)}
-.cta-bar-btn{background:var(--v);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;text-decoration:none;display:inline-block}
-.cta-bar-btn:hover{background:#5b21b6}
 
 /* ── Lang toggle ── */
 .lang-wrap{position:absolute;top:16px;right:16px;display:flex;gap:4px}
@@ -413,10 +408,7 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important}
 </div>
 
 <!-- CTA BAR -->
-<div class="cta-bar">
-  <div class="cta-bar-text" id="t-ctaText">Usa a Calculadora da Virada para aplicar este plano todos os meses.</div>
-  <a href="index.html" class="cta-bar-btn" id="t-ctaBtn">Abrir App →</a>
-</div>
+
 
 <script>
 // ── i18n ─────────────────────────────────────────────────────────
@@ -442,8 +434,6 @@ const TR = {
     milestones:'Marcos da Jornada',
     scenarios:'E se…? Cenários de aceleração',
     stratTitle:'Estratégias para chegar mais depressa',
-    ctaText:'Usa a Calculadora da Virada para aplicar este plano todos os meses.',
-    ctaBtn:'Abrir App →',
     alertNoPoupanca:'⚠️ Com as despesas actuais não sobra nada para poupar. Reduz as despesas ou aumenta a renda para avançar.',
     alertSlow:'💡 A este ritmo precisas de mais de 50 anos. Aumenta a taxa de poupança ou o retorno do investimento.',
     alertGood:'✅ Estás no caminho certo. Mantém a consistência e o tempo fará o trabalho.',
@@ -483,8 +473,6 @@ const TR = {
     milestones:'Hitos del Camino',
     scenarios:'¿Y si…? Escenarios de aceleración',
     stratTitle:'Estrategias para llegar más rápido',
-    ctaText:'Usa la Calculadora del Giro para aplicar este plan cada mes.',
-    ctaBtn:'Abrir App →',
     alertNoPoupanca:'⚠️ Con los gastos actuales no sobra nada para ahorrar. Reduce gastos o aumenta ingresos para avanzar.',
     alertSlow:'💡 A este ritmo necesitas más de 50 años. Aumenta la tasa de ahorro o el retorno de la inversión.',
     alertGood:'✅ Estás en el camino correcto. Mantén la consistencia y el tiempo hará el trabajo.',
@@ -522,8 +510,6 @@ const TR = {
     milestones:'Journey Milestones',
     scenarios:'What if…? Acceleration scenarios',
     stratTitle:'Strategies to get there faster',
-    ctaText:'Use the Calculadora da Virada to apply this plan every month.',
-    ctaBtn:'Open App →',
     alertNoPoupanca:'⚠️ With current expenses nothing is left to save. Reduce expenses or increase income to move forward.',
     alertSlow:'💡 At this rate you need more than 50 years. Increase savings rate or investment return.',
     alertGood:'✅ You\'re on the right track. Stay consistent and time will do the work.',
@@ -583,8 +569,6 @@ function applyTranslations(){
   s('t-milestones',T.milestones);
   s('t-scenarios',T.scenarios);
   s('t-stratTitle',T.stratTitle);
-  s('t-ctaText',T.ctaText);
-  s('t-ctaBtn',T.ctaBtn);
   renderStrategies();
 }
 
