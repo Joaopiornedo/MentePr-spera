@@ -133,9 +133,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 </style>
 <style id="eb-nav-css">
 .eb-topbar{position:sticky;top:0;z-index:300;display:flex;align-items:center;
-  justify-content:space-between;padding:0 16px;height:52px;
+  justify-content:space-between;
+  padding:env(safe-area-inset-top,0px) 16px 0 16px;
+  height:calc(52px + env(safe-area-inset-top,0px));
   background:var(--topbar,rgba(13,13,18,.96));backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border,rgba(255,255,255,.1));}
+/* alinhar brand/menu na zona de 52px abaixo da safe-area */
+.eb-topbar>.eb-brand,.eb-topbar>.eb-menu-btn{
+  margin-top:auto;margin-bottom:auto;
+  height:52px;display:flex;align-items:center;}
 .eb-brand{display:flex;align-items:center;gap:10px}
 .eb-logo{width:32px;height:32px;border-radius:9px;overflow:hidden;
   background:linear-gradient(135deg,#6d28d9,#8b5cf6);
@@ -197,6 +203,50 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
   color:var(--text2,#475569);cursor:pointer;font-family:inherit;transition:all .15s}
 .eb-lang-btn.eb-on{background:#6d28d9;color:#fff;border-color:#6d28d9}
 body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important}
+
+/* Plano — tabela e cards responsivos */
+#pl-table .grid span:not(:first-child){
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:clamp(9px,2.5vw,12px);
+}
+#pl-table .grid span:first-child{
+  font-size:clamp(9px,2.5vw,12px);
+}
+@media(max-width:400px){
+  .grid.grid-cols-3{gap:6px !important}
+  .grid.grid-cols-3 > div{padding:10px 6px !important}
+}
+
+/* ── Modo Escuro completo ── */
+[data-theme="dark"] body{background:#0f1117 !important;color:#e2e8f0 !important}
+[data-theme="dark"] .card{background:#1a1d2e !important;border-color:#2e3347 !important}
+[data-theme="dark"] .field input[type=number]{background:#22263a !important;color:#e2e8f0 !important;border-color:#2e3347 !important}
+[data-theme="dark"] .field label{color:#94a3b8 !important}
+[data-theme="dark"] .field-note{color:#4a5178 !important}
+[data-theme="dark"] .card-title{color:#4a5178 !important}
+[data-theme="dark"] .profile-btn{background:#22263a !important;border-color:#2e3347 !important}
+[data-theme="dark"] .profile-btn .plabel{color:#94a3b8 !important}
+[data-theme="dark"] .profile-btn .prate{color:#4a5178 !important}
+[data-theme="dark"] .result-card{background:#1a1d2e !important;border-color:#2e3347 !important}
+[data-theme="dark"] .result-card-label{color:#4a5178 !important}
+[data-theme="dark"] .result-card-note{color:#4a5178 !important}
+[data-theme="dark"] .milestone{background:#22263a !important;border-color:#2e3347 !important}
+[data-theme="dark"] .milestone-title{color:#e2e8f0 !important}
+[data-theme="dark"] .milestone-sub{color:#4a5178 !important}
+[data-theme="dark"] .prog-bar{background:#2e3347 !important}
+[data-theme="dark"] .slider-val{background:#2e1065 !important}
+[data-theme="dark"] input[type=range]{background:#2e3347 !important}
+/* eb nav + menu dark */
+[data-theme="dark"] .eb-topbar{background:rgba(15,17,23,.96) !important;border-color:#2e3347 !important}
+[data-theme="dark"] .eb-bottom-nav{background:#1a1d2e !important;border-color:#2e3347 !important}
+[data-theme="dark"] .eb-ns-sheet{background:#1a1d2e !important}
+[data-theme="dark"] .eb-row{background:#22263a !important;border-color:#2e3347 !important;color:#e2e8f0 !important}
+[data-theme="dark"] .eb-row-title{color:#e2e8f0 !important}
+[data-theme="dark"] .eb-row-sub{color:#4a5178 !important}
+[data-theme="dark"] .eb-ns-title{color:#e2e8f0 !important}
+[data-theme="dark"] .eb-lang-btn{background:#22263a !important;border-color:#2e3347 !important;color:#94a3b8 !important}
+[data-theme="dark"] .eb-ns-close{background:#22263a !important;border-color:#2e3347 !important;color:#94a3b8 !important}
+
 </style>
 </head>
 <body style="padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))">
@@ -721,8 +771,8 @@ syncSlider('taxa','taxaVal');
 syncSlider('inflacao','inflacaoVal');
 // Apply saved lang and theme from localStorage
 (function(){
-  var t = localStorage.getItem('cvTheme') || 'dark';
-  document.documentElement && document.documentElement.setAttribute && document.documentElement.setAttribute('data-theme', t);
+  var t = localStorage.getItem('cvTheme') || 'light';
+  applyLibTheme(t);
   var l = localStorage.getItem('cvLang') || 'pt';
   if(typeof setLang === 'function') setLang(l);
   else { if(typeof lang !== 'undefined') lang = l; applyTranslations(); }
@@ -798,6 +848,7 @@ function ebLang(l){
   localStorage.setItem('cvLang', l);
   var thisFile = location.pathname.split('/').pop();
   if(thisFile === 'calculadora-liberdade-financeira.html'){
+    if(typeof setLang === 'function') setLang(l);  // aplica traduções + recalcula
     ebSync(); ebMenuClose(); return;
   }
   var map = {pt:'ebook-cardss-pt.html', es:'ebook-cardss-es.html', en:'ebook-cardss-en.html'};
@@ -805,15 +856,22 @@ function ebLang(l){
 }
 
 function ebTheme(){
-  var dark = (localStorage.getItem('cvTheme')||'dark') === 'dark';
+  var dark = (localStorage.getItem('cvTheme')||'light') === 'dark';
   var next = dark ? 'light' : 'dark';
   localStorage.setItem('cvTheme', next);
-  document.documentElement.setAttribute('data-theme', next);
+  applyLibTheme(next);
   ebSync();
 }
 
+// Aplica o tema directamente via JS (igual ao index.html)
+function applyLibTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  document.body.style.background = (t === 'dark') ? '#0f1117' : '#f1f5f9';
+  document.body.style.color      = (t === 'dark') ? '#e2e8f0' : '#0f172a';
+}
+
 function ebSync(){
-  var dark = (localStorage.getItem('cvTheme')||'dark') === 'dark';
+  var dark = (localStorage.getItem('cvTheme')||'light') === 'dark';
   // theme icon + label + toggle
   var ic = document.getElementById('eb-th-ic');
   var lb = document.getElementById('eb-th-lb');

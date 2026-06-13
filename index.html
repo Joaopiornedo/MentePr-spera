@@ -157,6 +157,12 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
   border:1px solid var(--bdr);background:var(--surf2);
   color:var(--txt2);cursor:pointer;font-family:inherit;transition:all .15s}
 .ns-lang-btn.on{background:#6d28d9;color:#fff;border-color:#6d28d9}
+
+/* Plano — 3 cards responsivos em celular */
+@media(max-width:390px){
+  #page-plano .grid-cols-3 > div { padding: 10px 6px !important; }
+  #page-plano .grid-cols-3 .text-xs { font-size: 9px !important; }
+}
 </style>
 </head>
 <body style="background:#f1f5f9;min-height:100vh;">
@@ -614,17 +620,17 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 
   <!-- Result cards -->
   <div class="grid grid-cols-3 gap-3 mb-4">
-    <div class="rounded-2xl p-4 text-center" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);">
+    <div class="rounded-2xl px-1 py-4 text-center" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);">
       <div class="text-xs font-bold text-white/70 mb-1" id="t-plFinal">Capital final</div>
-      <div class="text-xl font-black text-white leading-tight" id="pl-result-total">$0</div>
+      <div class="font-black text-white leading-tight" style="font-size:clamp(10px,3.2vw,16px);word-break:break-all;" id="pl-result-total">$0</div>
     </div>
-    <div class="rounded-2xl p-4 text-center s" style="background:var(--surf);border:1px solid var(--bdr);">
+    <div class="rounded-2xl px-1 py-4 text-center s" style="background:var(--surf);border:1px solid var(--bdr);">
       <div class="text-xs font-bold mb-1" style="color:var(--txt3);" id="t-plInvestido">Investido</div>
-      <div class="text-xl font-black" style="color:var(--txt);line-height:1.2;" id="pl-result-invest">$0</div>
+      <div class="font-black" style="color:var(--txt);line-height:1.2;font-size:clamp(10px,3.2vw,16px);word-break:break-all;" id="pl-result-invest">$0</div>
     </div>
-    <div class="rounded-2xl p-4 text-center" style="background:#d1fae5;border:1px solid #059669;">
+    <div class="rounded-2xl px-1 py-4 text-center" style="background:#d1fae5;border:1px solid #059669;">
       <div class="text-xs font-bold mb-1" style="color:#059669;" id="t-plJuros">Juros ganhos</div>
-      <div class="text-xl font-black" style="color:#059669;line-height:1.2;" id="pl-result-juros">$0</div>
+      <div class="font-black" style="color:#059669;line-height:1.2;font-size:clamp(10px,3.2vw,16px);word-break:break-all;" id="pl-result-juros">$0</div>
     </div>
   </div>
 
