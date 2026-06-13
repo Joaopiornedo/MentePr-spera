@@ -130,6 +130,27 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
   .strategy-grid{grid-template-columns:1fr}
   .profiles{grid-template-columns:repeat(3,1fr)}
 }
+
+/* ── Dark mode ── */
+[data-theme="dark"]{
+  --ink:#e2e8f0;--ink2:#94a3b8;--ink3:#64748b;
+  --surf:#1e1b2e;--surf2:#16131f;--bdr:#2d2a3d;
+  --vl:#2e1065;--gl:#052e16;--al:#451a03;--rl:#450a0a;--cl:#083344;
+}
+[data-theme="dark"] body{background:#0f0d18;color:var(--ink)}
+[data-theme="dark"] .result-card{background:var(--surf)}
+[data-theme="dark"] .card{background:var(--surf)}
+[data-theme="dark"] .profile-btn{background:var(--surf2);border-color:var(--bdr)}
+[data-theme="dark"] .profile-btn.active{background:var(--vl);border-color:var(--v)}
+[data-theme="dark"] .milestone{background:var(--surf2);border-color:var(--bdr)}
+[data-theme="dark"] .strategy-card{border-color:var(--bdr)}
+[data-theme="dark"] .cta-bar{background:var(--surf);border-color:var(--bdr)}
+[data-theme="dark"] .field input[type=number]{background:var(--surf2);border-color:var(--bdr);color:var(--ink)}
+[data-theme="dark"] .eb-ns-sheet{background:var(--surf)}
+[data-theme="dark"] .eb-ns-header{border-color:var(--bdr)}
+[data-theme="dark"] .eb-row{background:var(--surf2);border-color:var(--bdr);color:var(--ink)}
+[data-theme="dark"] .eb-bottom-nav{background:var(--surf);border-color:var(--bdr)}
+[data-theme="dark"] .prog-wrap{background:var(--surf)}
 </style>
 <style id="eb-nav-css">
 .eb-topbar{position:sticky;top:0;z-index:300;display:flex;align-items:center;
@@ -817,6 +838,7 @@ function ebLang(l){
   localStorage.setItem('cvLang', l);
   var thisFile = location.pathname.split('/').pop();
   if(thisFile === 'calculadora-liberdade-financeira.html'){
+    if(typeof setLang === 'function') setLang(l);
     ebSync(); ebMenuClose(); return;
   }
   var map = {pt:'ebook-cardss-pt.html', es:'ebook-cardss-es.html', en:'ebook-cardss-en.html'};
