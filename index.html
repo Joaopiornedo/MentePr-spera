@@ -184,12 +184,6 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
     </div>
   </div>
   <!-- menu button -->
-  <!-- user-bar (shown when logged in via Firebase) -->
-  <div id="user-bar" style="display:none;align-items:center;gap:6px;margin-right:4px;">
-    <div id="user-bar-avatar"
-         style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;"
-         onclick="authLogout && authLogout()" title="Sair">?</div>
-  </div>
   <button onclick="openNavSheet()"
           class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-bold transition-all"
           style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);">
@@ -1925,11 +1919,5 @@ window.onload=()=>{
   </div>
 </div>
 
-<!-- Firebase + Auth (must be last, after app JS) -->
-<script src="firebase-config.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="auth.js"></script>
 </body>
 </html>
