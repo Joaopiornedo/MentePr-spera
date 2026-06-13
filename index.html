@@ -102,12 +102,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
        box-shadow:0 4px 20px rgba(0,0,0,.3)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ── settings popover ── */
-#settingsMenu{display:none;position:absolute;top:calc(100% + 8px);right:0;
-              width:220px;border-radius:14px;padding:6px;
-              background:var(--surf);border:1px solid var(--bdr);
-              box-shadow:0 8px 32px rgba(0,0,0,.15);z-index:300}
-#settingsMenu.open{display:block}
+
 
 /* ── invest alloc modal ── */
 #allocModal .alloc-acc-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr)}
@@ -119,6 +114,48 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 
 /* safe area bottom nav */
 .bottom-nav{padding-bottom:env(safe-area-inset-bottom,0)}
+
+/* ── Nav Sheet ── */
+#nsOverlay{display:none;position:fixed;inset:0;z-index:9000;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+  align-items:flex-end;justify-content:center;}
+#nsOverlay.open{display:flex}
+#nsSheet{width:100%;max-width:540px;background:var(--surf);
+  border-radius:24px 24px 0 0;max-height:88vh;overflow-y:auto;
+  padding-bottom:calc(env(safe-area-inset-bottom,0px)+16px);
+  animation:nsUp .28s cubic-bezier(.32,.72,0,1);}
+@keyframes nsUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.ns-handle{width:40px;height:4px;background:var(--bdr2);border-radius:2px;margin:14px auto 0}
+.ns-header{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;border-bottom:1px solid var(--bdr);}
+.ns-title{font-size:16px;font-weight:900;color:var(--txt)}
+.ns-sub{font-size:11px;color:var(--txt3);margin-top:2px}
+.ns-close{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;
+  justify-content:center;background:var(--surf2);border:1px solid var(--bdr);
+  color:var(--txt3);cursor:pointer;font-size:14px;font-weight:700;font-family:inherit;}
+.ns-body{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.ns-sec{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--txt3);padding:8px 0 2px}
+.ns-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;
+  background:var(--surf2);border:1px solid var(--bdr);text-decoration:none;
+  cursor:pointer;font-family:inherit;width:100%;text-align:left;
+  transition:all .15s;color:var(--txt);box-sizing:border-box;}
+.ns-row:hover,.ns-row:active{border-color:#6d28d9;background:#ede9fe}
+.ns-icon{width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:18px}
+.ns-info{flex:1;min-width:0}
+.ns-row-title{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:2px}
+.ns-row-sub{font-size:11px;color:var(--txt3);line-height:1.4}
+.ns-arr{color:var(--txt3);font-size:16px;flex-shrink:0}
+.ns-toggle{flex-shrink:0;width:40px;height:24px;border-radius:100px;
+  position:relative;transition:background .2s;background:#6d28d9}
+.ns-toggle-ball{position:absolute;top:3px;right:3px;width:18px;height:18px;
+  border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:all .2s}
+.ns-lang-row{display:flex;gap:8px;padding-top:4px}
+.ns-lang-btn{flex:1;padding:9px 0;border-radius:10px;font-size:11px;font-weight:700;
+  border:1px solid var(--bdr);background:var(--surf2);
+  color:var(--txt2);cursor:pointer;font-family:inherit;transition:all .15s}
+.ns-lang-btn.on{background:#6d28d9;color:#fff;border-color:#6d28d9}
 </style>
 </head>
 <body style="background:#f1f5f9;min-height:100vh;">
@@ -139,45 +176,17 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
       <div class="text-xs leading-tight" style="color:var(--txt3);" id="t-appSub">Gestão financeira inteligente</div>
     </div>
   </div>
-  <!-- actions -->
-  <div class="flex items-center gap-2">
-    <!-- install -->
-    <button onclick="openInstallModal()" id="btnInstall"
-            class="w-9 h-9 rounded-xl flex items-center justify-center text-lg text-white"
-            style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);border:none;">📲</button>
-    <!-- settings gear -->
-    <div class="relative" id="settingsWrap">
-      <button onclick="toggleSettings()"
-              class="w-9 h-9 rounded-xl flex items-center justify-center text-xl transition-all"
-              style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);">⚙️</button>
-      <div id="settingsMenu" class="s">
-        <!-- theme row -->
-        <div class="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all hover:bg-violet-50"
-             onclick="toggleTheme()" style="color:var(--txt);">
-          <span class="text-sm font-semibold" id="t-themeLabel">Modo Escuro</span>
-          <span id="themeIcon" class="text-base">🌙</span>
-        </div>
-        <!-- divider -->
-        <div style="height:1px;background:var(--bdr);margin:4px 0;"></div>
-        <!-- language options -->
-        <div class="px-2 pb-1">
-          <div class="text-xs font-bold uppercase tracking-wider mb-1.5 px-1" style="color:var(--txt3);">Idioma</div>
-          <div id="langPt" onclick="setLang('pt')" class="lang-opt flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all" style="color:var(--txt);">
-            <span>🇧🇷</span><span class="text-sm font-semibold">Português</span>
-            <span class="ml-auto text-sm font-black" style="color:#6d28d9;" id="lchk-pt">✓</span>
-          </div>
-          <div id="langEs" onclick="setLang('es')" class="lang-opt flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all" style="color:var(--txt);">
-            <span>🌎</span><span class="text-sm font-semibold">Español</span>
-            <span class="ml-auto text-sm font-black hidden" style="color:#6d28d9;" id="lchk-es">✓</span>
-          </div>
-          <div id="langEn" onclick="setLang('en')" class="lang-opt flex items-center gap-2.5 px-2 py-2 rounded-lg cursor-pointer transition-all" style="color:var(--txt);">
-            <span>🇺🇸</span><span class="text-sm font-semibold">English</span>
-            <span class="ml-auto text-sm font-black hidden" style="color:#6d28d9;" id="lchk-en">✓</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- menu button -->
+  <button onclick="openNavSheet()"
+          class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-bold transition-all"
+          style="background:var(--surf2);border:1px solid var(--bdr);color:var(--txt);">
+    <svg width="14" height="12" viewBox="0 0 14 12" fill="none">
+      <rect y="0" width="14" height="2" rx="1" fill="currentColor"/>
+      <rect y="5" width="10" height="2" rx="1" fill="currentColor"/>
+      <rect y="10" width="6"  height="2" rx="1" fill="currentColor"/>
+    </svg>
+    Menu
+  </button>
 </header>
 
 
@@ -502,8 +511,8 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 <!-- ══════════════════════════════════════
      BOTTOM NAV
 ══════════════════════════════════════ -->
-<nav class="bottom-nav fixed bottom-0 left-0 right-0 z-50 grid grid-cols-4"
-     style="background:var(--surf);border-top:1px solid var(--bdr);">
+<nav class="bottom-nav fixed bottom-0 left-0 right-0 z-50"
+     style="background:var(--surf);border-top:1px solid var(--bdr);display:grid;grid-template-columns:repeat(5,1fr);">
   <button class="nav-item active flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
           id="nav-orcamento" onclick="switchPage('orcamento')">
     <span class="text-xl">💰</span><span id="t-navOrc">Orçamento</span>
@@ -519,6 +528,10 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
   <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
           id="nav-plano">
     <span class="text-xl">📈</span><span id="t-navPlan">Plano</span>
+  </button>
+  <button class="nav-item flex flex-col items-center justify-center gap-1 py-2.5 text-xs font-bold"
+          id="nav-liberdade" onclick="location.href='calculadora-liberdade-financeira.html'">
+    <span class="text-xl">🏆</span><span id="t-navLib">Liberdade</span>
   </button>
 </nav>
 
@@ -625,7 +638,6 @@ let allocInputs={};
 function toggleTheme(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
   applyTheme(dark?'light':'dark');
-  closeSettings();
 }
 function applyTheme(t){
   document.documentElement.setAttribute('data-theme',t);
@@ -638,12 +650,6 @@ function applyTheme(t){
 // ─────────────────────────────────────────
 //  SETTINGS MENU
 // ─────────────────────────────────────────
-function toggleSettings(){
-  const m=$('settingsMenu');
-  m.classList.toggle('open');
-}
-function closeSettings(){ $('settingsMenu').classList.remove('open'); }
-document.addEventListener('click',e=>{ if(!$('settingsWrap').contains(e.target)) closeSettings(); });
 
 // ─────────────────────────────────────────
 //  NAVIGATION
@@ -1239,7 +1245,7 @@ const TR={
     dreamFormTitle:'✨ Novo Sonho / Meta', addDreamBtn:'🚀 Adicionar Sonho',
     dreamsEmpty:'Nenhum sonho adicionado ainda.',
     archiveBtn:'🔒 Fechar e Arquivar Mês',
-    navOrc:'Orçamento', navEbook:'Ebook', navHist:'Histórico', navPlan:'Plano',
+    navOrc:'Orçamento', navEbook:'Ebook', navHist:'Histórico', navPlan:'Plano', navLib:'Liberdade',
     histTitle:'📅 Histórico Mensal',
     histSelectLabel:'Selecione o mês e arquive o registo atual:',
     histArchiveBtn:'🔒 Arquivar', histSection:'Registos arquivados',
@@ -1270,7 +1276,7 @@ const TR={
     dreamFormTitle:'✨ Nuevo Sueño / Meta', addDreamBtn:'🚀 Agregar Sueño',
     dreamsEmpty:'Ningún sueño agregado aún.',
     archiveBtn:'🔒 Cerrar y Archivar Mes',
-    navOrc:'Presupuesto', navEbook:'Ebook', navHist:'Historial', navPlan:'Plan',
+    navOrc:'Presupuesto', navEbook:'Ebook', navHist:'Historial', navPlan:'Plan', navLib:'Libertad',
     histTitle:'📅 Historial Mensual',
     histSelectLabel:'Selecciona el mes y archiva el registro:',
     histArchiveBtn:'🔒 Archivar', histSection:'Registros archivados',
@@ -1301,7 +1307,7 @@ const TR={
     dreamFormTitle:'✨ New Dream / Goal', addDreamBtn:'🚀 Add Dream',
     dreamsEmpty:'No dreams added yet.',
     archiveBtn:'🔒 Close and Archive Month',
-    navOrc:'Budget', navEbook:'Ebook', navHist:'History', navPlan:'Plan',
+    navOrc:'Budget', navEbook:'Ebook', navHist:'History', navPlan:'Plan', navLib:'Freedom',
     histTitle:'📅 Monthly History',
     histSelectLabel:'Select month and archive current data:',
     histArchiveBtn:'🔒 Archive', histSection:'Archived records',
@@ -1356,7 +1362,7 @@ function applyTranslations(){
   const adbtn=$('t-addDreamBtn'); if(adbtn) adbtn.textContent=T.addDreamBtn;
   set('t-dreamsEmpty',T.dreamsEmpty);
   const arch=$('t-archiveBtn'); if(arch) arch.textContent=T.archiveBtn;
-  set('t-navOrc',T.navOrc); set('t-navEbook',T.navEbook); set('t-navHist',T.navHist); set('t-navPlan',T.navPlan);
+  set('t-navOrc',T.navOrc); set('t-navEbook',T.navEbook); set('t-navHist',T.navHist); set('t-navPlan',T.navPlan); set('t-navLib',T.navLib||'Liberdade');
   set('t-histTitle',T.histTitle); set('t-histSelectLabel',T.histSelectLabel);
   const hab=$('t-histArchiveBtn'); if(hab) hab.textContent=T.histArchiveBtn;
   set('t-histSection',T.histSection);
@@ -1384,6 +1390,40 @@ function defaultItems(){
   }
 }
 
+
+// ── Nav Sheet ──────────────────────────────────────
+function openNavSheet(){
+  document.getElementById('nsOverlay').classList.add('open');
+  nsSyncMenu();
+}
+function closeNavSheet(){
+  document.getElementById('nsOverlay').classList.remove('open');
+}
+function nsSyncMenu(){
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  var icon = document.getElementById('ns-theme-icon');
+  var lbl  = document.getElementById('ns-theme-t');
+  var tog  = document.getElementById('ns-toggle');
+  var ball = document.getElementById('ns-ball');
+  if(icon) icon.textContent = dark ? '☀️' : '🌙';
+  if(lbl)  lbl.textContent  = dark ? (TR[lang]&&TR[lang].lightMode||'Modo Claro') : (TR[lang]&&TR[lang].darkMode||'Modo Escuro');
+  if(tog)  tog.style.background = dark ? '#6d28d9' : '#cbd5e1';
+  if(ball){ ball.style.right = dark ? '3px' : 'auto'; ball.style.left = dark ? 'auto' : '3px'; }
+  var saved = localStorage.getItem('cvLang') || 'pt';
+  ['pt','es','en'].forEach(function(k){
+    var b = document.getElementById('ns-lb-'+k);
+    if(b) b.className = 'ns-lang-btn' + (k===saved?' on':'');
+  });
+}
+function nsToggleTheme(){
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  applyTheme(dark ? 'light' : 'dark');
+  nsSyncMenu();
+}
+function nsSetLang(l){
+  setLang(l);
+  nsSyncMenu();
+}
 window.onload=()=>{
   // theme
   const savedTheme=localStorage.getItem('cvTheme')||'light';
@@ -1429,5 +1469,52 @@ window.onload=()=>{
   switchTab('fixo');
 };
 </script>
+
+<!-- ══ NAV SHEET ══ -->
+<div id="nsOverlay" onclick="if(event.target===this)closeNavSheet()">
+  <div id="nsSheet" onclick="event.stopPropagation()">
+    <div class="ns-handle"></div>
+    <div class="ns-header">
+      <div><div class="ns-title">Menu</div><div class="ns-sub">Mente Próspera</div></div>
+      <button class="ns-close" onclick="closeNavSheet()">✕</button>
+    </div>
+    <div class="ns-body">
+
+      <div class="ns-sec" id="ns-sec-learn">APRENDER</div>
+      <a href="tutorial.html" class="ns-row">
+        <div class="ns-icon" style="background:#ede9fe">🎓</div>
+        <div class="ns-info"><div class="ns-row-title" id="ns-tut-t">Tutorial</div><div class="ns-row-sub" id="ns-tut-s">Como usar todas as ferramentas</div></div>
+        <span class="ns-arr">›</span>
+      </a>
+
+      <div class="ns-sec" id="ns-sec-config">CONFIGURAÇÕES</div>
+      <button class="ns-row" onclick="nsToggleTheme()">
+        <div class="ns-icon" style="background:var(--surf2)" id="ns-theme-icon">🌙</div>
+        <div class="ns-info">
+          <div class="ns-row-title" id="ns-theme-t">Modo Escuro</div>
+          <div class="ns-row-sub" id="ns-theme-s">Alternar tema claro / escuro</div>
+        </div>
+        <div class="ns-toggle" id="ns-toggle"><div class="ns-toggle-ball" id="ns-ball"></div></div>
+      </button>
+      <div class="ns-row" style="cursor:default;flex-direction:column;align-items:stretch;gap:10px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="ns-icon" style="background:var(--surf2)">🌍</div>
+          <div class="ns-info"><div class="ns-row-title" id="ns-lang-t">Idioma</div><div class="ns-row-sub">PT · ES · EN</div></div>
+        </div>
+        <div class="ns-lang-row">
+          <button class="ns-lang-btn on" id="ns-lb-pt" onclick="nsSetLang('pt')">🇧🇷 PT</button>
+          <button class="ns-lang-btn" id="ns-lb-es" onclick="nsSetLang('es')">🌎 ES</button>
+          <button class="ns-lang-btn" id="ns-lb-en" onclick="nsSetLang('en')">🇺🇸 EN</button>
+        </div>
+      </div>
+      <button class="ns-row" onclick="openInstallModal();closeNavSheet()">
+        <div class="ns-icon" style="background:#ede9fe">📲</div>
+        <div class="ns-info"><div class="ns-row-title" id="ns-inst-t">Instalar App</div><div class="ns-row-sub" id="ns-inst-s">Adicionar à tela inicial</div></div>
+        <span class="ns-arr">›</span>
+      </button>
+
+    </div>
+  </div>
+</div>
 </body>
 </html>
