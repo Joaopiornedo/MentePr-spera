@@ -1462,29 +1462,46 @@ function arquivarMes(){
   const mes=$('mesRef')?($('mesRef').value||hoje):hoje;
   const d=getData();
   const sal=safe($('salario').value);
-  const tF=sumAllItems('fixo'),tL=sumAllItems('lazer'),tI=sumAllItems('invest');
-  const parMensal=(d.parcelados||[]).reduce((s,p)=>s+p.total/p.parcelas,0);
 
-  // compute budgets to get economy values
+  // compute budgets
   let pF2=mode==='pct'?safe($('pctFixo').value):sal>0?safe($('pctFixo').value)/sal*100:0;
   let pI2=mode==='pct'?safe($('pctInvest').value):sal>0?safe($('pctInvest').value)/sal*100:0;
   let pS2=0; d.sonhos.forEach(s=>{ pS2+=sal>0?(s.valor/s.meses/sal*100):0; });
   let pPar2=0; (d.parcelados||[]).forEach(p=>{ pPar2+=sal>0?(p.total/p.parcelas/sal*100):0; });
   const pL2=Math.max(0,100-pF2-pI2-pS2-pPar2);
-  const mF2=sal*pF2/100, mL2=sal*pL2/100;
+  const mF2=sal*pF2/100, mL2=sal*pL2/100, mI2=sal*pI2/100;
+
+  // totais reais — incluir frações de lazer checadas
+  const tF=sumAllItems('fixo');
+  const tLItems=sumAllItems('lazer');
+  const tLFrac=fracCheckedTotal('lazer',mL2);
+  const tL=tLItems+tLFrac;
+  const tI=sumAllItems('invest');
+  const tIFrac=fracCheckedTotal('invest',mI2);
+
+  // parcelados: capturar estado ANTES de resetar
+  const parMensal=(d.parcelados||[]).reduce((s,p)=>s+p.total/p.parcelas,0);
+  const parPagoArc=(d.parcelados||[]).filter(p=>p.done).reduce((s,p)=>s+p.total/p.parcelas,0);
 
   const reg={
     id:Date.now(),mes,salario:sal,
-    totalFixo:tF,totalLazer:tL,totalInvest:tI,totalParcelado:parMensal,
+    totalFixo:tF,totalLazer:tL,totalInvest:tI+tIFrac,
+    totalParcelado:parMensal,parceladoPago:parPagoArc,
     econFixo:Math.max(0,mF2-tF),econLazer:Math.max(0,mL2-tL),
-    sobra:sal-tF-tL-tI-parMensal
+    sobra:sal-tF-tL-(tI+tIFrac)-parPagoArc
   };
   d.hist=d.hist.filter(h=>h.mes!==mes);
   d.hist.push(reg);
   // reset parcelados done para o novo mês
   (d.parcelados||[]).forEach(p=>p.done=false);
+  // reset frações checadas para o novo mês
+  if(d.fracs){
+    if(d.fracs.lazer)  d.fracs.lazer.checks=[];
+    if(d.fracs.invest) d.fracs.invest.checks=[];
+  }
   save(d);
-  renderParcelados();renderHistory();
+  renderParcelados();renderHistory();renderFracRows('lazer');renderFracRows('invest');
+  calcularTudo();
   toast(`🔒 Mês ${mes} arquivado!`);
   if(currentPage!=='historico') switchPage('historico');
 }
@@ -1511,7 +1528,7 @@ function renderHistory(){
       ['🛡️ Invest.',h.totalInvest,'#059669'],
       ['💰 Sobra',h.sobra,safe(h.sobra)>=0?'#059669':'#dc2626']
     ];
-    if(h.totalParcelado>0) gridItems.push(['💳 Parc.',h.totalParcelado,'#e11d48']);
+    if(h.totalParcelado>0) gridItems.push(['💳 Parc.',(h.parceladoPago!=null?h.parceladoPago:h.totalParcelado),'#e11d48']);
 
     const econParts=[];
     if(h.econFixo>0.005) econParts.push(`${fmtM(h.econFixo)} em Fixo`);
