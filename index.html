@@ -1017,6 +1017,18 @@ function applyTheme(t){
   const icon=$('themeIcon'); if(icon) icon.textContent=t==='dark'?'☀️':'🌙';
   const lbl=$('t-themeLabel'); if(lbl) lbl.textContent=t==='dark'?TR[lang].lightMode:TR[lang].darkMode;
   localStorage.setItem('cvTheme',t);
+  // Propaga o tema para o iframe do ebook, se já estiver carregado
+  try{
+    const f=$('ebookFrame');
+    if(f){
+      if(f.contentDocument){
+        f.contentDocument.documentElement.setAttribute('data-theme',t);
+      }
+      if(f.contentWindow){
+        f.contentWindow.postMessage({type:'setTheme',theme:t},'*');
+      }
+    }
+  }catch(e){}
 }
 
 // ─────────────────────────────────────────

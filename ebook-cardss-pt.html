@@ -1478,14 +1478,14 @@ function toggleTheme() {
   const next = isDark ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
   document.getElementById('btnTheme').textContent = isDark ? '☀️' : '🌙';
-  localStorage.setItem('ebookCardsTheme', next);
+  localStorage.setItem('cvTheme', next);
 }
 
 // ════════════════════════════════
 //  INIT
 // ════════════════════════════════
 (function(){
-  const theme = localStorage.getItem('ebookCardsTheme') || 'dark';
+  const theme = localStorage.getItem('cvTheme') || 'light';
   document.documentElement.setAttribute('data-theme', theme);
   document.getElementById('btnTheme').textContent = theme === 'dark' ? '🌙' : '☀️';
 
@@ -1632,7 +1632,7 @@ function ebLang(l){
 }
 
 function ebTheme(){
-  var dark = (localStorage.getItem('cvTheme')||'dark') === 'dark';
+  var dark = (localStorage.getItem('cvTheme')||'light') === 'dark';
   var next = dark ? 'light' : 'dark';
   localStorage.setItem('cvTheme', next);
   document.documentElement.setAttribute('data-theme', next);
@@ -1640,7 +1640,7 @@ function ebTheme(){
 }
 
 function ebSync(){
-  var dark = (localStorage.getItem('cvTheme')||'dark') === 'dark';
+  var dark = (localStorage.getItem('cvTheme')||'light') === 'dark';
   // theme icon + label + toggle
   var ic = document.getElementById('eb-th-ic');
   var lb = document.getElementById('eb-th-lb');
@@ -1661,7 +1661,7 @@ function ebSync(){
 // On load: check saved lang — redirect if different from this file
 (function(){
   var savedLang  = localStorage.getItem('cvLang') || 'pt';
-  var savedTheme = localStorage.getItem('cvTheme') || 'dark';
+  var savedTheme = localStorage.getItem('cvTheme') || 'light';
   var map = {pt:'ebook-cardss-pt.html', es:'ebook-cardss-es.html', en:'ebook-cardss-en.html'};
   var thisFile = (location.pathname.split('/').pop()) || ('ebook-cardss-' + _ebLang + '.html');
 
@@ -1676,6 +1676,25 @@ function ebSync(){
 
   // Sync menu visuals after DOM ready
   setTimeout(ebSync, 0);
+})();
+</script>
+<script>
+// Sincroniza tema quando a app (parent) muda — via storage e postMessage
+(function(){
+  function applyEbTheme(t){
+    document.documentElement.setAttribute('data-theme', t || 'light');
+    if(typeof ebSync === 'function'){ try{ ebSync(); }catch(e){} }
+  }
+  // Quando o parent escreve no localStorage
+  window.addEventListener('storage', function(e){
+    if(e.key === 'cvTheme'){ applyEbTheme(e.newValue); }
+  });
+  // Quando o parent envia mensagem direta
+  window.addEventListener('message', function(e){
+    if(e.data && e.data.type === 'setTheme'){ applyEbTheme(e.data.theme); }
+  });
+  // Reaplica ao carregar (garante consistência)
+  applyEbTheme(localStorage.getItem('cvTheme') || 'light');
 })();
 </script>
 </body>
