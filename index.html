@@ -570,15 +570,14 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
      PAGE 3 — EBOOK
 ══════════════════════════════════════ -->
 <div class="page" id="page-ebook">
-<div class="max-w-2xl mx-auto px-4 pb-28 pt-5">
-  <!-- redirects to external file; show loading card -->
-  <div class="rounded-2xl p-8 text-center" style="background:linear-gradient(160deg,#0d0d1a,#1a1a35);min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+<div style="position:fixed;inset:0;top:56px;bottom:64px;background:var(--bg);" id="ebookFrameWrap">
+  <!-- placeholder de carregamento -->
+  <div id="ebookLoader" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#0d0d1a,#1a1a35);z-index:2;">
     <div class="text-5xl mb-4">📚</div>
-    <div class="text-white font-black text-xl mb-2" id="t-ebookLoading">A abrir o Ebook...</div>
-    <div class="text-white/50 text-sm" id="t-ebookSub">Será redirecionado em instantes.</div>
-    <button onclick="goToEbook()" class="mt-6 px-6 py-3 rounded-xl font-bold text-white text-sm"
-            style="background:#6d28d9;border:none;" id="t-ebookBtn">Abrir agora</button>
+    <div class="text-white font-black text-xl" id="t-ebookLoading">A carregar o Ebook...</div>
   </div>
+  <!-- iframe carregado sob demanda -->
+  <iframe id="ebookFrame" style="width:100%;height:100%;border:none;display:block;" title="Ebook" loading="lazy"></iframe>
 </div>
 </div>
 
@@ -1001,14 +1000,36 @@ function switchPage(p){
   const n=$('nav-'+p); if(n) n.classList.add('active');
   if(p==='historico') renderHistory();
   if(p==='orcamento'){ renderParcelados(); renderDreams(); calcularTudo(); }
-  if(p==='ebook'){ goToEbook(); return; }
+  if(p==='ebook'){ loadEbookFrame(); }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function goToEbook(){
+function loadEbookFrame(){
   const map={pt:'ebook-cardss-pt.html',es:'ebook-cardss-es.html',en:'ebook-cardss-en.html'};
-  window.location.href=map[lang]||'ebook-cardss-pt.html';
+  const url=map[lang]||'ebook-cardss-pt.html';
+  const frame=$('ebookFrame');
+  const loader=$('ebookLoader');
+  const wrap=$('ebookFrameWrap');
+  if(!frame) return;
+  // Ajusta o iframe à altura real do topbar e da barra inferior
+  if(wrap){
+    const tb=document.getElementById('topbar');
+    const nav=document.querySelector('.bottom-nav');
+    wrap.style.top=(tb?tb.offsetHeight:56)+'px';
+    wrap.style.bottom=(nav?nav.offsetHeight:64)+'px';
+  }
+  // Recarrega o iframe apenas se o idioma mudou ou ainda não foi carregado
+  if(frame.getAttribute('data-loaded')!==url){
+    if(loader) loader.style.display='flex';
+    frame.onload=()=>{ if(loader) loader.style.display='none'; };
+    frame.src=url;
+    frame.setAttribute('data-loaded',url);
+  } else {
+    if(loader) loader.style.display='none';
+  }
 }
+
+function goToEbook(){ loadEbookFrame(); }
 
 function switchTab(t){
   currentTab=t;
@@ -1895,6 +1916,7 @@ function setLang(l){
   applyTranslations();
   if(typeof window.fi_setLang==='function'){ window.fi_setLang(l); }
   if(typeof closeNavSheet==='function') closeNavSheet();
+  if(currentPage==='ebook' && typeof loadEbookFrame==='function') loadEbookFrame();
 }
 
 function applyTranslations(){

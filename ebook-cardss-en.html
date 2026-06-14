@@ -600,6 +600,18 @@ body{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px)) !important}
 </style>
 </head>
 <body>
+<script>
+// Quando dentro de iframe (app integrada), esconder topbar e nav próprios
+if(window.self !== window.top){ document.documentElement.classList.add('in-app-frame'); }
+</script>
+<style>
+html.in-app-frame .eb-topbar,
+html.in-app-frame .eb-bottom-nav { display:none !important; }
+html.in-app-frame body { padding-top:0 !important; padding-bottom:0 !important; }
+html.in-app-frame .home-wrap,
+html.in-app-frame .reader-wrap { padding-top:16px !important; }
+</style>
+
 
 <!-- PROGRESS BAR -->
 <div class="progress-top" id="progressTop"></div>
