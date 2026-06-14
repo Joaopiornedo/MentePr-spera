@@ -1671,17 +1671,24 @@ function arquivarMes(){
   const parMensal=(d.parcelados||[]).reduce((s,p)=>s+p.total/p.parcelas,0);
   const parPagoArc=(d.parcelados||[]).filter(p=>p.done).reduce((s,p)=>s+p.total/p.parcelas,0);
 
+  // sonhos: total mensal a poupar e quanto foi efectivamente guardado (marcados)
+  const sonhosMensal=(d.sonhos||[]).reduce((s,sn)=>s+sn.valor/sn.meses,0);
+  const sonhosPago=(d.sonhos||[]).filter(sn=>sn.done).reduce((s,sn)=>s+sn.valor/sn.meses,0);
+
   const reg={
     id:Date.now(),mes,salario:sal,
     totalFixo:tF,totalLazer:tL,totalInvest:tI+tIFrac,
     totalParcelado:parMensal,parceladoPago:parPagoArc,
+    totalSonhos:sonhosMensal,sonhosPago:sonhosPago,
     econFixo:Math.max(0,mF2-tF),econLazer:Math.max(0,mL2-tL),
-    sobra:sal-tF-tL-(tI+tIFrac)-parPagoArc
+    sobra:sal-tF-tL-(tI+tIFrac)-parPagoArc-sonhosPago
   };
   d.hist=d.hist.filter(h=>h.mes!==mes);
   d.hist.push(reg);
   // reset parcelados done para o novo mês
   (d.parcelados||[]).forEach(p=>p.done=false);
+  // reset sonhos done para o novo mês
+  (d.sonhos||[]).forEach(sn=>sn.done=false);
   // reset frações checadas para o novo mês
   if(d.fracs){
     if(d.fracs.lazer)  d.fracs.lazer.checks=[];
@@ -1717,6 +1724,7 @@ function renderHistory(){
       ['💰 Sobra',h.sobra,safe(h.sobra)>=0?'#059669':'#dc2626']
     ];
     if(h.totalParcelado>0) gridItems.push(['💳 Parc.',(h.parceladoPago!=null?h.parceladoPago:h.totalParcelado),'#e11d48']);
+    if(h.totalSonhos>0) gridItems.push(['⭐ Sonhos',(h.sonhosPago!=null?h.sonhosPago:h.totalSonhos),'#7c3aed']);
 
     const econParts=[];
     if(h.econFixo>0.005) econParts.push(`${fmtM(h.econFixo)} em Fixo`);
