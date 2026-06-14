@@ -1594,6 +1594,10 @@ const TR={
     dreamsEmpty:'Nenhum sonho adicionado ainda.',
     archiveBtn:'🔒 Fechar e Arquivar Mês',
     navOrc:'Orçamento', navEbook:'Ebook', navHist:'Histórico', navPlan:'Plano', navLib:'Liberdade', planoTitle:'📈 Plano de Investimento', planoSub:'Simula o crescimento do teu capital ao longo do tempo.',
+    plCapital:'Capital inicial', plAporte:'Aporte mensal', plTaxa:'Taxa anual (%)', plAnos:'Anos', plAnosSuf:'anos',
+    plFinal:'Capital final', plInvestido:'Investido', plJuros:'Juros ganhos',
+    plCapitalPct:'Capital investido', plJurosPct:'Juros compostos',
+    plTabela:'Evolução anual', plColAno:'Ano', plColAporte:'Investido', plColJuros:'Juros', plColTotal:'Total',
     histTitle:'📅 Histórico Mensal',
     histSelectLabel:'Selecione o mês e arquive o registo atual:',
     histArchiveBtn:'🔒 Arquivar', histSection:'Registos arquivados',
@@ -1625,6 +1629,10 @@ const TR={
     dreamsEmpty:'Ningún sueño agregado aún.',
     archiveBtn:'🔒 Cerrar y Archivar Mes',
     navOrc:'Presupuesto', navEbook:'Ebook', navHist:'Historial', navPlan:'Plan', navLib:'Libertad', planoTitle:'📈 Plan de Inversión', planoSub:'Simula el crecimiento de tu capital a lo largo del tiempo.',
+    plCapital:'Capital inicial', plAporte:'Aportación mensual', plTaxa:'Tasa anual (%)', plAnos:'Años', plAnosSuf:'años',
+    plFinal:'Capital final', plInvestido:'Invertido', plJuros:'Intereses ganados',
+    plCapitalPct:'Capital invertido', plJurosPct:'Interés compuesto',
+    plTabela:'Evolución anual', plColAno:'Año', plColAporte:'Invertido', plColJuros:'Intereses', plColTotal:'Total',
     histTitle:'📅 Historial Mensual',
     histSelectLabel:'Selecciona el mes y archiva el registro:',
     histArchiveBtn:'🔒 Archivar', histSection:'Registros archivados',
@@ -1656,6 +1664,10 @@ const TR={
     dreamsEmpty:'No dreams added yet.',
     archiveBtn:'🔒 Close and Archive Month',
     navOrc:'Budget', navEbook:'Ebook', navHist:'History', navPlan:'Plan', navLib:'Freedom', planoTitle:'📈 Investment Plan', planoSub:'Simulate the growth of your capital over time.',
+    plCapital:'Initial capital', plAporte:'Monthly deposit', plTaxa:'Annual rate (%)', plAnos:'Years', plAnosSuf:'years',
+    plFinal:'Final capital', plInvestido:'Invested', plJuros:'Interest earned',
+    plCapitalPct:'Invested capital', plJurosPct:'Compound interest',
+    plTabela:'Annual breakdown', plColAno:'Year', plColAporte:'Invested', plColJuros:'Interest', plColTotal:'Total',
     histTitle:'📅 Monthly History',
     histSelectLabel:'Select month and archive current data:',
     histArchiveBtn:'🔒 Archive', histSection:'Archived records',
@@ -1721,6 +1733,19 @@ function applyTranslations(){
   set('t-installTitle',T.installTitle); set('t-installSub',T.installSub);
   set('t-ebookLoading',T.ebookLoading); set('t-ebookSub',T.ebookSub);
   const ebBtn=$('t-ebookBtn'); if(ebBtn) ebBtn.textContent=T.ebookBtn;
+  // ── Aba Plano ─────────────────────────────────────────────
+  if(T.plCapital){
+    set('t-planoTitle',T.planoTitle); set('t-planoSub',T.planoSub);
+    set('t-plCapital',T.plCapital);   set('t-plAporte',T.plAporte);
+    set('t-plTaxa',T.plTaxa);         set('t-plAnos',T.plAnos);
+    set('t-plAnosSuf',T.plAnosSuf);
+    set('t-plFinal',T.plFinal);       set('t-plInvestido',T.plInvestido);
+    set('t-plJuros',T.plJuros);
+    set('t-plCapitalPct',T.plCapitalPct); set('t-plJurosPct',T.plJurosPct);
+    set('t-plTabela',T.plTabela);
+    set('t-plColAno',T.plColAno);     set('t-plColAporte',T.plColAporte);
+    set('t-plColJuros',T.plColJuros); set('t-plColTotal',T.plColTotal);
+  }
   // item placeholders
   document.querySelectorAll('.iname').forEach(el=>el.placeholder=T.colDesc+'...');
 }
