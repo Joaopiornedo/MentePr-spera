@@ -1705,8 +1705,9 @@ function deleteHistory(id){
 }
 function renderHistory(){
   const d=getData(); const c=$('historyList');
+  const T=TR[lang]||TR.pt;
   if(!d.hist.length){
-    c.innerHTML=`<div class="text-center py-12 text-sm" style="color:var(--txt3);"><div class="text-4xl mb-3">📋</div>Nenhum mês arquivado ainda.</div>`;
+    c.innerHTML=`<div class="text-center py-12 text-sm" style="color:var(--txt3);"><div class="text-4xl mb-3">📋</div>${T.histEmpty}</div>`;
     return;
   }
   const sorted=[...d.hist].sort((a,b)=>b.mes.localeCompare(a.mes));
@@ -1717,23 +1718,23 @@ function renderHistory(){
     card.style='background:var(--surf);border:1px solid var(--bdr);';
 
     const gridItems=[
-      ['🏠 Fixo',h.totalFixo,'#6d28d9'],
-      ['☕ Lazer',h.totalLazer,'#d97706'],
-      ['🛡️ Invest.',h.totalInvest,'#059669'],
-      ['💰 Sobra',h.sobra,safe(h.sobra)>=0?'#059669':'#dc2626']
+      ['🏠 '+T.hFixo,h.totalFixo,'#6d28d9'],
+      ['☕ '+T.hLazer,h.totalLazer,'#d97706'],
+      ['🛡️ '+T.hInvest,h.totalInvest,'#059669'],
+      ['💰 '+T.hSobra,h.sobra,safe(h.sobra)>=0?'#059669':'#dc2626']
     ];
-    if(h.totalParcelado>0) gridItems.push(['💳 Parc.',(h.parceladoPago!=null?h.parceladoPago:h.totalParcelado),'#e11d48']);
-    if(h.totalSonhos>0) gridItems.push(['⭐ Sonhos',(h.sonhosPago!=null?h.sonhosPago:h.totalSonhos),'#7c3aed']);
+    if(h.totalParcelado>0) gridItems.push(['💳 '+T.hParc,(h.parceladoPago!=null?h.parceladoPago:h.totalParcelado),'#e11d48']);
+    if(h.totalSonhos>0) gridItems.push(['⭐ '+T.hSonhos,(h.sonhosPago!=null?h.sonhosPago:h.totalSonhos),'#7c3aed']);
 
     const econParts=[];
-    if(h.econFixo>0.005) econParts.push(`${fmtM(h.econFixo)} em Fixo`);
-    if(h.econLazer>0.005) econParts.push(`${fmtM(h.econLazer)} em Lazer`);
+    if(h.econFixo>0.005) econParts.push(`${fmtM(h.econFixo)} ${T.hEm} ${T.hFixo}`);
+    if(h.econLazer>0.005) econParts.push(`${fmtM(h.econLazer)} ${T.hEm} ${T.hLazer}`);
     const econStr=econParts.join(' · ');
 
     card.innerHTML=`
       <div class="flex items-center justify-between mb-3">
         <div><div class="font-bold" style="color:var(--txt);">📅 ${h.mes}</div>
-             <div class="text-xs" style="color:var(--txt3);">Salário: ${fmtM(h.salario)}</div></div>
+             <div class="text-xs" style="color:var(--txt3);">${T.hSalario}: ${fmtM(h.salario)}</div></div>
         <button onclick="deleteHistory(${h.id})" class="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
                 style="background:none;border:none;color:var(--txt3);" onmouseover="this.style.background='#fee2e2';this.style.color='#dc2626';" onmouseout="this.style.background='none';this.style.color='var(--txt3)';">🗑</button>
       </div>
@@ -1744,7 +1745,7 @@ function renderHistory(){
           <div class="font-black text-sm" style="color:${col};">${fmtM(v)}</div>
         </div>`).join('')}
       </div>
-      ${econStr?`<div class="mt-2 px-3 py-2 rounded-xl text-xs font-semibold" style="background:#d1fae5;color:#059669;">💰 Economizou: ${econStr}</div>`:''}`;
+      ${econStr?`<div class="mt-2 px-3 py-2 rounded-xl text-xs font-semibold" style="background:#d1fae5;color:#059669;">💰 ${T.hEconomizou}: ${econStr}</div>`:''}`;
     c.appendChild(card);
   });
 }
@@ -1793,6 +1794,7 @@ const TR={
     plCapitalPct:'Capital investido', plJurosPct:'Juros compostos',
     plTabela:'Evolução anual', plColAno:'Ano', plColAporte:'Investido', plColJuros:'Juros', plColTotal:'Total',
     histTitle:'📅 Histórico Mensal',
+    histEmpty:'Nenhum mês arquivado ainda.', hFixo:'Fixo', hLazer:'Lazer', hInvest:'Invest.', hSobra:'Sobra', hParc:'Parc.', hSonhos:'Sonhos', hSalario:'Salário', hEconomizou:'Economizou', hEm:'em',
     histSelectLabel:'Selecione o mês e arquive o registo atual:',
     histArchiveBtn:'🔒 Arquivar', histSection:'Registos arquivados',
     allocTitle:'💼 Alocar Investimento',
@@ -1828,6 +1830,7 @@ const TR={
     plCapitalPct:'Capital invertido', plJurosPct:'Interés compuesto',
     plTabela:'Evolución anual', plColAno:'Año', plColAporte:'Invertido', plColJuros:'Intereses', plColTotal:'Total',
     histTitle:'📅 Historial Mensual',
+    histEmpty:'Ningún mes archivado todavía.', hFixo:'Fijo', hLazer:'Ocio', hInvest:'Invers.', hSobra:'Sobra', hParc:'Cuotas', hSonhos:'Sueños', hSalario:'Salario', hEconomizou:'Ahorró', hEm:'en',
     histSelectLabel:'Selecciona el mes y archiva el registro:',
     histArchiveBtn:'🔒 Archivar', histSection:'Registros archivados',
     allocTitle:'💼 Asignar Inversión',
@@ -1863,6 +1866,7 @@ const TR={
     plCapitalPct:'Invested capital', plJurosPct:'Compound interest',
     plTabela:'Annual breakdown', plColAno:'Year', plColAporte:'Invested', plColJuros:'Interest', plColTotal:'Total',
     histTitle:'📅 Monthly History',
+    histEmpty:'No month archived yet.', hFixo:'Fixed', hLazer:'Leisure', hInvest:'Invest.', hSobra:'Left', hParc:'Install.', hSonhos:'Dreams', hSalario:'Salary', hEconomizou:'Saved', hEm:'in',
     histSelectLabel:'Select month and archive current data:',
     histArchiveBtn:'🔒 Archive', histSection:'Archived records',
     allocTitle:'💼 Allocate Investment',
@@ -1943,6 +1947,7 @@ function applyTranslations(){
   }
   // item placeholders
   document.querySelectorAll('.iname').forEach(el=>el.placeholder=T.colDesc+'...');
+  if(typeof renderHistory==='function' && currentPage==='historico') renderHistory();
 }
 
 // ─────────────────────────────────────────
