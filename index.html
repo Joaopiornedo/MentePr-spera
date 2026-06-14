@@ -731,7 +731,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
     <div class="field">
       <label id="fi-t-lblPatrimonio">💰 Patrimônio actual ($)</label>
       <div class="field-row"><span class="field-prefix">$</span>
-        <input type="number" id="fi-patrimonio" value="0" min="0" step="100" oninput="fi_calc()">
+        <input type="number" id="fi-patrimonio" value="0" min="0" step="100" readonly style="opacity:.85;cursor:not-allowed;">
       </div>
       <div class="field-note" id="fi-t-patrimonioNote">Soma de investimentos, poupanças e activos financeiros líquidos</div>
     </div>
@@ -739,24 +739,29 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
     <div class="field">
       <label id="fi-t-lblRenda">📥 Renda / Salário mensal ($)</label>
       <div class="field-row"><span class="field-prefix">$</span>
-        <input type="number" id="fi-renda" value="2000" min="0" step="100" oninput="fi_calc()">
+        <input type="number" id="fi-renda" value="2000" min="0" step="100" readonly style="opacity:.85;cursor:not-allowed;">
       </div>
+      <div class="field-note" id="fi-t-rendaNote">Vem automaticamente do salário definido no teu orçamento</div>
     </div>
 
     <div class="field">
       <label id="fi-t-lblDespesas">💸 Despesas mensais actuais ($)</label>
       <div class="field-row"><span class="field-prefix">$</span>
-        <input type="number" id="fi-despesas" value="1600" min="0" step="100" oninput="fi_calc()">
+        <input type="number" id="fi-despesas" value="1600" min="0" step="100" readonly style="opacity:.85;cursor:not-allowed;">
       </div>
-      <div class="field-note" id="fi-t-despesasNote">Inclui todas as despesas — fixas, lazer, parcelados</div>
+      <div class="field-note" id="fi-t-despesasNote">Baseado na meta mensal de Gastos Fixos + Lazer + Parcelados do teu orçamento</div>
     </div>
 
     <div class="field">
       <label id="fi-t-lblDespesasReforma">🏖️ Despesas mensais na reforma ($)</label>
       <div class="field-row"><span class="field-prefix">$</span>
-        <input type="number" id="fi-despesasReforma" value="2000" min="0" step="100" oninput="fi_calc()">
+        <input type="number" id="fi-despesasReforma" value="2000" min="0" step="100" readonly style="opacity:.85;cursor:not-allowed;">
       </div>
-      <div class="field-note" id="fi-t-despesasReformaNote">O que precisas por mês para viver com qualidade na reforma</div>
+      <div class="slider-row" style="margin-top:8px;">
+        <input type="range" id="fi-reformaExtra" min="0" max="50" value="15" step="5" oninput="fi_syncReformaExtra();fi_calc()">
+        <div class="slider-val" id="fi-reformaExtraVal">+15%</div>
+      </div>
+      <div class="field-note" id="fi-t-despesasReformaNote">Despesas atuais + margem para mais qualidade de vida na reforma</div>
     </div>
 
     <div class="field">
@@ -2225,10 +2230,10 @@ const TR = {
     badge:'Bónus Exclusivo', title:'Calculadora de\nLiberdade Financeira',
     sub:'Descobre exactamente quantos anos faltam para viveres dos teus rendimentos — e o que fazer para chegar lá mais depressa.',
     inputsTitle:'Os teus números actuais',
-    lblPatrimonio:'💰 Patrimônio actual ($)', patrimonioNote:'Soma de investimentos, poupanças e activos financeiros líquidos',
-    lblRenda:'📥 Renda / Salário mensal ($)',
-    lblDespesas:'💸 Despesas mensais actuais ($)', despesasNote:'Inclui todas as despesas — fixas, lazer, parcelados',
-    lblDespesasReforma:'🏖️ Despesas mensais na reforma ($)', despesasReformaNote:'O que precisas por mês para viver com qualidade na reforma',
+    lblPatrimonio:'💰 Patrimônio actual ($)', patrimonioNote:'Vem do Saldo Total do teu orçamento (salário + todas as contas)',
+    lblRenda:'📥 Renda / Salário mensal ($)', rendaNote:'Vem automaticamente do salário definido no teu orçamento',
+    lblDespesas:'💸 Despesas mensais actuais ($)', despesasNote:'Baseado na meta mensal de Gastos Fixos + Lazer + Parcelados do teu orçamento',
+    lblDespesasReforma:'🏖️ Despesas mensais na reforma ($)', despesasReformaNote:'Despesas atuais + margem para mais qualidade de vida na reforma',
     lblTaxa:'📈 Taxa de retorno anual esperada (%)',
     profC:'Conservador', profCRate:'~6% / ano', profM:'Moderado', profMRate:'~10% / ano', profA:'Arrojado', profARate:'~15% / ano',
     lblInflacao:'🌡️ Inflação anual esperada (%)',
@@ -2264,10 +2269,10 @@ const TR = {
     badge:'Bono Exclusivo', title:'Calculadora de\nLibertad Financiera',
     sub:'Descubre exactamente cuántos años faltan para vivir de tus rentas — y qué hacer para llegar más rápido.',
     inputsTitle:'Tus números actuales',
-    lblPatrimonio:'💰 Patrimonio actual ($)', patrimonioNote:'Suma de inversiones, ahorros y activos financieros líquidos',
-    lblRenda:'📥 Ingreso / Salario mensual ($)',
-    lblDespesas:'💸 Gastos mensuales actuales ($)', despesasNote:'Incluye todos los gastos — fijos, ocio, cuotas',
-    lblDespesasReforma:'🏖️ Gastos mensuales en la jubilación ($)', despesasReformaNote:'Lo que necesitas por mes para vivir con calidad en la jubilación',
+    lblPatrimonio:'💰 Patrimonio actual ($)', patrimonioNote:'Viene del Saldo Total de tu presupuesto (salario + todas las cuentas)',
+    lblRenda:'📥 Ingreso / Salario mensual ($)', rendaNote:'Viene automáticamente del salario definido en tu presupuesto',
+    lblDespesas:'💸 Gastos mensuales actuales ($)', despesasNote:'Basado en la meta mensual de Gastos Fijos + Ocio + Cuotas de tu presupuesto',
+    lblDespesasReforma:'🏖️ Gastos mensuales en la jubilación ($)', despesasReformaNote:'Gastos actuales + margen para más calidad de vida en la jubilación',
     lblTaxa:'📈 Tasa de retorno anual esperada (%)',
     profC:'Conservador', profCRate:'~6% / año', profM:'Moderado', profMRate:'~10% / año', profA:'Agresivo', profARate:'~15% / año',
     lblInflacao:'🌡️ Inflación anual esperada (%)',
@@ -2301,10 +2306,10 @@ const TR = {
     badge:'Exclusive Bonus', title:'Financial Freedom\nCalculator',
     sub:'Find out exactly how many years until you can live off your investments — and what to do to get there faster.',
     inputsTitle:'Your current numbers',
-    lblPatrimonio:'💰 Current net worth ($)', patrimonioNote:'Sum of investments, savings and liquid financial assets',
-    lblRenda:'📥 Monthly income / salary ($)',
-    lblDespesas:'💸 Current monthly expenses ($)', despesasNote:'Includes all expenses — fixed, leisure, instalments',
-    lblDespesasReforma:'🏖️ Monthly expenses in retirement ($)', despesasReformaNote:'What you need per month to live comfortably in retirement',
+    lblPatrimonio:'💰 Current net worth ($)', patrimonioNote:'Comes from the Total Balance of your budget (salary + all accounts)',
+    lblRenda:'📥 Monthly income / salary ($)', rendaNote:'Comes automatically from the salary set in your budget',
+    lblDespesas:'💸 Current monthly expenses ($)', despesasNote:'Based on the monthly target of Fixed + Leisure + Installments from your budget',
+    lblDespesasReforma:'🏖️ Monthly expenses in retirement ($)', despesasReformaNote:'Current expenses + margin for a better quality of life in retirement',
     lblTaxa:'📈 Expected annual return rate (%)',
     profC:'Conservative', profCRate:'~6% / year', profM:'Moderate', profMRate:'~10% / year', profA:'Aggressive', profARate:'~15% / year',
     lblInflacao:'🌡️ Expected annual inflation (%)',
@@ -2359,6 +2364,7 @@ function fi_applyTranslations(){
   document.getElementById('fi-t-lblPatrimonio').textContent=T.lblPatrimonio;
   document.getElementById('fi-t-patrimonioNote').textContent=T.patrimonioNote;
   document.getElementById('fi-t-lblRenda').textContent=T.lblRenda;
+  { var _rn=document.getElementById('fi-t-rendaNote'); if(_rn&&T.rendaNote) _rn.textContent=T.rendaNote; }
   document.getElementById('fi-t-lblDespesas').textContent=T.lblDespesas;
   document.getElementById('fi-t-despesasNote').textContent=T.despesasNote;
   document.getElementById('fi-t-lblDespesasReforma').textContent=T.lblDespesasReforma;
@@ -2386,8 +2392,8 @@ const fmtD = n => '$' + Number(n||0).toLocaleString('pt',{minimumFractionDigits:
 const safe = v => { const n=parseFloat(String(v||0).replace(',','.')); return isNaN(n)?0:n; };
 
 function fi_syncSlider(id, valId){
-  const el = document.getElementById(id);
-  const out = document.getElementById(valId);
+  const el = document.getElementById('fi-'+id);
+  const out = document.getElementById('fi-'+valId);
   if(!el || !out) return;
   const val = parseFloat(el.value);
   out.textContent = val.toFixed(1)+'%';
@@ -2397,7 +2403,7 @@ function fi_setProfile(rate, id){
   document.getElementById('fi-taxa').value = rate;
   fi_syncSlider('taxa','taxaVal');
   document.querySelectorAll('.profile-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('prof-'+id)?.classList.add('active');
+  document.getElementById('fi-prof-'+id)?.classList.add('active');
   fi_calc();
 }
 
@@ -2434,8 +2440,85 @@ function fi_getPatrimonioAt(patrimonio, poupancaMes, taxaAnual, inflacaoAnual, y
   return pat;
 }
 
+
+// ── Integração com o Orçamento: calcula renda e despesas reais ──
+function fi_getBudgetData(){
+  try{
+    var d = JSON.parse(localStorage.getItem('cvD6')||'{}');
+    var cfg = d.cfg||{};
+    var sal = parseFloat(cfg.salario)||0;
+    var mode = cfg.mode || localStorage.getItem('cvMode') || 'pct';
+    // pF e pI conforme o modo (% ou valor em $)
+    var pF, pI;
+    if(mode==='pct'){
+      pF = Math.max(0, Math.min(100, parseFloat(cfg.pctFixo)||0));
+      pI = Math.max(0, Math.min(100, parseFloat(cfg.pctInvest)||0));
+    } else {
+      pF = sal>0 ? (parseFloat(cfg.pctFixo)||0)/sal*100 : 0;
+      pI = sal>0 ? (parseFloat(cfg.pctInvest)||0)/sal*100 : 0;
+    }
+    // parcelados mensais
+    var parMensal = 0;
+    (d.parcelados||[]).forEach(function(p){
+      if(p && p.total && p.parcelas) parMensal += p.total/p.parcelas;
+    });
+    var pPar = sal>0 ? parMensal/sal*100 : 0;
+    // sonhos (entram no lazer auto, mas não contam como despesa de vida)
+    var pS = 0;
+    (d.sonhos||[]).forEach(function(s){
+      if(s && s.valor && s.meses){ pS += sal>0 ? (s.valor/s.meses)/sal*100 : 0; }
+    });
+    // Lazer ajustado (mesma fórmula do orçamento)
+    var pL = Math.max(0, 100 - pF - pI - pS - pPar);
+    var mF = sal*pF/100;   // meta fixo
+    var mL = sal*pL/100;   // meta lazer
+    // Despesas de vida = fixo + lazer + parcelados
+    var despesas = mF + mL + parMensal;
+    // Saldo Total = saldo de todas as contas + salário
+    var contas = 0;
+    (d.wallet||[]).forEach(function(a){ if(a) contas += parseFloat(a.valor)||0; });
+    var patrimonio = contas + sal;
+    return { salario: sal, despesas: despesas, mF: mF, mL: mL, parMensal: parMensal, patrimonio: patrimonio, contas: contas };
+  }catch(e){ return { salario:0, despesas:0, mF:0, mL:0, parMensal:0, patrimonio:0, contas:0 }; }
+}
+
+// ── Slider de % extra para despesas na reforma ──
+function fi_syncReformaExtra(){
+  var el = document.getElementById('fi-reformaExtra');
+  var out = document.getElementById('fi-reformaExtraVal');
+  if(el && out) out.textContent = '+' + el.value + '%';
+}
+
+// ── Preenche renda e despesas a partir do orçamento ──
+function fi_syncFromBudget(){
+  var b = fi_getBudgetData();
+  var pEl = document.getElementById('fi-patrimonio');
+  var rEl = document.getElementById('fi-renda');
+  var dEl = document.getElementById('fi-despesas');
+  if(pEl && b.patrimonio>0) pEl.value = Math.round(b.patrimonio);
+  if(rEl && b.salario>0) rEl.value = Math.round(b.salario);
+  if(dEl && b.despesas>0) dEl.value = Math.round(b.despesas);
+  // despesas na reforma = despesas atuais + extra%
+  var ex = document.getElementById('fi-reformaExtra');
+  var rfEl = document.getElementById('fi-despesasReforma');
+  var pct = ex ? (parseFloat(ex.value)||0) : 15;
+  var base = dEl ? (parseFloat(dEl.value)||0) : 0;
+  if(rfEl) rfEl.value = Math.round(base * (1 + pct/100));
+}
+
 function fi_calc(){
   const T = TR[lang];
+  // Recalcula despesas na reforma = despesas atuais + margem%
+  (function(){
+    var ex = document.getElementById('fi-reformaExtra');
+    var dEl = document.getElementById('fi-despesas');
+    var rfEl = document.getElementById('fi-despesasReforma');
+    if(ex && dEl && rfEl){
+      var pct = parseFloat(ex.value)||0;
+      var base = parseFloat(dEl.value)||0;
+      rfEl.value = Math.round(base * (1 + pct/100));
+    }
+  })();
   const patrimonio = safe(document.getElementById('fi-patrimonio').value);
   const renda      = safe(document.getElementById('fi-renda').value);
   const despesas   = safe(document.getElementById('fi-despesas').value);
@@ -2578,12 +2661,18 @@ window.fi_setLang = fi_setLang;
 window.fi_calc = fi_calc;
 window.fi_setProfile = fi_setProfile;
 window.fi_syncSlider = fi_syncSlider;
+window.fi_syncReformaExtra = fi_syncReformaExtra;
+window.fi_syncFromBudget = fi_syncFromBudget;
 
 window._fi_init = function(){
   try {
     var l = localStorage.getItem('cvLang') || 'pt';
     lang = l;
     fi_applyTranslations();
+    fi_syncFromBudget();
+    fi_syncReformaExtra();
+    fi_syncSlider('taxa','taxaVal');
+    fi_syncSlider('inflacao','inflacaoVal');
     fi_calc();
   } catch(e) { console.warn('fi init', e); }
 };
