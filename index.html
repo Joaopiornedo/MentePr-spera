@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Calculadora da Virada</title>
+<title>Mente Próspera</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#6d28d9">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Calculadora da Virada">
+<meta name="apple-mobile-web-app-title" content="Mente Próspera">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = {
@@ -213,8 +213,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
            onerror="this.style.display='none';this.parentElement.innerHTML='💰'">
     </div>
     <div>
-      <div class="text-sm font-bold leading-tight" style="color:var(--txt);" id="t-appName">Calculadora da Virada</div>
-      <div class="text-xs leading-tight" style="color:var(--txt3);" id="t-appSub">Gestão financeira inteligente</div>
+      <div class="text-sm font-bold leading-tight" style="color:var(--txt);" id="t-appName">Mente Próspera</div>
     </div>
   </div>
   <!-- menu button -->
@@ -1769,7 +1768,7 @@ if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch
 // ─────────────────────────────────────────
 const TR={
   pt:{
-    appName:'Calculadora da Virada', appSub:'Gestão financeira inteligente',
+    appName:'Mente Próspera',
     darkMode:'Modo Escuro', lightMode:'Modo Claro',
     walletTitle:'SALDO TOTAL', walletFree:'Saldo livre:',
     accounts:'Minhas contas', addAccount:'＋ Adicionar conta',
@@ -1804,7 +1803,7 @@ const TR={
     ebookLoading:'A abrir o Ebook...', ebookSub:'Será redirecionado em instantes.', ebookBtn:'Abrir agora',
   },
   es:{
-    appName:'Calculadora del Giro', appSub:'Gestión financiera inteligente',
+    appName:'Mente Próspera',
     darkMode:'Modo Oscuro', lightMode:'Modo Claro',
     walletTitle:'SALDO TOTAL', walletFree:'Saldo libre:',
     accounts:'Mis cuentas', addAccount:'＋ Agregar cuenta',
@@ -1839,7 +1838,7 @@ const TR={
     ebookLoading:'Abriendo el Ebook...', ebookSub:'Será redirigido en instantes.', ebookBtn:'Abrir ahora',
   },
   en:{
-    appName:'Budget Calculator', appSub:'Smart financial management',
+    appName:'Prosperous Mind',
     darkMode:'Dark Mode', lightMode:'Light Mode',
     walletTitle:'TOTAL BALANCE', walletFree:'Free balance:',
     accounts:'My accounts', addAccount:'＋ Add account',
@@ -1895,7 +1894,7 @@ function applyTranslations(){
   const T=TR[lang]||TR.pt;
   const set=(id,v)=>{ const e=$(id); if(e) e.textContent=v; };
   document.documentElement.lang=lang;
-  set('t-appName',T.appName); set('t-appSub',T.appSub);
+  set('t-appName',T.appName);
   set('t-themeLabel',document.documentElement.getAttribute('data-theme')==='dark'?T.lightMode:T.darkMode);
   set('t-walletTitle',T.walletTitle); set('t-walletFree',T.walletFree);
   set('t-accounts',T.accounts);
