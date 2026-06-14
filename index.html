@@ -258,14 +258,6 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
         <input type="number" id="salario" value="2000" min="0" step="0.01" placeholder="0.00"
                class="flex-1 bg-transparent border-none outline-none text-white text-2xl font-black placeholder-white/30"
                oninput="calcularTudo();saveItems();">
-        <!-- mode toggle -->
-        <div class="flex rounded-lg overflow-hidden flex-shrink-0" style="background:rgba(255,255,255,.15);">
-          <button id="mBtn-pct" onclick="setMode('pct')"
-                  class="px-2.5 py-1 text-xs font-bold text-white rounded-md transition-all"
-                  style="background:rgba(255,255,255,.3);">%</button>
-          <button id="mBtn-val" onclick="setMode('val')"
-                  class="px-2.5 py-1 text-xs font-bold text-white/50 rounded-md transition-all">$</button>
-        </div>
       </div>
     </div>
 
@@ -289,7 +281,18 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 
   <!-- ── DISTRIBUTION BAR + BUDGET CARDS ── -->
   <div class="rounded-2xl p-4 mb-4 s" style="background:var(--surf);border:1px solid var(--bdr);box-shadow:var(--shadow);">
-    <div class="text-xs font-bold uppercase tracking-widest mb-3" style="color:var(--txt3);" id="t-distLabel">Distribuição do orçamento</div>
+    <div class="flex items-center justify-between mb-3">
+      <div class="text-xs font-bold uppercase tracking-widest" style="color:var(--txt3);" id="t-distLabel">Distribuição do orçamento</div>
+      <!-- mode toggle -->
+      <div class="flex rounded-lg overflow-hidden flex-shrink-0" style="background:var(--surf2);border:1px solid var(--bdr);">
+        <button id="mBtn-pct" onclick="setMode('pct')"
+                class="px-3 py-1 text-xs font-bold rounded-md transition-all"
+                style="background:#6d28d9;color:#fff;">%</button>
+        <button id="mBtn-val" onclick="setMode('val')"
+                class="px-3 py-1 text-xs font-bold rounded-md transition-all"
+                style="color:var(--txt3);">$</button>
+      </div>
+    </div>
     <!-- bar -->
     <div class="h-2.5 rounded-full overflow-hidden flex mb-4" style="background:var(--bdr);">
       <div class="dseg" id="bar-fixo"   style="background:#6d28d9;"></div>
@@ -1033,10 +1036,10 @@ function setMode(m){
     $('pctInvest').value=sal>0?fmt(safe($('pctInvest').value)/sal*100,1):'0';
   }
   mode=m;
-  $('mBtn-pct').style.background=m==='pct'?'rgba(255,255,255,.3)':'transparent';
-  $('mBtn-pct').style.color=m==='pct'?'#fff':'rgba(255,255,255,.4)';
-  $('mBtn-val').style.background=m==='val'?'rgba(255,255,255,.3)':'transparent';
-  $('mBtn-val').style.color=m==='val'?'#fff':'rgba(255,255,255,.4)';
+  $('mBtn-pct').style.background=m==='pct'?'#6d28d9':'transparent';
+  $('mBtn-pct').style.color=m==='pct'?'#fff':'var(--txt3)';
+  $('mBtn-val').style.background=m==='val'?'#6d28d9':'transparent';
+  $('mBtn-val').style.color=m==='val'?'#fff':'var(--txt3)';
   ['symFixo','symLazer','symInvest'].forEach(id=>{ if($(id)) $(id).textContent=m==='pct'?'%':'$'; });
   calcularTudo();
   const d=getData(); d.cfg.mode=m; save(d);
@@ -2064,10 +2067,10 @@ window.onload=()=>{
   mode=d.cfg.mode||localStorage.getItem('cvMode')||'pct';
 
   // mode buttons
-  $('mBtn-pct').style.background=mode==='pct'?'rgba(255,255,255,.3)':'transparent';
-  $('mBtn-pct').style.color=mode==='pct'?'#fff':'rgba(255,255,255,.4)';
-  $('mBtn-val').style.background=mode==='val'?'rgba(255,255,255,.3)':'transparent';
-  $('mBtn-val').style.color=mode==='val'?'#fff':'rgba(255,255,255,.4)';
+  $('mBtn-pct').style.background=mode==='pct'?'#6d28d9':'transparent';
+  $('mBtn-pct').style.color=mode==='pct'?'#fff':'var(--txt3)';
+  $('mBtn-val').style.background=mode==='val'?'#6d28d9':'transparent';
+  $('mBtn-val').style.color=mode==='val'?'#fff':'var(--txt3)';
 
   // fractions select state
   if(d.fracs.lazer.n>0)   $('fracLazer').value=d.fracs.lazer.n;
