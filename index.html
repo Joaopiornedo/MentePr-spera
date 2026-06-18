@@ -1593,7 +1593,6 @@ function calcularTudo(){
   const mF=sal*pF/100, mL=sal*pL/100, mI=sal*pI/100;
 
   // UI budget cards
-  $('pctLazer').value=fmt(pL,1);
   $('badge-fixo').textContent=fmt(pF,1)+'%';
   $('badge-lazer').textContent=fmt(pL,1)+'%';
   $('badge-invest').textContent=fmt(pI,1)+'%';
@@ -1602,10 +1601,12 @@ function calcularTudo(){
   $('meta-invest').textContent=fmtM(mI);
 
   if(mode==='pct'){
+    $('pctLazer').value=fmt(pL,1);
     $('valFixo').textContent=fmtM(mF);
     $('valLazer').textContent=fmtM(mL);
     $('valInvest').textContent=fmtM(mI);
   } else {
+    $('pctLazer').value=fmt(mL,2);
     $('valFixo').textContent=fmt(pF,1)+'% do salário';
     $('valLazer').textContent=fmt(pL,1)+'% do salário';
     $('valInvest').textContent=fmt(pI,1)+'% do salário';
